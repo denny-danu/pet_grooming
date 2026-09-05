@@ -19,7 +19,7 @@ export const actions: Actions = {
 		const phone = String(data.get("phone") ?? "").trim();
 		const email = String(data.get("email") ?? "").trim();
 		if (!firstName || !lastName || !phone) {
-			return fail(400, { error: "Name and phone are required", firstName, lastName, phone, email });
+			return fail(400, { error: "First name, last name, and phone are required", firstName, lastName, phone, email });
 		}
 
 		const [owner] = await db
@@ -31,11 +31,15 @@ export const actions: Actions = {
 
 		const petName = String(data.get("petName") ?? "").trim();
 		if (petName) {
+			const weightKg = String(data.get("weightKg") ?? "").trim() || null;
+			const vaccinationDueDate = String(data.get("vaccinationDueDate") ?? "") || null;
 			await db.insert(pets).values({
 				ownerId: owner.id,
 				name: petName,
 				species: (String(data.get("species") ?? "dog") as never),
-				breed: String(data.get("breed") ?? "").trim() || null
+				breed: String(data.get("breed") ?? "").trim() || null,
+				weightKg,
+				vaccinationDueDate
 			});
 		}
 

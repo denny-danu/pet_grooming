@@ -49,7 +49,7 @@ export async function applyLedger(op: LedgerOp) {
 		.update(membershipAccounts)
 		.set({
 			pointsBalance: newBalance,
-			pointsLifetimeEarned: account.pointsLifetimeEarned + (op.amount > 0 ? op.amount : 0)
+			updatedAt: new Date()
 		})
 		.where(eq(membershipAccounts.id, account.id))
 		.returning();

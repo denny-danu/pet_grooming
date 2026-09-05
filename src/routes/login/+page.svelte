@@ -1,95 +1,321 @@
 <script lang="ts">
 	import { page } from "$app/state";
-	import { PawPrint, KeyRound, Mail, Sparkles } from "@lucide/svelte";
+	import { PawPrint, KeyRound, Mail, Sparkles, ShieldCheck, ArrowRight, AlertCircle, Store } from "@lucide/svelte";
+
 	const form = $derived(page.form);
 	const error = $derived(form?.error);
+
 	let email = $state('admin@petco.local');
 	let password = $state('admin123');
+	let isSubmitting = $state(false);
+
+	function fillDemo() {
+		email = 'admin@petco.local';
+		password = 'admin123';
+	}
 </script>
 
-<div class="login-wrap">
-	<div class="backdrop"></div>
-	<div class="login-card">
-		<div class="head">
-			<span class="brand-mark"><PawPrint size={20} strokeWidth={2.2} /></span>
-			<div>
-				<h1>PetCo</h1>
-				<p>Staff sign-in · CRM, bookings &amp; membership</p>
-			</div>
-		</div>
+<svelte:head>
+	<title>Sign in · PetCo CRM</title>
+</svelte:head>
 
-		<form method="POST" action="?/login">
+<div class="login-wrapper">
+	<div class="ambient-glow glow-1"></div>
+	<div class="ambient-glow glow-2"></div>
+	<div class="ambient-glow glow-3"></div>
+
+	<div class="login-container">
+		<div class="login-card">
+			<div class="card-brand-head">
+				<div class="brand-emblem">
+					<PawPrint size={24} strokeWidth={2.5} />
+				</div>
+				<div class="brand-text">
+					<h1>PetCo CRM</h1>
+					<p>Staff Portal · Pet Care, Grooming &amp; Hotel</p>
+				</div>
+			</div>
+
+			<div class="status-strip">
+				<span class="status-pulse"></span>
+				<span>Main Branch Server · Operational</span>
+			</div>
+
 			{#if error}
-				<div class="alert alert-error">Error signing in — check your email and password.</div>
+				<div class="alert alert-error" style="margin: var(--sp-3) 0;">
+					<AlertCircle />
+					<span>Invalid credentials. Please check your email and password.</span>
+				</div>
 			{/if}
 
-			<div class="field">
-				<label for="email">Email</label>
-				<div class="input-wrap">
-					<Mail size={15} class="input-icon" />
-					<input id="email" name="email" type="email" placeholder="you@petco.local" autocomplete="username" bind:value={email} />
+			<form method="POST" action="?/login" onsubmit={() => isSubmitting = true}>
+				<div class="field">
+					<label for="email">Staff Email Address</label>
+					<div class="input-wrap">
+						<Mail size={16} class="input-icon" />
+						<input
+							id="email"
+							name="email"
+							type="email"
+							placeholder="staff@petco.local"
+							autocomplete="username"
+							bind:value={email}
+							required
+						/>
+					</div>
+				</div>
+
+				<div class="field">
+					<label for="password">Password</label>
+					<div class="input-wrap">
+						<KeyRound size={16} class="input-icon" />
+						<input
+							id="password"
+							name="password"
+							type="password"
+							placeholder="••••••••"
+							autocomplete="current-password"
+							bind:value={password}
+							required
+						/>
+					</div>
+				</div>
+
+				<button class="btn btn-primary submit-btn" type="submit" disabled={isSubmitting}>
+					<span>{isSubmitting ? 'Signing in...' : 'Sign in to Console'}</span>
+					<ArrowRight size={16} />
+				</button>
+
+				<button class="btn demo-btn" type="button" onclick={fillDemo}>
+					<Sparkles size={14} />
+					<span>Auto-fill Demo Credentials</span>
+				</button>
+			</form>
+
+			<div class="login-footer">
+				<div class="security-badge">
+					<ShieldCheck size={13} />
+					<span>Encrypted Staff Session · Role-Based Access</span>
 				</div>
 			</div>
-
-			<div class="field">
-				<label for="password">Password</label>
-				<div class="input-wrap">
-					<KeyRound size={15} class="input-icon" />
-					<input id="password" name="password" type="password" placeholder="••••••••" autocomplete="current-password" bind:value={password} />
-				</div>
-			</div>
-
-			<button class="btn btn-primary btn-lg submit" type="submit">Sign in</button>
-
-			<button class="btn demo" type="button" onclick={() => { email = 'admin@petco.local'; password = 'admin123'; }}>
-				<Sparkles size={14} /> Fill demo credentials
-			</button>
-		</form>
-
-		<p class="foot-note">
-			Demo access is prefilled — just press <strong>Sign in</strong>.
-		</p>
+		</div>
 	</div>
 </div>
 
 <style>
-	.login-wrap {
-		position: relative;
-		display: grid; place-items: center;
+	.login-wrapper {
 		min-height: 100vh;
-		background: #0f1220;
+		display: grid;
+		place-items: center;
+		background: #090d16;
+		position: relative;
 		overflow: hidden;
 		padding: 24px;
+		font-family: var(--font-sans);
 	}
-	.backdrop {
-		position: absolute; inset: 0;
-		background:
-			radial-gradient(700px 480px at 15% -10%, rgba(109, 94, 242, 0.35), transparent 60%),
-			radial-gradient(640px 420px at 105% 110%, rgba(79, 70, 229, 0.28), transparent 55%);
+
+	.ambient-glow {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(100px);
+		pointer-events: none;
 	}
-	.login-card {
+
+	.glow-1 {
+		width: 500px;
+		height: 500px;
+		background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+		top: -100px;
+		left: -100px;
+	}
+
+	.glow-2 {
+		width: 600px;
+		height: 600px;
+		background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+		bottom: -150px;
+		right: -100px;
+	}
+
+	.glow-3 {
+		width: 350px;
+		height: 350px;
+		background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+
+	.login-container {
 		position: relative;
-		width: 100%; max-width: 372px;
-		background: var(--surface);
+		width: 100%;
+		max-width: 420px;
+		z-index: 10;
+	}
+
+	.login-card {
+		background: rgba(15, 23, 42, 0.85);
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
 		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: var(--r-2xl);
+		padding: 32px 28px;
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+	}
+
+	.card-brand-head {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		margin-bottom: 16px;
+	}
+
+	.brand-emblem {
+		width: 48px;
+		height: 48px;
 		border-radius: var(--r-xl);
-		box-shadow: var(--shadow-lg);
-		padding: var(--sp-6);
+		background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+		display: grid;
+		place-items: center;
+		color: #ffffff;
+		box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+		flex-shrink: 0;
 	}
-	.head { display: flex; align-items: center; gap: 12px; margin-bottom: var(--sp-6); }
-	.brand-mark {
-		width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
-		background: linear-gradient(135deg, #6d5ef2, #4f46e5);
-		color: #fff; display: grid; place-items: center;
-		box-shadow: var(--shadow-md);
+
+	.brand-text h1 {
+		font-size: 22px;
+		font-weight: 800;
+		letter-spacing: -0.025em;
+		color: #ffffff;
+		margin: 0;
 	}
-	.head h1 { font-size: 19px; margin: 0; }
-	.head p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
-	.input-wrap { position: relative; }
-	.input-wrap input { padding-left: 34px; }
-	.input-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
-	.submit { width: 100%; margin-top: 6px; }
-	.demo { width: 100%; margin-top: 8px; background: var(--surface-2); border-style: dashed; }
-	.demo:hover { background: var(--surface-3); }
-	.foot-note { text-align: center; font-size: 12px; color: var(--faint); margin: 16px 0 0; }
+
+	.brand-text p {
+		font-size: 12px;
+		color: #94a3b8;
+		margin: 2px 0 0;
+	}
+
+	.status-strip {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		padding: 4px 10px;
+		border-radius: var(--r-full);
+		background: rgba(16, 185, 129, 0.1);
+		border: 1px solid rgba(16, 185, 129, 0.2);
+		color: #34d399;
+		font-size: 11.5px;
+		font-weight: 600;
+		margin-bottom: 20px;
+	}
+
+	.status-pulse {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #10b981;
+		box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+	}
+
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		margin-bottom: 16px;
+	}
+
+	.field label {
+		font-size: 12.5px;
+		font-weight: 600;
+		color: #cbd5e1;
+	}
+
+	.input-wrap {
+		position: relative;
+		width: 100%;
+	}
+
+	.input-wrap input {
+		width: 100%;
+		padding: 10px 14px 10px 38px;
+		background: rgba(30, 41, 59, 0.7);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: var(--r-md);
+		color: #ffffff;
+		font-size: 13.5px;
+		transition: all 140ms ease;
+	}
+
+	.input-wrap input:focus {
+		border-color: #6366f1;
+		background: rgba(30, 41, 59, 0.95);
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+		outline: none;
+	}
+
+	.input-wrap input::placeholder {
+		color: #64748b;
+	}
+
+	:global(.input-wrap .input-icon) {
+		position: absolute;
+		left: 12px;
+		top: 50%;
+		transform: translateY(-50%);
+		color: #64748b;
+		pointer-events: none;
+	}
+
+	.submit-btn {
+		width: 100%;
+		padding: 11px 18px;
+		font-size: 14px;
+		font-weight: 700;
+		border-radius: var(--r-md);
+		margin-top: 6px;
+		background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+		border: none;
+		box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+		transition: all 140ms ease;
+	}
+
+	.submit-btn:hover {
+		box-shadow: 0 6px 20px rgba(79, 70, 229, 0.55);
+		transform: translateY(-1px);
+	}
+
+	.demo-btn {
+		width: 100%;
+		margin-top: 10px;
+		padding: 9px 14px;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px dashed rgba(255, 255, 255, 0.15);
+		color: #cbd5e1;
+		font-size: 12.5px;
+		border-radius: var(--r-md);
+	}
+
+	.demo-btn:hover {
+		background: rgba(255, 255, 255, 0.09);
+		border-color: rgba(255, 255, 255, 0.25);
+		color: #ffffff;
+	}
+
+	.login-footer {
+		margin-top: 24px;
+		padding-top: 16px;
+		border-top: 1px solid rgba(255, 255, 255, 0.07);
+		display: flex;
+		justify-content: center;
+	}
+
+	.security-badge {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 11px;
+		font-weight: 500;
+		color: #64748b;
+	}
 </style>

@@ -1,8 +1,8 @@
 import { db } from "$lib/server/db";
 import { bookings, owners, pets, services, staff, rooms } from "$lib/server/db/schema";
-import { and, gte, lt, inArray, eq } from "drizzle-orm";
+import { and, gte, lt, eq } from "drizzle-orm";
 import { requireUser } from "$lib/server/auth";
-import { addDays, startOfDay, endOfDay } from "date-fns";
+import { addDays, startOfDay } from "date-fns";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals, url }) => {
@@ -23,7 +23,11 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			ownerId: owners.id,
 			ownerName: owners.firstName,
 			ownerLast: owners.lastName,
+			ownerPhone: owners.phone,
+			petId: bookings.petId,
 			petName: pets.name,
+			petSpecies: pets.species,
+			petBreed: pets.breed,
 			serviceName: services.name,
 			roomName: rooms.name,
 			staffName: staff.name
@@ -42,5 +46,5 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		items: rows.filter((r) => r.startsAt >= d && r.startsAt < addDays(d, 1))
 	}));
 
-	return { days: grouped, viewDate };
+	return { days: grouped, viewDate, totalCount: rows.length };
 };

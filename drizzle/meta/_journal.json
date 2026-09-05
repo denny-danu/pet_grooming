@@ -8,6 +8,20 @@
       "when": 1788633181336,
       "tag": "0000_kind_madame_masque",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788635793271,
+      "tag": "0001_polite_solo",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788637005242,
+      "tag": "0002_dizzy_terror",
+      "breakpoints": true
     }
   ]
 }

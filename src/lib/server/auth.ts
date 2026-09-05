@@ -15,3 +15,11 @@ export function requireUser(locals: RequestEvent["locals"]): SessionUser {
 	if (!locals.user) throw redirect(303, "/login");
 	return locals.user;
 }
+
+export function getBranchFilter(locals: RequestEvent["locals"]): number | null {
+	if (!locals.user) return null;
+	if (locals.user.isHeadOffice || locals.user.role === "admin") {
+		return locals.activeBranchId ?? null;
+	}
+	return locals.user.branchId ?? null;
+}

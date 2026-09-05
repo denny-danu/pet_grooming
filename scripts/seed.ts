@@ -1,5 +1,7 @@
 import { db } from "../src/lib/server/db";
 import {
+	branches,
+	storeSettings,
 	owners,
 	pets,
 	staff,
@@ -13,16 +15,37 @@ import {
 	notifications,
 	ledgerEntries,
 	packagePurchases,
-	auditLogs
+	auditLogs,
+	productCategories,
+	products,
+	orders,
+	orderItems,
+	dailyCareLogs,
+	customerTanks,
+	waterParameterLogs,
+	aquariumServicePlans,
+	groomingCutCards,
+	bookingAddons
 } from "../src/lib/server/db/schema";
 import { bcryptHash } from "../src/lib/server/auth";
 import { addMinutes, addDays, startOfDay } from "date-fns";
 
 async function main() {
+	await db.delete(orderItems);
+	await db.delete(orders);
+	await db.delete(products);
+	await db.delete(productCategories);
+	await db.delete(dailyCareLogs);
+	await db.delete(waterParameterLogs);
+	await db.delete(aquariumServicePlans);
+	await db.delete(customerTanks);
+	await db.delete(groomingCutCards);
+	await db.delete(bookingAddons);
 	await db.delete(notifications);
 	await db.delete(ledgerEntries);
 	await db.delete(auditLogs);
 	await db.delete(packagePurchases);
+	await db.delete(stays);
 	await db.delete(bookings);
 	await db.delete(packages);
 	await db.delete(membershipAccounts);
@@ -32,62 +55,152 @@ async function main() {
 	await db.delete(pets);
 	await db.delete(staff);
 	await db.delete(owners);
+	await db.delete(storeSettings);
+	await db.delete(branches);
 
+	// 1. Seed Branch Offices (Head Office + Child Branches)
+	const branchList = await db
+		.insert(branches)
+		.values([
+			{
+				name: "Kantor Pusat (Head Office)",
+				code: "HO-01",
+				isHeadOffice: true,
+				city: "Jakarta Pusat",
+				address: "Gedung Cyber 2 Tower Lt. 18, Jl. HR Rasuna Said",
+				phone: "+62 21-500-8888",
+				email: "headoffice@petco.co.id",
+				active: true
+			},
+			{
+				name: "Cabang Kemang (South Jakarta)",
+				code: "KMG-01",
+				isHeadOffice: false,
+				city: "Jakarta Selatan",
+				address: "Jl. Kemang Raya No. 42A, Mampang Prapatan",
+				phone: "+62 21-718-2938",
+				email: "kemang@petco.co.id",
+				active: true
+			},
+			{
+				name: "Cabang Senopati (South Jakarta)",
+				code: "SNP-01",
+				isHeadOffice: false,
+				city: "Jakarta Selatan",
+				address: "Jl. Senopati No. 88, Kebayoran Baru",
+				phone: "+62 21-720-4491",
+				email: "senopati@petco.co.id",
+				active: true
+			},
+			{
+				name: "Cabang BSD City (Tangerang)",
+				code: "BSD-01",
+				isHeadOffice: false,
+				city: "Tangerang Selatan",
+				address: "Ruko Golden Boulevard Blok W2 No. 15, BSD City",
+				phone: "+62 21-537-8890",
+				email: "bsd@petco.co.id",
+				active: true
+			},
+			{
+				name: "Cabang Surabaya (East Java)",
+				code: "SBY-01",
+				isHeadOffice: false,
+				city: "Surabaya",
+				address: "Jl. Raya Darmo Permai II No. 19, Sukomanunggal",
+				phone: "+62 31-732-1100",
+				email: "surabaya@petco.co.id",
+				active: true
+			}
+		])
+		.returning();
+
+	const [hoBranch, kemangBranch, senopatiBranch, bsdBranch, sbyBranch] = branchList;
+
+	// 2. Seed Store Settings
+	await db.insert(storeSettings).values({
+		storeName: "PetCo Pet Care, Retail & Hotel",
+		tagline: "Integrated Pet CRM, Salon, Boarding & Aquarium Systems",
+		contactPhone: "+62 21-718-2938",
+		contactEmail: "contact@petco.co.id",
+		taxRatePercent: 11,
+		receiptHeader: "PetCo Pet Care, Grooming & Hotel",
+		receiptFooter: "Terima kasih atas kunjungan Anda! Sampai jumpa kembali.",
+		onlineBookingEnabled: true,
+		autoConfirmBookings: true,
+		reminder24hEnabled: true,
+		reminder2hEnabled: true,
+		whatsappApiKey: "pk_live_petco_wa_secret_2026"
+	});
+
+	// 3. Seed Staff (Admin assigned to HO, Branch Staff assigned to Kemang & Senopati)
 	const [admin] = await db
 		.insert(staff)
 		.values({
 			email: "admin@petco.local",
 			passwordHash: await bcryptHash("admin123"),
 			name: "Ada Admin",
-			role: "admin"
+			role: "admin",
+			branchId: hoBranch.id
 		})
 		.returning();
 
 	await db.insert(staff).values([
-		{ email: "mana@petco.local", passwordHash: await bcryptHash("admin123"), name: "Manny Manager", role: "manager" },
-		{ email: "rec@petco.local", passwordHash: await bcryptHash("admin123"), name: "Reena Reception", role: "receptionist" },
-		{ email: "groom@petco.local", passwordHash: await bcryptHash("admin123"), name: "Grace Groomer", role: "groomer", specialty: "full-groom" },
-		{ email: "care@petco.local", passwordHash: await bcryptHash("admin123"), name: "Carl Caretaker", role: "caretaker" }
+		{ email: "mana@petco.local", passwordHash: await bcryptHash("admin123"), name: "Manny Manager", role: "manager", branchId: hoBranch.id },
+		{ email: "rec@petco.local", passwordHash: await bcryptHash("admin123"), name: "Reena Reception", role: "receptionist", branchId: kemangBranch.id },
+		{ email: "groom@petco.local", passwordHash: await bcryptHash("admin123"), name: "Grace Groomer", role: "groomer", specialty: "Full Groom & Cat Styling", branchId: kemangBranch.id },
+		{ email: "care@petco.local", passwordHash: await bcryptHash("admin123"), name: "Carl Caretaker", role: "caretaker", specialty: "Hotel & Dog Behavior", branchId: kemangBranch.id },
+		{ email: "aqua@petco.local", passwordHash: await bcryptHash("admin123"), name: "Arya Aquarist", role: "specialist", specialty: "Reef & Planted Aquascapes", branchId: kemangBranch.id },
+		{ email: "seno.rec@petco.local", passwordHash: await bcryptHash("admin123"), name: "Siti Senopati", role: "receptionist", branchId: senopatiBranch.id }
 	]);
 
+	// 4. Seed Services
 	const svc = await db
 		.insert(services)
 		.values([
-			{ kind: "grooming", name: "Full Groom", durationMinutes: 90, priceCents: 6500, requiresStaffSkill: "full-groom" },
-			{ kind: "grooming", name: "Bath & Brush", durationMinutes: 45, priceCents: 3500, requiresStaffSkill: "bath" },
-			{ kind: "grooming", name: "Nail Trim", durationMinutes: 15, priceCents: 1500 },
-			{ kind: "aquarium", name: "Tank Maintenance Visit", durationMinutes: 60, priceCents: 8000 }
+			{ kind: "grooming", name: "Full Groom (Grooming Lengkap)", durationMinutes: 90, priceCents: 180000, requiresStaffSkill: "full-groom" },
+			{ kind: "grooming", name: "Bath & Brush (Mandi & Sisir)", durationMinutes: 45, priceCents: 95000, requiresStaffSkill: "bath" },
+			{ kind: "grooming", name: "Nail Trim (Gunting Kuku)", durationMinutes: 15, priceCents: 35000 },
+			{ kind: "grooming", name: "Teeth Brushing (Sikat Gigi)", durationMinutes: 15, priceCents: 30000 },
+			{ kind: "grooming", name: "Flea & Tick Medicated Bath (Mandi Kutu)", durationMinutes: 30, priceCents: 50000 },
+			{ kind: "aquarium", name: "Tank Maintenance (Perawatan Akuarium)", durationMinutes: 60, priceCents: 250000 },
+			{ kind: "aquarium", name: "Aquascape Setup & Installation", durationMinutes: 180, priceCents: 750000 }
 		])
 		.returning();
 	const [fullGroom, bathBrush, nailTrim] = svc;
 
+	// 5. Seed Rooms per branch
 	const roomList = await db
 		.insert(rooms)
 		.values([
-			{ name: "Small Suite", sizeLabel: "S", maxPetWeightKg: "10", pricePerNightCents: 3000 },
-			{ name: "Standard Suite", sizeLabel: "M", maxPetWeightKg: "25", pricePerNightCents: 4500 },
-			{ name: "Large Suite", sizeLabel: "L", maxPetWeightKg: "50", pricePerNightCents: 6500 },
-			{ name: "Cat Condo", sizeLabel: "C", pricePerNightCents: 2800 }
+			{ branchId: kemangBranch.id, name: "Small Suite (Kamar Kecil - Kemang)", sizeLabel: "S", maxPetWeightKg: "10", pricePerNightCents: 120000 },
+			{ branchId: kemangBranch.id, name: "Standard Suite (Kamar Standar - Kemang)", sizeLabel: "M", maxPetWeightKg: "25", pricePerNightCents: 175000 },
+			{ branchId: kemangBranch.id, name: "VIP Suite (Kamar VIP - Kemang)", sizeLabel: "L", maxPetWeightKg: "50", pricePerNightCents: 250000 },
+			{ branchId: kemangBranch.id, name: "Cat Condo (Kandang Kucing - Kemang)", sizeLabel: "C", pricePerNightCents: 100000 },
+			{ branchId: senopatiBranch.id, name: "Luxury Penthouse (Senopati)", sizeLabel: "XL", maxPetWeightKg: "60", pricePerNightCents: 350000 }
 		])
 		.returning();
 	const [smallSuite, standardSuite, largeSuite, catCondo] = roomList;
 
+	// 6. Seed Membership Tiers
 	await db.insert(membershipTiers).values([
-		{ name: "silver", minPoints: 0, pointsPerCentSpend: 1 },
+		{ name: "silver", minPoints: 0, pointsPerCentSpend: 1, discountPercent: 0 },
 		{ name: "gold", minPoints: 1000, pointsPerCentSpend: 2, discountPercent: 5 },
 		{ name: "platinum", minPoints: 5000, pointsPerCentSpend: 3, discountPercent: 10 }
 	]);
 
+	// 7. Seed Packages
 	await db.insert(packages).values([
-		{ name: "5x Full Groom Pack", kind: "grooming", credits: 5, priceCents: 30000 },
-		{ name: "10 Night Hotel Pass", kind: "hotel", credits: 10, priceCents: 40000 }
+		{ name: "5x Full Grooming Pack", kind: "grooming", credits: 5, priceCents: 800000 },
+		{ name: "10 Night Hotel Stay Pass", kind: "hotel", credits: 10, priceCents: 1100000 }
 	]);
 
-	const demoOwners: { firstName: string; lastName: string; email: string; phone: string; tier: string }[] = [
-		{ firstName: "Olivia", lastName: "Baker", email: "olivia@example.com", phone: "+15551234001", tier: "silver" },
-		{ firstName: "Liam", lastName: "Chen", email: "liam@example.com", phone: "+15551234002", tier: "gold" },
-		{ firstName: "Sofia", lastName: "Garcia", email: "sofia@example.com", phone: "+15551234003", tier: "platinum" },
-		{ firstName: "Noah", lastName: "Patel", email: "noah@example.com", phone: "+15551234004", tier: "silver" }
+	// 8. Seed Owners
+	const demoOwners = [
+		{ firstName: "Olivia", lastName: "Baker", email: "olivia@example.com", phone: "+62 812-3456-7001", tier: "silver", branchId: kemangBranch.id },
+		{ firstName: "Budi", lastName: "Santoso", email: "budi@example.com", phone: "+62 813-9876-5002", tier: "gold", branchId: kemangBranch.id },
+		{ firstName: "Siti", lastName: "Rahma", email: "siti@example.com", phone: "+62 815-4321-8003", tier: "platinum", branchId: senopatiBranch.id },
+		{ firstName: "Denny", lastName: "Pratama", email: "denny@example.com", phone: "+62 818-5678-9004", tier: "silver", branchId: kemangBranch.id }
 	];
 
 	for (const o of demoOwners) {
@@ -102,61 +215,177 @@ async function main() {
 		await db.insert(pets).values([
 			{
 				ownerId: owner.id,
-				name: o.firstName === "Olivia" ? "Rex" : o.firstName === "Liam" ? "Mochi" : o.firstName === "Sofia" ? "Bella" : "Simba",
+				name: o.firstName === "Olivia" ? "Rex" : o.firstName === "Budi" ? "Mochi" : o.firstName === "Siti" ? "Bella" : "Simba",
 				species: "dog",
-				breed: "Labrador",
+				breed: "Golden Retriever",
 				weightKg: "28",
 				lastVaccinationDate: "2026-01-10",
 				vaccinationDueDate: "2027-01-10"
 			},
 			o.tier === "platinum" || o.tier === "gold"
-				? { ownerId: owner.id, name: o.firstName === "Sofia" ? "Milo" : "Luna", species: "cat", breed: "Siamese" }
+				? { ownerId: owner.id, name: o.firstName === "Siti" ? "Milo" : "Luna", species: "cat", breed: "Persian Cat" }
 				: undefined
 		].filter(Boolean) as never[]);
 	}
 
 	const groomer = (await db.query.staff.findFirst({ where: (s, { eq }) => eq(s.email, "groom@petco.local") }))!;
+	const caretaker = (await db.query.staff.findFirst({ where: (s, { eq }) => eq(s.email, "care@petco.local") }))!;
+	const specialist = (await db.query.staff.findFirst({ where: (s, { eq }) => eq(s.email, "aqua@petco.local") }))!;
 	const ownerOlivia = (await db.query.owners.findFirst({ where: (o, { eq }) => eq(o.email, "olivia@example.com") }))!;
+	const ownerBudi = (await db.query.owners.findFirst({ where: (o, { eq }) => eq(o.email, "budi@example.com") }))!;
 	const rex = (await db.query.pets.findFirst({ where: (p, { and, eq }) => and(eq(p.ownerId, ownerOlivia.id), eq(p.name, "Rex")) }))!;
-	const bookingDate = startOfDay(addDays(new Date(), 1));
+	const mochi = (await db.query.pets.findFirst({ where: (p, { and, eq }) => and(eq(p.ownerId, ownerBudi.id), eq(p.name, "Mochi")) }))!;
 
-	await db.insert(bookings).values({
-		kind: "grooming",
-		ownerId: ownerOlivia.id,
+	const bookingDate = startOfDay(addDays(new Date(), 1));
+	const todayDate = startOfDay(new Date());
+
+	// Grooming Booking (Kemang Branch)
+	const [groomBooking] = await db
+		.insert(bookings)
+		.values({
+			branchId: kemangBranch.id,
+			kind: "grooming",
+			ownerId: ownerOlivia.id,
+			petId: rex.id,
+			serviceId: fullGroom.id,
+			staffId: groomer.id,
+			status: "confirmed",
+			startsAt: addMinutes(bookingDate, 9 * 60),
+			endsAt: addMinutes(bookingDate, 9 * 60 + 90),
+			priceCents: fullGroom.priceCents
+		})
+		.returning();
+
+	// Grooming Cut Card
+	await db.insert(groomingCutCards).values({
 		petId: rex.id,
-		serviceId: fullGroom.id,
-		staffId: groomer.id,
-		status: "confirmed",
-		startsAt: addMinutes(bookingDate, 9 * 60),
-		endsAt: addMinutes(bookingDate, 9 * 60 + 90),
-		priceCents: fullGroom.priceCents
+		bookingId: groomBooking.id,
+		bladeLengthBody: "#7F (3.2mm) Teddy Cut",
+		bladeLengthFace: "Scissor round face & clean muzzle",
+		coatCondition: "Healthy, slight matting behind ears",
+		behaviorScore: 5,
+		skinIssues: "Sensitive underbelly, use oatmeal shampoo",
+		staffId: groomer.id
 	});
 
+	// Hotel Booking (Kemang Branch)
 	const [hotelBooking] = await db
 		.insert(bookings)
 		.values({
+			branchId: kemangBranch.id,
 			kind: "hotel",
 			ownerId: ownerOlivia.id,
 			petId: rex.id,
-			roomId: smallSuite.id,
-			status: "pending",
-			startsAt: addDays(bookingDate, 3),
-			endsAt: addDays(bookingDate, 5),
-			priceCents: smallSuite.pricePerNightCents * 2,
-			depositCents: smallSuite.pricePerNightCents
+			roomId: standardSuite.id,
+			status: "checked_in",
+			startsAt: todayDate,
+			endsAt: addDays(todayDate, 3),
+			priceCents: standardSuite.pricePerNightCents * 3,
+			depositCents: standardSuite.pricePerNightCents
 		})
 		.returning();
 
 	await db.insert(stays).values({
 		bookingId: hotelBooking.id,
-		roomId: smallSuite.id,
-		checkInDate: addDays(bookingDate, 3).toISOString().slice(0, 10),
-		checkOutDate: addDays(bookingDate, 5).toISOString().slice(0, 10),
-		nightCount: 2,
-		petCareJson: { feeding: "twice daily", walksPerDay: 2 }
+		roomId: standardSuite.id,
+		checkInDate: todayDate.toISOString().slice(0, 10),
+		checkOutDate: addDays(todayDate, 3).toISOString().slice(0, 10),
+		nightCount: 3,
+		petCareJson: { feeding: "twice daily (08:00 & 18:00)", walksPerDay: 2, meds: "Glucosamine chew with breakfast" }
 	});
 
-	console.log(`Seeded. login: admin@petco.local / admin123`);
+	// Care Log for today
+	await db.insert(dailyCareLogs).values({
+		bookingId: hotelBooking.id,
+		petId: rex.id,
+		careDate: todayDate.toISOString().slice(0, 10),
+		feedingAmDone: true,
+		feedingPmDone: false,
+		walkAmDone: true,
+		walkPmDone: false,
+		medicationDone: true,
+		moodNotes: "Rex ate all his morning kibble happily. Very playful in the garden.",
+		staffId: caretaker.id
+	});
+
+	// Product Categories & Retail Products
+	const cats = await db
+		.insert(productCategories)
+		.values([
+			{ name: "Pet Food & Nutrition", slug: "food", icon: "Utensils" },
+			{ name: "Grooming & Shampoos", slug: "grooming", icon: "Sparkles" },
+			{ name: "Aquarium & Fish Supplies", slug: "aquarium", icon: "Fish" },
+			{ name: "Treats & Toys", slug: "treats", icon: "Gift" }
+		])
+		.returning();
+
+	await db.insert(products).values([
+		{ categoryId: cats[0].id, name: "Royal Canin Golden Retriever Adult (3kg)", sku: "RC-GR-3KG", priceCents: 385000, costCents: 310000, stockQty: 18, lowStockThreshold: 5, unit: "bag" },
+		{ categoryId: cats[0].id, name: "Pro Plan Sensitive Skin & Stomach (2.5kg)", sku: "PP-SSS-25", priceCents: 320000, costCents: 260000, stockQty: 12, lowStockThreshold: 4, unit: "bag" },
+		{ categoryId: cats[0].id, name: "Whiskas Ocean Fish Adult (1.2kg)", sku: "WH-FISH-12", priceCents: 78000, costCents: 60000, stockQty: 25, lowStockThreshold: 8, unit: "bag" },
+		{ categoryId: cats[1].id, name: "Bio-Groom Oatmeal Soothing Shampoo (355ml)", sku: "BG-OAT-355", priceCents: 145000, costCents: 105000, stockQty: 8, lowStockThreshold: 3, unit: "bottle" },
+		{ categoryId: cats[1].id, name: "TropiClean Flea & Tick Treatment Shampoo", sku: "TC-FT-590", priceCents: 195000, costCents: 140000, stockQty: 6, lowStockThreshold: 3, unit: "bottle" },
+		{ categoryId: cats[2].id, name: "Hikari Micro Pellets Tropical Fish (45g)", sku: "HK-MP-45", priceCents: 45000, costCents: 30000, stockQty: 30, lowStockThreshold: 10, unit: "can" },
+		{ categoryId: cats[2].id, name: "Seachem Prime Water Conditioner (250ml)", sku: "SC-PRIME-250", priceCents: 165000, costCents: 120000, stockQty: 14, lowStockThreshold: 5, unit: "bottle" },
+		{ categoryId: cats[3].id, name: "Dental Chew Bones Multipack (6pcs)", sku: "DC-BONE-6P", priceCents: 55000, costCents: 35000, stockQty: 40, lowStockThreshold: 10, unit: "pack" }
+	]);
+
+	// Customer Tanks & Water Tests
+	const [tankOlivia] = await db
+		.insert(customerTanks)
+		.values({
+			branchId: kemangBranch.id,
+			ownerId: ownerOlivia.id,
+			name: "Living Room Reef Oasis",
+			volumeLiters: 250,
+			ecosystem: "reef",
+			dimensions: "100x50x50 cm",
+			filtrationType: "Sump with Nyos Skimmer",
+			lightingType: "Radion XR15 G6 Pro LED",
+			notes: "LPS and Soft Coral mixed reef. Clean weekly filter sock."
+		})
+		.returning();
+
+	const [tankBudi] = await db
+		.insert(customerTanks)
+		.values({
+			branchId: kemangBranch.id,
+			ownerId: ownerBudi.id,
+			name: "Office Nature Aquascape",
+			volumeLiters: 120,
+			ecosystem: "planted",
+			dimensions: "90x45x45 cm",
+			filtrationType: "Oase Biomaster 350 External Canister",
+			lightingType: "Chihiros WRGB II Pro",
+			notes: "High tech planted tank with pressurized CO2 (2 bps)."
+		})
+		.returning();
+
+	await db.insert(waterParameterLogs).values({
+		tankId: tankOlivia.id,
+		ph: "8.20",
+		salinityPpt: "35.00",
+		temperatureC: "25.5",
+		nitratePpm: "5.00",
+		ammoniaPpm: "0.00",
+		nitritePpm: "0.00",
+		khDkh: "8.5",
+		notes: "Parameters stable. Performed 20% RO water change and skimmer cup cleaning.",
+		staffId: specialist.id
+	});
+
+	await db.insert(aquariumServicePlans).values({
+		ownerId: ownerOlivia.id,
+		tankId: tankOlivia.id,
+		planName: "Monthly Reef Bi-Weekly Maintenance Plan",
+		frequency: "biweekly",
+		pricePerVisitCents: 250000,
+		active: true,
+		nextScheduledDate: addDays(todayDate, 7).toISOString().slice(0, 10),
+		notes: "Includes water testing, glass scraping, filter sock swap, coral nutrition."
+	});
+
+	console.log(`Seeded multi-branch ecosystem (HO + 4 Child Branches, Store Settings, CRM, Hotel, Aquarium, Shop). Login: admin@petco.local / admin123`);
 }
 
 main()

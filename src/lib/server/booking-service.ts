@@ -116,7 +116,7 @@ export async function cancelBooking(
 	}
 	const [updated] = await db
 		.update(bookings)
-		.set({ status: "cancelled", cancelledAt: new Date(), cancelReason: reason })
+		.set({ status: "cancelled", cancelReason: reason, updatedAt: new Date() })
 		.where(eq(bookings.id, bookingId))
 		.returning();
 	return updated;
@@ -189,7 +189,7 @@ export async function markNoShow(bookingId: number, noShowFeeCents = 0) {
 	}
 	const [updated] = await db
 		.update(bookings)
-		.set({ status: "no_show", noShowAt: new Date(), noShowFeeCents })
+		.set({ status: "no_show", updatedAt: new Date() })
 		.where(eq(bookings.id, bookingId))
 		.returning();
 	return updated;
