@@ -20,6 +20,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			status: bookings.status,
 			startsAt: bookings.startsAt,
 			endsAt: bookings.endsAt,
+			ownerId: owners.id,
 			ownerName: owners.firstName,
 			ownerLast: owners.lastName,
 			petName: pets.name,
