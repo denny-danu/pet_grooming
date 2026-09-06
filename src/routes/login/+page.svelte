@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { page } from "$app/state";
-	import { PawPrint, KeyRound, Mail, Sparkles, ShieldCheck, ArrowRight, AlertCircle, Store } from "@lucide/svelte";
+	import { PawPrint, KeyRound, Mail, Sparkles, ShieldCheck, ArrowRight, AlertCircle } from "@lucide/svelte";
+	import { makeT } from "$lib/i18n/t";
+	import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
 
 	const form = $derived(page.form);
 	const error = $derived(form?.error);
+	const t = $derived(makeT(page.data.locale ?? "en"));
 
 	let email = $state('admin@petco.local');
 	let password = $state('admin123');
@@ -16,7 +19,7 @@
 </script>
 
 <svelte:head>
-	<title>Sign in · PetCo CRM</title>
+	<title>{t['auth.loginTitle']()}</title>
 </svelte:head>
 
 <div class="login-wrapper">
@@ -25,32 +28,35 @@
 	<div class="ambient-glow glow-3"></div>
 
 	<div class="login-container">
+		<div class="login-lang">
+			<LanguageSwitcher value={page.data.locale ?? "en"} currentPath="/login" />
+		</div>
 		<div class="login-card">
 			<div class="card-brand-head">
 				<div class="brand-emblem">
 					<PawPrint size={24} strokeWidth={2.5} />
 				</div>
 				<div class="brand-text">
-					<h1>PetCo CRM</h1>
-					<p>Staff Portal · Pet Care, Grooming &amp; Hotel</p>
+					<h1>{t['app.name']()} CRM</h1>
+					<p>{t['auth.staffPortal']()}</p>
 				</div>
 			</div>
 
 			<div class="status-strip">
 				<span class="status-pulse"></span>
-				<span>Main Branch Server · Operational</span>
+				<span>{t['auth.operational']()}</span>
 			</div>
 
 			{#if error}
 				<div class="alert alert-error" style="margin: var(--sp-3) 0;">
 					<AlertCircle />
-					<span>Invalid credentials. Please check your email and password.</span>
+					<span>{t['auth.invalidMsg']()}</span>
 				</div>
 			{/if}
 
 			<form method="POST" action="?/login" onsubmit={() => isSubmitting = true}>
 				<div class="field">
-					<label for="email">Staff Email Address</label>
+					<label for="email">{t['auth.staffEmail']()}</label>
 					<div class="input-wrap">
 						<Mail size={16} class="input-icon" />
 						<input
@@ -66,7 +72,7 @@
 				</div>
 
 				<div class="field">
-					<label for="password">Password</label>
+					<label for="password">{t['auth.password']()}</label>
 					<div class="input-wrap">
 						<KeyRound size={16} class="input-icon" />
 						<input
@@ -82,20 +88,20 @@
 				</div>
 
 				<button class="btn btn-primary submit-btn" type="submit" disabled={isSubmitting}>
-					<span>{isSubmitting ? 'Signing in...' : 'Sign in to Console'}</span>
+					<span>{isSubmitting ? t['auth.signingIn']() : t['auth.signInToConsole']()}</span>
 					<ArrowRight size={16} />
 				</button>
 
 				<button class="btn demo-btn" type="button" onclick={fillDemo}>
 					<Sparkles size={14} />
-					<span>Auto-fill Demo Credentials</span>
+					<span>{t['auth.fillDemoCreds']()}</span>
 				</button>
 			</form>
 
 			<div class="login-footer">
 				<div class="security-badge">
 					<ShieldCheck size={13} />
-					<span>Encrypted Staff Session · Role-Based Access</span>
+					<span>{t['auth.securityNote']()}</span>
 				</div>
 			</div>
 		</div>
@@ -152,6 +158,15 @@
 		max-width: 420px;
 		z-index: 10;
 	}
+
+	.login-lang {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: 10px;
+		color: #cbd5e1;
+	}
+	.login-lang :global(.lang select) { color: #cbd5e1; }
+	.login-lang :global(.lang-icon) { color: #64748b; }
 
 	.login-card {
 		background: rgba(15, 23, 42, 0.85);
