@@ -37,23 +37,31 @@
 	const t = $derived(makeT(page.data.locale ?? "en"));
 	const isId = $derived(page.data.locale === "id");
 
-	// Active tab: 'book' (Online Booking Wizard) or 'lookup' (Booking Database & Status Tracker)
+	// Active mode: 'book' (Multi-Step Online Wizard) or 'lookup' (Booking Database Tracker)
 	let activeTab = $state<"book" | "lookup">("book");
 
-	// Booking Wizard States
+	// Multi-Step Wizard Current Step (1 to 5)
+	let currentStep = $state<1 | 2 | 3 | 4 | 5>(1);
+	let stepValidationError = $state<string | null>(null);
+
+	// Step 1: Service Kind
 	let selectedKind = $state<"grooming" | "hotel" | "aquarium">("grooming");
+
+	// Step 2: Branch Location
 	let selectedBranchId = $state<number>(1);
+
+	// Step 3: Package, Room & Add-ons
 	let selectedServiceId = $state<number | null>(null);
 	let selectedRoomId = $state<number | null>(null);
 	let selectedAddonIds = $state<number[]>([]);
 
-	// Schedule States
+	// Step 4: Schedule States
 	let bookingDate = $state(new Date(Date.now() + 86400000).toISOString().slice(0, 10));
 	let timeSlot = $state("10:00");
 	let checkInDate = $state(new Date(Date.now() + 86400000).toISOString().slice(0, 10));
 	let checkOutDate = $state(new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10));
 
-	// Client / Pet Inputs
+	// Step 5: Pet & Client Dossier
 	let firstName = $state("");
 	let lastName = $state("");
 	let phone = $state("");
@@ -145,6 +153,74 @@
 		}
 	}
 
+	// Step Navigation & Validation
+	function goToStep(step: 1 | 2 | 3 | 4 | 5) {
+		if (step > currentStep) {
+			if (!validateCurrentStep()) return;
+		}
+		stepValidationError = null;
+		currentStep = step;
+	}
+
+	function nextStep() {
+		if (!validateCurrentStep()) return;
+		stepValidationError = null;
+		if (currentStep < 5) {
+			currentStep = (currentStep + 1) as 1 | 2 | 3 | 4 | 5;
+		}
+	}
+
+	function prevStep() {
+		stepValidationError = null;
+		if (currentStep > 1) {
+			currentStep = (currentStep - 1) as 1 | 2 | 3 | 4 | 5;
+		}
+	}
+
+	function validateCurrentStep(): boolean {
+		stepValidationError = null;
+		if (currentStep === 1) {
+			if (!selectedKind) {
+				stepValidationError = isId ? "Silakan pilih salah satu kategori layanan." : "Please select a service category.";
+				return false;
+			}
+		} else if (currentStep === 2) {
+			if (!selectedBranchId) {
+				stepValidationError = isId ? "Silakan pilih salah satu cabang di Kota Semarang." : "Please select a Semarang branch location.";
+				return false;
+			}
+		} else if (currentStep === 3) {
+			if (selectedKind === "grooming" || selectedKind === "aquarium") {
+				if (!selectedServiceId) {
+					stepValidationError = isId ? "Silakan pilih salah satu paket layanan." : "Please select a service package.";
+					return false;
+				}
+			} else if (selectedKind === "hotel") {
+				if (!selectedRoomId) {
+					stepValidationError = isId ? "Silakan pilih tipe kamar hotel." : "Please select a hotel room suite.";
+					return false;
+				}
+			}
+		} else if (currentStep === 4) {
+			if (selectedKind === "hotel") {
+				if (!checkInDate || !checkOutDate) {
+					stepValidationError = isId ? "Silakan tentukan tanggal check-in dan check-out." : "Please select check-in and check-out dates.";
+					return false;
+				}
+				if (new Date(checkOutDate) <= new Date(checkInDate)) {
+					stepValidationError = isId ? "Tanggal check-out harus setelah tanggal check-in." : "Check-out date must be after check-in date.";
+					return false;
+				}
+			} else {
+				if (!bookingDate) {
+					stepValidationError = isId ? "Silakan tentukan tanggal jadwal layanan." : "Please select an appointment date.";
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	const timeSlots = ["09:00", "10:30", "12:00", "13:30", "15:00", "16:30", "18:00"];
 
 	const speciesIcons: Record<string, string> = {
@@ -155,10 +231,18 @@
 		fish: "🐠",
 		other: "🐾"
 	};
+
+	const stepNames = [
+		{ num: 1, labelId: "Layanan", labelEn: "Service" },
+		{ num: 2, labelId: "Cabang", labelEn: "Branch" },
+		{ num: 3, labelId: "Paket / Kamar", labelEn: "Package" },
+		{ num: 4, labelId: "Jadwal", labelEn: "Schedule" },
+		{ num: 5, labelId: "Data Diri", labelEn: "Details" }
+	];
 </script>
 
 <svelte:head>
-	<title>{isId ? "Reservasi & Database Booking · PetCo Semarang" : "Client Booking & Reservation Database · PetCo Semarang"}</title>
+	<title>{isId ? "Wizard Reservasi Online & Database · PetCo Semarang" : "Online Booking Wizard & Database · PetCo Semarang"}</title>
 </svelte:head>
 
 <div class="neobrutalist-booking-root overflow-x-hidden w-full max-w-full">
@@ -169,11 +253,11 @@
 				<span class="brand-box"><PawPrint size={19} strokeWidth={2.6} /></span>
 				<div class="brand-text-block">
 					<span class="brand-title">PETCO</span>
-					<span class="brand-city-tag">SEMARANG // BOOKING</span>
+					<span class="brand-city-tag">SEMARANG // WIZARD</span>
 				</div>
 			</a>
 
-			<!-- Tab Mode Navigation -->
+			<!-- Tab Mode Toggle -->
 			<div class="neo-tab-toggle" role="tablist">
 				<button
 					class="tab-toggle-btn"
@@ -183,7 +267,7 @@
 					aria-selected={activeTab === "book"}
 				>
 					<Calendar size={15} />
-					<span>{isId ? "[ RESERVASI BARU ]" : "[ NEW BOOKING ]"}</span>
+					<span>{isId ? "[ WIZARD RESERVASI ]" : "[ STEP WIZARD ]"}</span>
 				</button>
 
 				<button
@@ -218,28 +302,28 @@
 		<div class="neo-container">
 			<div class="hero-tag-strip">
 				<span class="status-indicator"></span>
-				<span class="tag-label">{isId ? "KOTA SEMARANG // PORTAL RESERVASI RESMI" : "SEMARANG CITY // OFFICIAL RESERVATION PORTAL"}</span>
+				<span class="tag-label">{isId ? "KOTA SEMARANG // WIZARD RESERVASI INTERAKTIF" : "SEMARANG CITY // INTERACTIVE BOOKING WIZARD"}</span>
 			</div>
 
 			<h1 class="hero-page-title">
 				{activeTab === "book"
-					? (isId ? "RESERVASI SALON GROOMING & HOTEL HEWAN SEMARANG." : "BOOK YOUR PET APPOINTMENT IN SEMARANG.")
+					? (isId ? "WIZARD RESERVASI SALON & HOTEL SEMARANG." : "STEP-BY-STEP PET RESERVATION WIZARD.")
 					: (isId ? "DATABASE & PELACAK STATUS BOOKING KLIEN." : "CLIENT BOOKING DATABASE & TRACKER.")}
 			</h1>
 
 			<p class="hero-page-sub">
 				{activeTab === "book"
-					? (isId ? "Pilih cabang terdekat di Kota Semarang (Simpang Lima, Candi Baru, Banyumanik, Puri Anjasmoro, Ngaliyan) dan lengkapi data anabul untuk reservasi instan." : "Select your preferred Semarang facility and configure your pet's appointment in 5 simple steps.")
-					: (isId ? "Ketik Nomor WhatsApp atau Kode Booking (e.g. PET-00012) untuk melihat riwayat perawatan dan status konfirmasi anabul Anda." : "Lookup your booking history and live confirmation status using your phone number or reference code.")}
+					? (isId ? "Ikuti 5 langkah mudah di bawah untuk reservasi instan di 5 cabang PetCo Kota Semarang." : "Complete the 5 guided steps below to secure your companion's appointment.")
+					: (isId ? "Ketik Nomor WhatsApp atau Kode Booking untuk melihat riwayat perawatan anabul Anda di Semarang." : "Lookup your booking history and live confirmation status using your phone number or reference code.")}
 			</p>
 		</div>
 	</section>
 
-	<!-- ==================== MAIN BOOKING / LOOKUP CONTAINER ==================== -->
+	<!-- ==================== MAIN WIZARD CONTAINER ==================== -->
 	<main class="neo-main-content">
 		<div class="neo-container">
 			{#if form?.success && form.booking}
-				<!-- ==================== NEOBRUTALIST CONFIRMATION TICKET ==================== -->
+				<!-- ==================== TICKET CONFIRMATION ==================== -->
 				<div class="neo-ticket-wrapper">
 					<div class="neo-ticket-card">
 						<div class="ticket-badge-banner">
@@ -313,361 +397,460 @@
 					</div>
 				</div>
 			{:else if activeTab === "book"}
-				<!-- ==================== 5-STEP NEOBRUTALIST BOOKING WIZARD ==================== -->
+				<!-- ==================== MULTI-STEP WIZARD FORM ==================== -->
 				<form method="POST" action="?/book" class="booking-wizard-form" onsubmit={() => (isSubmitting = true)}>
-					{#if form?.error}
+					<!-- Preserved Hidden Inputs for All Steps -->
+					<input type="hidden" name="kind" value={selectedKind} />
+					<input type="hidden" name="branchId" value={selectedBranchId} />
+					{#if selectedServiceId}<input type="hidden" name="serviceId" value={selectedServiceId} />{/if}
+					{#if selectedRoomId}<input type="hidden" name="roomId" value={selectedRoomId} />{/if}
+					{#each selectedAddonIds as aid}
+						<input type="hidden" name="addonIds" value={aid} />
+					{/each}
+					<input type="hidden" name="date" value={bookingDate} />
+					<input type="hidden" name="timeSlot" value={timeSlot} />
+					<input type="hidden" name="checkInDate" value={checkInDate} />
+					<input type="hidden" name="checkOutDate" value={checkOutDate} />
+					<!-- STEPPER PROGRESS BAR (INTERACTIVE BREADCRUMB) -->
+					<div class="stepper-progress-bar">
+						{#each stepNames as st}
+							<button
+								type="button"
+								class="step-progress-pill"
+								class:active={currentStep === st.num}
+								class:completed={currentStep > st.num}
+								onclick={() => goToStep(st.num as 1|2|3|4|5)}
+							>
+								<span class="step-badge-num">
+									{#if currentStep > st.num}
+										✓
+									{:else}
+										0{st.num}
+									{/if}
+								</span>
+								<span class="step-badge-text">{isId ? st.labelId : st.labelEn}</span>
+							</button>
+							{#if st.num < 5}
+								<span class="stepper-arrow">→</span>
+							{/if}
+						{/each}
+					</div>
+
+					<!-- Error alert if validation fails -->
+					{#if stepValidationError || form?.error}
 						<div class="neo-alert-error">
 							<AlertCircle size={18} />
-							<span>{form.error}</span>
+							<span>{stepValidationError || form?.error}</span>
 						</div>
 					{/if}
 
 					<div class="wizard-two-column-layout">
-						<!-- LEFT COLUMN: INTERACTIVE FORM STEPS -->
+						<!-- LEFT COLUMN: ACTIVE STEP PANE -->
 						<div class="wizard-steps-container">
-							<!-- STEP 1: SERVICE CATEGORY -->
-							<div class="neo-step-box">
-								<div class="step-head-strip">
-									<span class="step-num-box">01</span>
-									<div class="step-text-wrap">
-										<h3>{isId ? "PILIH KATEGORI LAYANAN" : "SELECT SERVICE DISCIPLINE"}</h3>
-										<p>{isId ? "Pilih spesialisasi perawatan yang Anda butuhkan di Semarang" : "Choose the type of pet care required"}</p>
+							<!-- ==================== STEP 1: SERVICE DISCIPLINE ==================== -->
+							{#if currentStep === 1}
+								<div class="neo-step-box">
+									<div class="step-head-strip">
+										<span class="step-num-box">01</span>
+										<div class="step-text-wrap">
+											<h3>{isId ? "PILIH KATEGORI LAYANAN" : "SELECT SERVICE DISCIPLINE"}</h3>
+											<p>{isId ? "Pilih spesialisasi perawatan yang Anda butuhkan di Semarang" : "Choose the type of pet care required"}</p>
+										</div>
 									</div>
-								</div>
 
-								<div class="neo-kind-grid">
-									<button
-										type="button"
-										class="kind-btn-neo"
-										class:selected={selectedKind === "grooming"}
-										onclick={() => (selectedKind = "grooming")}
-									>
-										<span class="kind-icon-square pink"><Scissors size={24} /></span>
-										<span class="kind-title">{isId ? "Grooming & Spa" : "Grooming & Spa"}</span>
-										<span class="kind-subtitle">{isId ? "Mandi, potong bulu & spa" : "Styling & hygiene"}</span>
-									</button>
-
-									<button
-										type="button"
-										class="kind-btn-neo"
-										class:selected={selectedKind === "hotel"}
-										onclick={() => (selectedKind = "hotel")}
-									>
-										<span class="kind-icon-square purple"><Hotel size={24} /></span>
-										<span class="kind-title">{isId ? "Pet Hotel 24 Jam" : "24/7 Pet Hotel"}</span>
-										<span class="kind-subtitle">{isId ? "Kamar AC & jalan harian" : "Luxury boarding"}</span>
-									</button>
-
-									<button
-										type="button"
-										class="kind-btn-neo"
-										class:selected={selectedKind === "aquarium"}
-										onclick={() => (selectedKind = "aquarium")}
-									>
-										<span class="kind-icon-square blue"><Fish size={24} /></span>
-										<span class="kind-title">{isId ? "Layanan Akuarium" : "Aquatic Care"}</span>
-										<span class="kind-subtitle">{isId ? "Aquascape & tes air" : "Biotope maintenance"}</span>
-									</button>
-								</div>
-								<input type="hidden" name="kind" value={selectedKind} />
-							</div>
-
-							<!-- STEP 2: SEMARANG BRANCH SELECTION -->
-							<div class="neo-step-box">
-								<div class="step-head-strip">
-									<span class="step-num-box">02</span>
-									<div class="step-text-wrap">
-										<h3>{isId ? "PILIH CABANG KOTA SEMARANG" : "SELECT SEMARANG FACILITY"}</h3>
-										<p>{isId ? "Pilih lokasi cabang PetCo terdekat dengan domisili Anda" : "Choose your preferred Semarang facility"}</p>
-									</div>
-								</div>
-
-								<div class="neo-branch-grid">
-									{#each data.branches as branch}
+									<div class="neo-kind-grid">
 										<button
 											type="button"
-											class="branch-btn-neo"
-											class:selected={selectedBranchId === branch.id}
-											onclick={() => (selectedBranchId = branch.id)}
+											class="kind-btn-neo"
+											class:selected={selectedKind === "grooming"}
+											onclick={() => (selectedKind = "grooming")}
 										>
-											<div class="b-card-top">
-												<Building2 size={16} class="b-icon" />
-												<strong>{branch.name}</strong>
-												{#if branch.isHeadOffice}
-													<span class="b-tag-flag">HQ</span>
-												{/if}
-											</div>
-											<div class="b-card-loc"><MapPin size={12} /> {branch.city || "Semarang"}</div>
-											{#if branch.address}
-												<div class="b-card-detail">{branch.address}</div>
-											{/if}
+											<span class="kind-icon-square pink"><Scissors size={24} /></span>
+											<span class="kind-title">{isId ? "Grooming & Spa" : "Grooming & Spa"}</span>
+											<span class="kind-subtitle">{isId ? "Mandi, potong bulu & spa" : "Styling & hygiene"}</span>
 										</button>
-									{/each}
-								</div>
-								<input type="hidden" name="branchId" value={selectedBranchId} />
-							</div>
 
-							<!-- STEP 3: PACKAGE / ROOM SELECTION -->
-							<div class="neo-step-box">
-								<div class="step-head-strip">
-									<span class="step-num-box">03</span>
-									<div class="step-text-wrap">
-										<h3>
-											{#if selectedKind === "grooming"}
-												{isId ? "PILIH PAKET GROOMING" : "SELECT GROOMING PACKAGE"}
-											{:else if selectedKind === "hotel"}
-												{isId ? "PILIH TIPE KAMAR HOTEL" : "SELECT HOTEL SUITE"}
-											{:else}
-												{isId ? "PILIH LAYANAN AKUARIUM" : "SELECT AQUATIC SERVICE"}
-											{/if}
-										</h3>
-										<p>{isId ? "Tarif resmi terdaftar dengan standar kualitas PetCo" : "Certified service tier with itemized transparent rates"}</p>
+										<button
+											type="button"
+											class="kind-btn-neo"
+											class:selected={selectedKind === "hotel"}
+											onclick={() => (selectedKind = "hotel")}
+										>
+											<span class="kind-icon-square purple"><Hotel size={24} /></span>
+											<span class="kind-title">{isId ? "Pet Hotel 24 Jam" : "24/7 Pet Hotel"}</span>
+											<span class="kind-subtitle">{isId ? "Kamar AC & jalan harian" : "Luxury boarding"}</span>
+										</button>
+
+										<button
+											type="button"
+											class="kind-btn-neo"
+											class:selected={selectedKind === "aquarium"}
+											onclick={() => (selectedKind = "aquarium")}
+										>
+											<span class="kind-icon-square blue"><Fish size={24} /></span>
+											<span class="kind-title">{isId ? "Layanan Akuarium" : "Aquatic Care"}</span>
+											<span class="kind-subtitle">{isId ? "Aquascape & tes air" : "Biotope maintenance"}</span>
+										</button>
+									</div>
+
+									<div class="step-footer-actions">
+										<div></div>
+										<button type="button" class="neo-btn neo-btn-primary" onclick={nextStep}>
+											<span>{isId ? "LANJUT: PILIH CABANG" : "NEXT: SELECT BRANCH"}</span>
+											<ArrowRight size={15} />
+										</button>
 									</div>
 								</div>
+							{/if}
 
-								{#if selectedKind === "grooming"}
-									<div class="neo-items-stack">
-										{#each branchServices as svc}
+							<!-- ==================== STEP 2: BRANCH FACILITY ==================== -->
+							{#if currentStep === 2}
+								<div class="neo-step-box">
+									<div class="step-head-strip">
+										<span class="step-num-box">02</span>
+										<div class="step-text-wrap">
+											<h3>{isId ? "PILIH CABANG KOTA SEMARANG" : "SELECT SEMARANG FACILITY"}</h3>
+											<p>{isId ? "Pilih lokasi cabang PetCo terdekat dengan domisili Anda di Semarang" : "Choose your preferred Semarang facility"}</p>
+										</div>
+									</div>
+
+									<div class="neo-branch-grid">
+										{#each data.branches as branch}
 											<button
 												type="button"
-												class="item-select-btn"
-												class:selected={selectedServiceId === svc.id}
-												onclick={() => (selectedServiceId = svc.id)}
+												class="branch-btn-neo"
+												class:selected={selectedBranchId === branch.id}
+												onclick={() => (selectedBranchId = branch.id)}
 											>
-												<div class="item-meta">
-													<strong>{svc.name}</strong>
-													<span><Clock size={12} /> {svc.durationMinutes || 60} mins</span>
+												<div class="b-card-top">
+													<Building2 size={16} class="b-icon" />
+													<strong>{branch.name}</strong>
+													{#if branch.isHeadOffice}
+														<span class="b-tag-flag">HQ</span>
+													{/if}
 												</div>
-												<div class="item-price">{money(svc.priceCents)}</div>
+												<div class="b-card-loc"><MapPin size={12} /> {branch.city || "Semarang"}</div>
+												{#if branch.address}
+													<div class="b-card-detail">{branch.address}</div>
+												{/if}
 											</button>
 										{/each}
 									</div>
-									<input type="hidden" name="serviceId" value={selectedServiceId} />
 
-									<!-- Grooming Add-ons -->
-									<div class="neo-addons-compartment">
-										<span class="addons-tag">{isId ? "[ LAYANAN TAMBAHAN OPSIONAL ]" : "[ OPTIONAL ADD-ONS ]"}</span>
-										<div class="addons-chips-wrap">
-											{#each data.services.filter((s) => s.name.toLowerCase().includes("flea") || s.name.toLowerCase().includes("teeth") || s.name.toLowerCase().includes("nail") || s.name.toLowerCase().includes("spa") || s.name.toLowerCase().includes("ear")) as addon}
-												<label class="addon-toggle-neo" class:checked={selectedAddonIds.includes(addon.id)}>
-													<input
-														type="checkbox"
-														name="addonIds"
-														value={addon.id}
-														checked={selectedAddonIds.includes(addon.id)}
-														onchange={() => toggleAddon(addon.id)}
-													/>
-													<div class="addon-info-block">
-														<span class="a-title">{addon.name}</span>
-														<strong class="a-price">+{money(addon.priceCents)}</strong>
+									<div class="step-footer-actions">
+										<button type="button" class="neo-btn neo-btn-secondary" onclick={prevStep}>
+											<ArrowLeft size={15} />
+											<span>{isId ? "KEMBALI" : "PREVIOUS"}</span>
+										</button>
+										<button type="button" class="neo-btn neo-btn-primary" onclick={nextStep}>
+											<span>{isId ? "LANJUT: PILIH PAKET" : "NEXT: SELECT PACKAGE"}</span>
+											<ArrowRight size={15} />
+										</button>
+									</div>
+								</div>
+							{/if}
+
+							<!-- ==================== STEP 3: PACKAGE & ADD-ONS ==================== -->
+							{#if currentStep === 3}
+								<div class="neo-step-box">
+									<div class="step-head-strip">
+										<span class="step-num-box">03</span>
+										<div class="step-text-wrap">
+											<h3>
+												{#if selectedKind === "grooming"}
+													{isId ? "PILIH PAKET GROOMING" : "SELECT GROOMING PACKAGE"}
+												{:else if selectedKind === "hotel"}
+													{isId ? "PILIH TIPE SUITE HOTEL" : "SELECT HOTEL SUITE"}
+												{:else}
+													{isId ? "PILIH LAYANAN AKUARIUM" : "SELECT AQUATIC SERVICE"}
+												{/if}
+											</h3>
+											<p>{isId ? "Tarif resmi terdaftar dengan standar kualitas PetCo" : "Certified service tier with itemized transparent rates"}</p>
+										</div>
+									</div>
+
+									{#if selectedKind === "grooming"}
+										<div class="neo-items-stack">
+											{#each branchServices as svc}
+												<button
+													type="button"
+													class="item-select-btn"
+													class:selected={selectedServiceId === svc.id}
+													onclick={() => (selectedServiceId = svc.id)}
+												>
+													<div class="item-meta">
+														<strong>{svc.name}</strong>
+														<span><Clock size={12} /> {svc.durationMinutes || 60} mins</span>
 													</div>
-												</label>
+													<div class="item-price">{money(svc.priceCents)}</div>
+												</button>
 											{/each}
 										</div>
-									</div>
-								{:else if selectedKind === "hotel"}
-									<div class="neo-items-stack">
-										{#each branchRooms as rm}
-											<button
-												type="button"
-												class="item-select-btn"
-												class:selected={selectedRoomId === rm.id}
-												onclick={() => (selectedRoomId = rm.id)}
-											>
-												<div class="item-meta">
-													<strong>{rm.name}</strong>
-													<span>{rm.sizeLabel || "Private Suite"} · Max {rm.maxPetWeightKg || 20}kg</span>
-												</div>
-												<div class="item-price">
-													<strong>{money(rm.pricePerNightCents)}</strong>
-													<small>/{isId ? "malam" : "night"}</small>
-												</div>
-											</button>
-										{/each}
-									</div>
-									<input type="hidden" name="roomId" value={selectedRoomId} />
-								{:else}
-									<div class="neo-items-stack">
-										{#each branchServices as svc}
-											<button
-												type="button"
-												class="item-select-btn"
-												class:selected={selectedServiceId === svc.id}
-												onclick={() => (selectedServiceId = svc.id)}
-											>
-												<div class="item-meta">
-													<strong>{svc.name}</strong>
-													<span><Clock size={12} /> {svc.durationMinutes || 60} mins</span>
-												</div>
-												<div class="item-price">{money(svc.priceCents)}</div>
-											</button>
-										{/each}
-									</div>
-									<input type="hidden" name="serviceId" value={selectedServiceId} />
-								{/if}
-							</div>
 
-							<!-- STEP 4: SCHEDULE & DATES -->
-							<div class="neo-step-box">
-								<div class="step-head-strip">
-									<span class="step-num-box">04</span>
-									<div class="step-text-wrap">
-										<h3>{isId ? "JADWAL & WAKTU KEDATANGAN" : "SCHEDULE & TIME SELECTION"}</h3>
-										<p>{isId ? "Tentukan waktu janji temu di cabang Semarang" : "Choose your appointment arrival window"}</p>
-									</div>
-								</div>
-
-								{#if selectedKind === "hotel"}
-									<div class="neo-form-row">
-										<div class="neo-form-group">
-											<DatePicker
-												id="checkInDate"
-												name="checkInDate"
-												label={isId ? "Tanggal Check-in" : "Check-in Date"}
-												bind:value={checkInDate}
-												required
-											/>
-										</div>
-										<div class="neo-form-group">
-											<DatePicker
-												id="checkOutDate"
-												name="checkOutDate"
-												label={isId ? "Tanggal Check-out" : "Check-out Date"}
-												bind:value={checkOutDate}
-												required
-											/>
-										</div>
-									</div>
-									<div class="hotel-stay-pill">
-										<span>{isId ? "Total Durasi Menginap:" : "Stay Duration:"}</span>
-										<strong>{calculatedNights} {isId ? "Malam" : "Nights"}</strong>
-									</div>
-								{:else}
-									<div class="neo-form-row">
-										<div class="neo-form-group">
-											<DatePicker
-												id="bookingDate"
-												name="date"
-												label={isId ? "Tanggal Layanan" : "Appointment Date"}
-												bind:value={bookingDate}
-												required
-											/>
-										</div>
-										<div class="neo-form-group">
-											<label for="timeSlotContainer">{isId ? "Pilih Jam Kedatangan" : "Select Arrival Slot"}</label>
-											<div id="timeSlotContainer" class="time-slots-deck">
-												{#each timeSlots as slot}
-													<button
-														type="button"
-														class="slot-btn-neo"
-														class:active={timeSlot === slot}
-														onclick={() => (timeSlot = slot)}
-													>
-														{slot}
-													</button>
+										<!-- Grooming Add-ons -->
+										<div class="neo-addons-compartment">
+											<span class="addons-tag">{isId ? "[ LAYANAN TAMBAHAN OPSIONAL ]" : "[ OPTIONAL ADD-ONS ]"}</span>
+											<div class="addons-chips-wrap">
+												{#each data.services.filter((s) => s.name.toLowerCase().includes("flea") || s.name.toLowerCase().includes("teeth") || s.name.toLowerCase().includes("nail") || s.name.toLowerCase().includes("spa") || s.name.toLowerCase().includes("ear")) as addon}
+													<label class="addon-toggle-neo" class:checked={selectedAddonIds.includes(addon.id)}>
+														<input
+															type="checkbox"
+															name="addonIds"
+															value={addon.id}
+															checked={selectedAddonIds.includes(addon.id)}
+															onchange={() => toggleAddon(addon.id)}
+														/>
+														<div class="addon-info-block">
+															<span class="a-title">{addon.name}</span>
+															<strong class="a-price">+{money(addon.priceCents)}</strong>
+														</div>
+													</label>
 												{/each}
 											</div>
-											<input type="hidden" name="timeSlot" value={timeSlot} />
 										</div>
-									</div>
-								{/if}
-							</div>
+									{:else if selectedKind === "hotel"}
+										<div class="neo-items-stack">
+											{#each branchRooms as rm}
+												<button
+													type="button"
+													class="item-select-btn"
+													class:selected={selectedRoomId === rm.id}
+													onclick={() => (selectedRoomId = rm.id)}
+												>
+													<div class="item-meta">
+														<strong>{rm.name}</strong>
+														<span>{rm.sizeLabel || "Private Suite"} · Max {rm.maxPetWeightKg || 20}kg</span>
+													</div>
+													<div class="item-price">
+														<strong>{money(rm.pricePerNightCents)}</strong>
+														<small>/{isId ? "malam" : "night"}</small>
+													</div>
+												</button>
+											{/each}
+										</div>
+									{:else}
+										<div class="neo-items-stack">
+											{#each branchServices as svc}
+												<button
+													type="button"
+													class="item-select-btn"
+													class:selected={selectedServiceId === svc.id}
+													onclick={() => (selectedServiceId = svc.id)}
+												>
+													<div class="item-meta">
+														<strong>{svc.name}</strong>
+														<span><Clock size={12} /> {svc.durationMinutes || 60} mins</span>
+													</div>
+													<div class="item-price">{money(svc.priceCents)}</div>
+												</button>
+											{/each}
+										</div>
+									{/if}
 
-							<!-- STEP 5: PET & OWNER DOSSIER -->
-							<div class="neo-step-box">
-								<div class="step-head-strip">
-									<span class="step-num-box">05</span>
-									<div class="step-text-wrap">
-										<h3>{isId ? "DATA HEWAN & KONTAK PEMILIK" : "PET & CLIENT DOSSIER"}</h3>
-										<p>{isId ? "Lengkapi rekam medis digital dan nomor WhatsApp untuk laporan berkala" : "Details for digital records and WhatsApp photo updates"}</p>
+									<div class="step-footer-actions">
+										<button type="button" class="neo-btn neo-btn-secondary" onclick={prevStep}>
+											<ArrowLeft size={15} />
+											<span>{isId ? "KEMBALI" : "PREVIOUS"}</span>
+										</button>
+										<button type="button" class="neo-btn neo-btn-primary" onclick={nextStep}>
+											<span>{isId ? "LANJUT: PILIH JADWAL" : "NEXT: SELECT SCHEDULE"}</span>
+											<ArrowRight size={15} />
+										</button>
 									</div>
 								</div>
+							{/if}
 
-								<!-- Pet Section -->
-								<div class="neo-sub-compartment">
-									<div class="sub-head"><PawPrint size={15} /> <span>{isId ? "[ DATA ANABUL ]" : "[ COMPANION PET ]"}</span></div>
-
-									<div class="neo-form-row">
-										<div class="neo-form-group">
-											<label for="petName">{isId ? "Nama Hewan *" : "Pet Name *"}</label>
-											<input id="petName" name="petName" type="text" placeholder="e.g. Milo, Luna, Bobby" bind:value={petName} required />
+							<!-- ==================== STEP 4: SCHEDULE & DATES ==================== -->
+							{#if currentStep === 4}
+								<div class="neo-step-box">
+									<div class="step-head-strip">
+										<span class="step-num-box">04</span>
+										<div class="step-text-wrap">
+											<h3>{isId ? "JADWAL & WAKTU KEDATANGAN" : "SCHEDULE & TIME SELECTION"}</h3>
+											<p>{isId ? "Tentukan waktu janji temu di cabang Semarang" : "Choose your appointment arrival window"}</p>
 										</div>
-										<div class="neo-form-group">
-											<label for="speciesContainer">{isId ? "Spesies" : "Species"}</label>
-											<div id="speciesContainer" class="species-chips-grid">
-												{#each ["dog", "cat", "bird", "reptile", "fish", "other"] as sp}
-													<button
-														type="button"
-														class="species-chip-neo"
-														class:active={species === sp}
-														onclick={() => (species = sp as any)}
-													>
-														<span>{speciesIcons[sp]}</span>
-														<strong>{sp.toUpperCase()}</strong>
-													</button>
-												{/each}
+									</div>
+
+									{#if selectedKind === "hotel"}
+										<div class="neo-form-row">
+											<div class="neo-form-group">
+												<DatePicker
+													id="checkInDate"
+													name="checkInDate"
+													label={isId ? "Tanggal Check-in" : "Check-in Date"}
+													bind:value={checkInDate}
+													required
+												/>
 											</div>
-											<input type="hidden" name="species" value={species} />
+											<div class="neo-form-group">
+												<DatePicker
+													id="checkOutDate"
+													name="checkOutDate"
+													label={isId ? "Tanggal Check-out" : "Check-out Date"}
+													bind:value={checkOutDate}
+													required
+												/>
+											</div>
 										</div>
-									</div>
+										<div class="hotel-stay-pill">
+											<span>{isId ? "Total Durasi Menginap:" : "Stay Duration:"}</span>
+											<strong>{calculatedNights} {isId ? "Malam" : "Nights"}</strong>
+										</div>
+									{:else}
+										<div class="neo-form-row">
+											<div class="neo-form-group">
+												<DatePicker
+													id="bookingDate"
+													name="date"
+													label={isId ? "Tanggal Layanan" : "Appointment Date"}
+													bind:value={bookingDate}
+													required
+												/>
+											</div>
+											<div class="neo-form-group">
+												<label for="timeSlotContainer">{isId ? "Pilih Jam Kedatangan" : "Select Arrival Slot"}</label>
+												<div id="timeSlotContainer" class="time-slots-deck">
+													{#each timeSlots as slot}
+														<button
+															type="button"
+															class="slot-btn-neo"
+															class:active={timeSlot === slot}
+															onclick={() => (timeSlot = slot)}
+														>
+															{slot}
+														</button>
+													{/each}
+												</div>
+												<input type="hidden" name="timeSlot" value={timeSlot} />
+											</div>
+										</div>
+									{/if}
 
-									<div class="neo-form-row">
-										<div class="neo-form-group">
-											<label for="breed">{isId ? "Ras / Breed (Opsional)" : "Breed (Optional)"}</label>
-											<input id="breed" name="breed" type="text" placeholder="e.g. Toy Poodle, Golden, Persian" bind:value={breed} />
-										</div>
-										<div class="neo-form-group">
-											<label for="weightKg">{isId ? "Berat Badan (kg)" : "Weight (kg)"}</label>
-											<input id="weightKg" name="weightKg" type="number" step="0.1" min="0.1" max="100" placeholder="e.g. 4.5" bind:value={weightKg} />
-										</div>
-									</div>
-
-									<div class="neo-form-group">
-										<label for="healthNotes">{isId ? "Catatan Kesehatan / Alergi / Pantangan" : "Allergies & Medical Notes"}</label>
-										<textarea id="healthNotes" name="healthNotes" rows="2" placeholder="e.g. Sensitive skin, dislikes ear touch, special diet" bind:value={healthNotes}></textarea>
+									<div class="step-footer-actions">
+										<button type="button" class="neo-btn neo-btn-secondary" onclick={prevStep}>
+											<ArrowLeft size={15} />
+											<span>{isId ? "KEMBALI" : "PREVIOUS"}</span>
+										</button>
+										<button type="button" class="neo-btn neo-btn-primary" onclick={nextStep}>
+											<span>{isId ? "LANJUT: DATA ANABUL & PEMILIK" : "NEXT: PET & OWNER DETAILS"}</span>
+											<ArrowRight size={15} />
+										</button>
 									</div>
 								</div>
+							{/if}
 
-								<!-- Owner Section -->
-								<div class="neo-sub-compartment">
-									<div class="sub-head"><User size={15} /> <span>{isId ? "[ KONTAK KLIEN ]" : "[ CLIENT CONTACT ]"}</span></div>
-
-									<div class="neo-form-row">
-										<div class="neo-form-group">
-											<label for="firstName">{isId ? "Nama Depan *" : "First Name *"}</label>
-											<input id="firstName" name="firstName" type="text" placeholder="e.g. Budi" bind:value={firstName} required />
-										</div>
-										<div class="neo-form-group">
-											<label for="lastName">{isId ? "Nama Belakang" : "Last Name"}</label>
-											<input id="lastName" name="lastName" type="text" placeholder="e.g. Santoso" bind:value={lastName} />
+							<!-- ==================== STEP 5: PET & OWNER DOSSIER ==================== -->
+							{#if currentStep === 5}
+								<div class="neo-step-box">
+									<div class="step-head-strip">
+										<span class="step-num-box">05</span>
+										<div class="step-text-wrap">
+											<h3>{isId ? "DATA HEWAN & KONTAK PEMILIK" : "PET & CLIENT DOSSIER"}</h3>
+											<p>{isId ? "Lengkapi rekam medis digital dan nomor WhatsApp untuk laporan berkala" : "Details for digital records and WhatsApp photo updates"}</p>
 										</div>
 									</div>
 
-									<div class="neo-form-row">
-										<div class="neo-form-group">
-											<label for="phone">{isId ? "Nomor WhatsApp / HP *" : "WhatsApp Phone Number *"}</label>
-											<input id="phone" name="phone" type="tel" placeholder="e.g. 081234567890" bind:value={phone} required />
+									<!-- Pet Section -->
+									<div class="neo-sub-compartment">
+										<div class="sub-head"><PawPrint size={15} /> <span>{isId ? "[ DATA ANABUL ]" : "[ COMPANION PET ]"}</span></div>
+
+										<div class="neo-form-row">
+											<div class="neo-form-group">
+												<label for="petName">{isId ? "Nama Hewan *" : "Pet Name *"}</label>
+												<input id="petName" name="petName" type="text" placeholder="e.g. Milo, Luna, Bobby" bind:value={petName} required />
+											</div>
+											<div class="neo-form-group">
+												<label for="speciesContainer">{isId ? "Spesies" : "Species"}</label>
+												<div id="speciesContainer" class="species-chips-grid">
+													{#each ["dog", "cat", "bird", "reptile", "fish", "other"] as sp}
+														<button
+															type="button"
+															class="species-chip-neo"
+															class:active={species === sp}
+															onclick={() => (species = sp as any)}
+														>
+															<span>{speciesIcons[sp]}</span>
+															<strong>{sp.toUpperCase()}</strong>
+														</button>
+													{/each}
+												</div>
+												<input type="hidden" name="species" value={species} />
+											</div>
 										</div>
+
+										<div class="neo-form-row">
+											<div class="neo-form-group">
+												<label for="breed">{isId ? "Ras / Breed (Opsional)" : "Breed (Optional)"}</label>
+												<input id="breed" name="breed" type="text" placeholder="e.g. Toy Poodle, Golden, Persian" bind:value={breed} />
+											</div>
+											<div class="neo-form-group">
+												<label for="weightKg">{isId ? "Berat Badan (kg)" : "Weight (kg)"}</label>
+												<input id="weightKg" name="weightKg" type="number" step="0.1" min="0.1" max="100" placeholder="e.g. 4.5" bind:value={weightKg} />
+											</div>
+										</div>
+
 										<div class="neo-form-group">
-											<label for="email">{isId ? "Email" : "Email Address"}</label>
-											<input id="email" name="email" type="email" placeholder="e.g. client@gmail.com" bind:value={email} />
+											<label for="healthNotes">{isId ? "Catatan Kesehatan / Alergi / Pantangan" : "Allergies & Medical Notes"}</label>
+											<textarea id="healthNotes" name="healthNotes" rows="2" placeholder="e.g. Sensitive skin, dislikes ear touch, special diet" bind:value={healthNotes}></textarea>
 										</div>
 									</div>
 
-									<div class="neo-form-group">
-										<label for="notes">{isId ? "Instruksi / Permintaan Khusus" : "Special Instructions"}</label>
-										<textarea id="notes" name="notes" rows="2" placeholder="e.g. Pick up at 5pm, extra towel dry" bind:value={bookingNotes}></textarea>
+									<!-- Owner Section -->
+									<div class="neo-sub-compartment">
+										<div class="sub-head"><User size={15} /> <span>{isId ? "[ KONTAK KLIEN ]" : "[ CLIENT CONTACT ]"}</span></div>
+
+										<div class="neo-form-row">
+											<div class="neo-form-group">
+												<label for="firstName">{isId ? "Nama Depan *" : "First Name *"}</label>
+												<input id="firstName" name="firstName" type="text" placeholder="e.g. Budi" bind:value={firstName} required />
+											</div>
+											<div class="neo-form-group">
+												<label for="lastName">{isId ? "Nama Belakang" : "Last Name"}</label>
+												<input id="lastName" name="lastName" type="text" placeholder="e.g. Santoso" bind:value={lastName} />
+											</div>
+										</div>
+
+										<div class="neo-form-row">
+											<div class="neo-form-group">
+												<label for="phone">{isId ? "Nomor WhatsApp / HP *" : "WhatsApp Phone Number *"}</label>
+												<input id="phone" name="phone" type="tel" placeholder="e.g. 081234567890" bind:value={phone} required />
+											</div>
+											<div class="neo-form-group">
+												<label for="email">{isId ? "Email" : "Email Address"}</label>
+												<input id="email" name="email" type="email" placeholder="e.g. client@gmail.com" bind:value={email} />
+											</div>
+										</div>
+
+										<div class="neo-form-group">
+											<label for="notes">{isId ? "Instruksi / Permintaan Khusus" : "Special Instructions"}</label>
+											<textarea id="notes" name="notes" rows="2" placeholder="e.g. Pick up at 5pm, extra towel dry" bind:value={bookingNotes}></textarea>
+										</div>
+									</div>
+
+									<div class="step-footer-actions">
+										<button type="button" class="neo-btn neo-btn-secondary" onclick={prevStep}>
+											<ArrowLeft size={15} />
+											<span>{isId ? "KEMBALI" : "PREVIOUS"}</span>
+										</button>
+										<button type="submit" class="neo-btn neo-btn-primary submit-cta" disabled={isSubmitting}>
+											{#if isSubmitting}
+												<span>{isId ? "MEMPROSES..." : "PROCESSING..."}</span>
+											{:else}
+												<CheckCircle2 size={18} />
+												<span>{isId ? "KONFIRMASI & BUAT BOOKING" : "CONFIRM & SUBMIT BOOKING"}</span>
+											{/if}
+										</button>
 									</div>
 								</div>
-							</div>
+							{/if}
 						</div>
 
-						<!-- RIGHT COLUMN: STICKY NEOBRUTALIST SUMMARY CARD -->
+						<!-- RIGHT COLUMN: STICKY LIVE INVOICE SUMMARY -->
 						<div class="wizard-summary-col">
 							<div class="neo-summary-card">
 								<div class="sum-card-header">
 									<Receipt size={17} />
-									<h3>{isId ? "RINGKASAN RESERVASI" : "RESERVATION SUMMARY"}</h3>
+									<h3>{isId ? "RINGKASAN ESTIMASI" : "LIVE ESTIMATE"}</h3>
 								</div>
 
 								<div class="sum-items-list">
@@ -739,14 +922,12 @@
 									</div>
 								</div>
 
-								<button type="submit" class="neo-btn neo-btn-lg neo-btn-primary w-full submit-cta" disabled={isSubmitting}>
-									{#if isSubmitting}
-										<span>{isId ? "MEMPROSES..." : "PROCESSING..."}</span>
-									{:else}
-										<CheckCircle2 size={18} />
-										<span>{isId ? "KONFIRMASI BOOKING" : "CONFIRM RESERVATION"}</span>
-									{/if}
-								</button>
+								<div class="wizard-step-tracker">
+									<span>{isId ? "Langkah" : "Step"} {currentStep} {isId ? "dari" : "of"} 5</span>
+									<div class="tracker-bar">
+										<div class="tracker-fill" style="width: {(currentStep / 5) * 100}%;"></div>
+									</div>
+								</div>
 
 								<p class="sum-foot-note">
 									{isId
@@ -862,7 +1043,7 @@
 		</div>
 	</main>
 
-	<!-- ==================== SWISS INDUSTRIAL FOOTER ==================== -->
+	<!-- ==================== FOOTER ==================== -->
 	<footer class="neo-footer">
 		<div class="neo-container">
 			<div class="footer-grid-neo">
@@ -959,21 +1140,12 @@
 		user-select: none;
 	}
 
-	.neo-btn-sm {
-		padding: 7px 14px;
-		font-size: 12px;
-		box-shadow: 3px 3px 0px #0f172a;
-	}
-
-	.neo-btn-lg {
-		padding: 14px 28px;
-		font-size: 14.5px;
-		box-shadow: 4px 4px 0px #0f172a;
-	}
-
 	.neo-btn-primary {
 		background: #4f46e5;
 		color: #ffffff;
+		padding: 10px 20px;
+		font-size: 13.5px;
+		box-shadow: 4px 4px 0px #0f172a;
 	}
 
 	.neo-btn-primary:hover {
@@ -990,12 +1162,15 @@
 	.neo-btn-secondary {
 		background: #ffffff;
 		color: #0f172a;
+		padding: 10px 18px;
+		font-size: 13px;
+		box-shadow: 3px 3px 0px #0f172a;
 	}
 
 	.neo-btn-secondary:hover {
 		background: #f8fafc;
 		transform: translate(-1px, -1px);
-		box-shadow: 5px 5px 0px #0f172a;
+		box-shadow: 4px 4px 0px #0f172a;
 	}
 
 	.neo-btn-secondary:active {
@@ -1019,6 +1194,110 @@
 
 	.w-full {
 		width: 100%;
+	}
+
+	/* ============ STEPPER PROGRESS BAR ============ */
+	.stepper-progress-bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+		background: #ffffff;
+		border: 2.5px solid #0f172a;
+		border-radius: 12px;
+		padding: 12px 18px;
+		box-shadow: 4px 4px 0px #0f172a;
+		margin-bottom: 24px;
+		overflow-x: auto;
+	}
+
+	.step-progress-pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		background: #faf8f5;
+		border: 2px solid #0f172a;
+		padding: 7px 14px;
+		border-radius: 8px;
+		cursor: pointer;
+		box-shadow: 2px 2px 0px #0f172a;
+		transition: all 100ms ease;
+		white-space: nowrap;
+	}
+
+	.step-progress-pill:hover {
+		background: #fef08a;
+		transform: translate(-1px, -1px);
+	}
+
+	.step-progress-pill.active {
+		background: #facc15;
+		box-shadow: 3px 3px 0px #0f172a;
+	}
+
+	.step-progress-pill.completed {
+		background: #a7f3d0;
+	}
+
+	.step-badge-num {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11px;
+		font-weight: 950;
+		color: #0f172a;
+		background: #ffffff;
+		border: 1.5px solid #0f172a;
+		border-radius: 4px;
+		padding: 1px 5px;
+	}
+
+	.step-badge-text {
+		font-family: "Cabinet Grotesk", "Outfit", sans-serif;
+		font-size: 13px;
+		font-weight: 850;
+		color: #0f172a;
+	}
+
+	.stepper-arrow {
+		font-weight: 900;
+		color: #64748b;
+	}
+
+	/* Step Footer Action Buttons */
+	.step-footer-actions {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		margin-top: 24px;
+		padding-top: 18px;
+		border-top: 2px dashed #cbd5e1;
+	}
+
+	/* Tracker Fill */
+	.wizard-step-tracker {
+		margin-top: 14px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11px;
+		font-weight: 850;
+		color: #0f172a;
+	}
+
+	.tracker-bar {
+		width: 100%;
+		height: 8px;
+		background: #e2e8f0;
+		border: 1.5px solid #0f172a;
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.tracker-fill {
+		height: 100%;
+		background: #4f46e5;
+		transition: width 200ms ease;
 	}
 
 	/* ============ HEADER ============ */
@@ -1079,7 +1358,6 @@
 		letter-spacing: 0.06em;
 	}
 
-	/* Tab Toggle */
 	.neo-tab-toggle {
 		display: flex;
 		align-items: center;
@@ -2204,6 +2482,15 @@
 		.footer-grid-neo {
 			grid-template-columns: 1fr 1fr;
 		}
+
+		.stepper-progress-bar {
+			padding: 10px 14px;
+			gap: 6px;
+		}
+
+		.step-badge-text {
+			font-size: 12px;
+		}
 	}
 
 	@media (max-width: 640px) {
@@ -2235,6 +2522,10 @@
 
 		.footer-grid-neo {
 			grid-template-columns: 1fr;
+		}
+
+		.stepper-progress-bar {
+			justify-content: flex-start;
 		}
 	}
 </style>
