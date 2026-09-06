@@ -4,8 +4,7 @@
 		ChevronLeft,
 		ChevronRight,
 		X,
-		Sparkles,
-		Clock
+		Sparkles
 	} from "@lucide/svelte";
 
 	let {
@@ -13,7 +12,7 @@
 		id,
 		name,
 		label,
-		placeholder = "Select date...",
+		placeholder = "Pilih tanggal...",
 		min,
 		max,
 		required = false,
@@ -56,19 +55,19 @@
 	});
 
 	const monthNames = [
-		"January", "February", "March", "April", "May", "June",
-		"July", "August", "September", "October", "November", "December"
+		"Januari", "Februari", "Maret", "April", "Mei", "Juni",
+		"Juli", "Agustus", "September", "Oktober", "November", "Desember"
 	];
-	const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+	const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 
 	const formattedDisplay = $derived(() => {
 		if (!value) return "";
 		const d = new Date(value + "T00:00:00");
 		if (isNaN(d.getTime())) return value;
-		return d.toLocaleDateString(undefined, {
+		return d.toLocaleDateString("id-ID", {
 			weekday: "short",
-			month: "short",
 			day: "numeric",
+			month: "short",
 			year: "numeric"
 		});
 	});
@@ -147,19 +146,17 @@
 	function updatePlacement() {
 		if (!triggerRef) return;
 		const rect = triggerRef.getBoundingClientRect();
-		const popoverHeight = 350; // height of popover
-		const popoverWidth = 310;
+		const popoverHeight = 360;
+		const popoverWidth = 320;
 		const spaceBelow = window.innerHeight - rect.bottom;
 		const spaceAbove = rect.top;
 
-		// Dynamic vertical placement: if space below is too small and space above is larger, open TOP
 		if (spaceBelow < popoverHeight && spaceAbove > spaceBelow) {
 			placement = "top";
 		} else {
 			placement = "bottom";
 		}
 
-		// Dynamic horizontal alignment: if close to right edge, align right
 		const spaceRight = window.innerWidth - rect.left;
 		if (spaceRight < popoverWidth) {
 			align = "right";
@@ -226,9 +223,9 @@
 
 <svelte:window onclick={handleWindowClick} onkeydown={handleKeydown} onscroll={updatePlacement} onresize={updatePlacement} />
 
-<div class="custom-datepicker-container {isOpen ? 'is-active-container' : ''}">
+<div class="neo-datepicker-wrap {isOpen ? 'is-active' : ''}">
 	{#if label}
-		<label for={id} class="datepicker-label">
+		<label for={id} class="neo-datepicker-label">
 			<span>{label}</span>
 			{#if required}<span class="req">*</span>{/if}
 		</label>
@@ -243,7 +240,7 @@
 	<div
 		{id}
 		bind:this={triggerRef}
-		class="datepicker-trigger {isOpen ? 'is-open' : ''} {value ? 'has-value' : ''}"
+		class="neo-datepicker-trigger {isOpen ? 'is-open' : ''} {value ? 'has-val' : ''}"
 		onclick={toggleOpen}
 		onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleOpen(); } }}
 		role="button"
@@ -251,125 +248,108 @@
 		aria-expanded={isOpen}
 		aria-haspopup="dialog"
 	>
-		<span class="trigger-icon">
-			<CalendarIcon size={16} />
+		<span class="neo-trigger-icon">
+			<CalendarIcon size={16} strokeWidth={2.4} />
 		</span>
 
-		<span class="trigger-text {value ? 'selected-text' : 'placeholder-text'}">
+		<span class="neo-trigger-text {value ? 'is-filled' : 'is-placeholder'}">
 			{formattedDisplay() || placeholder}
 		</span>
 
 		{#if value}
 			<button
 				type="button"
-				class="clear-btn"
+				class="neo-clear-btn"
 				onclick={(e) => {
 					e.stopPropagation();
 					value = "";
 					if (onchange) onchange("");
 				}}
-				title="Clear date"
+				title="Hapus tanggal"
+				aria-label="Hapus tanggal"
 			>
-				<X size={13} />
+				<X size={12} strokeWidth={2.8} />
 			</button>
 		{/if}
 	</div>
 
-	<!-- Popover Calendar with Dynamic Viewport Placement -->
+	<!-- Popover Calendar -->
 	{#if isOpen}
 		<div
-			class="datepicker-popover placement-{placement} align-{align}"
+			class="neo-calendar-popover placement-{placement} align-{align}"
 			bind:this={popoverRef}
 			role="dialog"
 			tabindex="-1"
-			aria-label="Calendar date picker"
+			aria-label="Kalender pemilih tanggal"
 		>
-			<!-- Quick Presets Toolbar -->
+			<!-- Presets Toolbar -->
 			{#if showPresets}
-				<div class="popover-presets">
-					<button
-						type="button"
-						class="pop-preset-btn"
-						onclick={() => selectPreset(0)}
-					>
-						Today
-					</button>
-					<button
-						type="button"
-						class="pop-preset-btn"
-						onclick={() => selectPreset(1)}
-					>
-						Tomorrow
-					</button>
-					<button
-						type="button"
-						class="pop-preset-btn"
-						onclick={() => selectPreset(2)}
-					>
-						+2 Days
-					</button>
-					<button
-						type="button"
-						class="pop-preset-btn"
-						onclick={() => selectPreset(7)}
-					>
-						+1 Week
-					</button>
+				<div class="neo-pop-presets">
+					<button type="button" class="preset-pill-btn" onclick={() => selectPreset(0)}>[ Hari Ini ]</button>
+					<button type="button" class="preset-pill-btn" onclick={() => selectPreset(1)}>[ Besok ]</button>
+					<button type="button" class="preset-pill-btn" onclick={() => selectPreset(2)}>[ +2 Hari ]</button>
+					<button type="button" class="preset-pill-btn" onclick={() => selectPreset(7)}>[ +7 Hari ]</button>
 				</div>
 			{/if}
 
-			<!-- Month & Year Navigator -->
-			<div class="calendar-nav">
+			<!-- Month & Year Navigator Header -->
+			<div class="neo-cal-header">
 				<button
 					type="button"
-					class="nav-btn"
+					class="cal-nav-btn"
 					onclick={prevMonth}
-					aria-label="Previous month"
+					aria-label="Bulan sebelumnya"
+					title="Bulan sebelumnya"
 				>
-					<ChevronLeft size={16} />
+					<ChevronLeft size={16} strokeWidth={2.6} />
 				</button>
 
-				<div class="month-year-title">
-					<span class="month-name">{monthNames[viewMonth]}</span>
-					<span class="year-name">{viewYear}</span>
+				<div class="cal-title-box">
+					<span class="m-name">{monthNames[viewMonth]}</span>
+					<span class="y-name">{viewYear}</span>
 				</div>
 
 				<button
 					type="button"
-					class="nav-btn"
+					class="cal-nav-btn"
 					onclick={nextMonth}
-					aria-label="Next month"
+					aria-label="Bulan berikutnya"
+					title="Bulan berikutnya"
 				>
-					<ChevronRight size={16} />
+					<ChevronRight size={16} strokeWidth={2.6} />
 				</button>
 			</div>
 
-			<!-- Weekdays Row -->
-			<div class="weekdays-grid">
+			<!-- Weekdays Grid -->
+			<div class="neo-weekdays-row">
 				{#each dayNames as dn}
-					<span class="weekday-header">{dn}</span>
+					<span class="weekday-tag">{dn}</span>
 				{/each}
 			</div>
 
-			<!-- Days Matrix Grid (42 cells) -->
-			<div class="days-grid">
+			<!-- Days Grid (42 cells) -->
+			<div class="neo-days-grid">
 				{#each calendarDays() as d}
 					<button
 						type="button"
-						class="day-cell {d.isCurrentMonth ? 'in-month' : 'out-month'} {d.isToday ? 'is-today' : ''} {d.isSelected ? 'is-selected' : ''}"
+						class="neo-day-btn"
+						class:in-month={d.isCurrentMonth}
+						class:out-month={!d.isCurrentMonth}
+						class:is-today={d.isToday}
+						class:is-selected={d.isSelected}
 						disabled={d.isDisabled}
 						onclick={() => selectDate(d.dateStr)}
 					>
-						<span class="day-number">{d.dayNum}</span>
+						<span>{d.dayNum}</span>
 					</button>
 				{/each}
 			</div>
 
-			<!-- Footer quick actions -->
-			<div class="popover-footer">
+			<!-- Footer -->
+			<div class="neo-cal-footer">
 				<button
 					type="button"
-					class="btn-footer-today"
+					class="neo-today-shortcut"
 					onclick={() => {
 						const now = new Date();
 						viewYear = now.getFullYear();
@@ -377,8 +357,8 @@
 						selectDate(now.toISOString().slice(0, 10));
 					}}
 				>
-					<Sparkles size={12} />
-					<span>Jump to Today</span>
+					<Sparkles size={13} />
+					<span>Lompat ke Hari Ini</span>
 				</button>
 			</div>
 		</div>
@@ -386,7 +366,7 @@
 </div>
 
 <style>
-	.custom-datepicker-container {
+	.neo-datepicker-wrap {
 		position: relative;
 		width: 100%;
 		display: flex;
@@ -394,320 +374,290 @@
 		gap: 6px;
 	}
 
-	.custom-datepicker-container.is-active-container {
+	.neo-datepicker-wrap.is-active {
 		z-index: 999;
 	}
 
-	.datepicker-label {
-		font-size: 12.5px;
-		font-weight: 600;
-		color: var(--ink-2);
+	.neo-datepicker-label {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11px;
+		font-weight: 850;
+		color: #0f172a;
+		letter-spacing: 0.04em;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 	}
 
-	.datepicker-trigger {
+	.req {
+		color: #ef4444;
+	}
+
+	/* Trigger */
+	.neo-datepicker-trigger {
 		position: relative;
 		display: flex;
 		align-items: center;
 		width: 100%;
-		height: 40px;
-		min-height: 40px;
+		height: 42px;
+		min-height: 42px;
 		padding: 0 12px 0 38px;
-		border-radius: var(--r-md);
-		border: 1px solid var(--border-strong);
-		background: var(--surface);
-		color: var(--ink);
-		font-size: 13.5px;
+		border: 2px solid #0f172a;
+		border-radius: 6px;
+		background: #ffffff;
+		color: #0f172a;
+		font-size: 13px;
+		font-weight: 750;
 		cursor: pointer;
 		text-align: left;
-		transition: all 140ms ease;
-		box-shadow: var(--shadow-xs);
+		box-shadow: 2px 2px 0px #0f172a;
+		transition: all 100ms ease;
 		user-select: none;
 	}
 
-	.datepicker-trigger:hover {
-		border-color: var(--faint);
-		background: var(--surface-2);
+	.neo-datepicker-trigger:hover {
+		background: #fefce8;
+		transform: translate(-1px, -1px);
+		box-shadow: 3px 3px 0px #0f172a;
 	}
 
-	.datepicker-trigger.is-open,
-	.datepicker-trigger:focus-visible {
-		border-color: var(--primary);
-		box-shadow: var(--focus);
-		background: var(--surface);
-		outline: none;
+	.neo-datepicker-trigger.is-open {
+		border-color: #4f46e5;
+		background: #fefce8;
+		box-shadow: 3px 3px 0px #4f46e5;
 	}
 
-	.trigger-icon {
+	.neo-trigger-icon {
 		position: absolute;
 		left: 12px;
 		top: 50%;
 		transform: translateY(-50%);
-		color: var(--primary);
+		color: #4f46e5;
 		pointer-events: none;
 		display: grid;
 		place-items: center;
 	}
 
-	.trigger-text {
-		flex: 1;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		font-family: inherit;
+	.neo-trigger-text.is-placeholder {
+		color: #64748b;
+		font-weight: 500;
 	}
 
-	.selected-text {
-		color: var(--ink);
-		font-weight: 600;
+	.neo-trigger-text.is-filled {
+		color: #0f172a;
+		font-weight: 800;
 	}
 
-	.placeholder-text {
-		color: var(--faint);
-	}
-
-	.clear-btn {
-		background: var(--surface-3);
-		border: none;
-		color: var(--muted);
+	.neo-clear-btn {
+		margin-left: auto;
 		width: 20px;
 		height: 20px;
-		border-radius: var(--r-full);
+		border-radius: 4px;
+		background: #facc15;
+		border: 1.5px solid #0f172a;
+		color: #0f172a;
 		display: grid;
 		place-items: center;
 		cursor: pointer;
-		padding: 0;
-		margin-left: 6px;
-		transition: all 120ms ease;
+		box-shadow: 1px 1px 0px #0f172a;
 	}
 
-	.clear-btn:hover {
-		background: var(--danger-bg);
-		color: var(--danger);
+	.neo-clear-btn:hover {
+		background: #ef4444;
+		color: #ffffff;
 	}
 
-	/* Floating Popover with Dynamic Positioning */
-	.datepicker-popover {
+	/* Popover Window */
+	.neo-calendar-popover {
 		position: absolute;
-		width: 308px;
-		background: #ffffff !important;
-		background-color: #ffffff !important;
-		border: 1px solid var(--border);
-		border-radius: var(--r-xl);
-		box-shadow: 0 20px 40px -8px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.08);
-		padding: 14px;
-		z-index: 9999;
-	}
-
-	/* Pop Out Below */
-	.datepicker-popover.placement-bottom {
-		top: calc(100% + 6px);
-		bottom: auto;
-		animation: popInBottom 140ms cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	/* Pop Out Above (when trigger is near bottom of viewport) */
-	.datepicker-popover.placement-top {
-		bottom: calc(100% + 6px);
-		top: auto;
-		animation: popInTop 140ms cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	.datepicker-popover.align-left {
-		left: 0;
-		right: auto;
-	}
-
-	.datepicker-popover.align-right {
-		right: 0;
-		left: auto;
-	}
-
-	.popover-presets {
+		z-index: 1000;
+		width: 310px;
+		background: #ffffff;
+		border: 2.5px solid #0f172a;
+		border-radius: 10px;
+		padding: 16px;
+		box-shadow: 6px 6px 0px #0f172a;
 		display: flex;
-		align-items: center;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.neo-calendar-popover.placement-bottom {
+		top: calc(100% + 8px);
+	}
+
+	.neo-calendar-popover.placement-top {
+		bottom: calc(100% + 8px);
+	}
+
+	.neo-calendar-popover.align-left {
+		left: 0;
+	}
+
+	.neo-calendar-popover.align-right {
+		right: 0;
+	}
+
+	/* Presets Toolbar */
+	.neo-pop-presets {
+		display: flex;
+		flex-wrap: wrap;
 		gap: 4px;
 		padding-bottom: 10px;
-		margin-bottom: 10px;
-		border-bottom: 1px solid var(--border-subtle);
-		overflow-x: auto;
+		border-bottom: 2px dashed #cbd5e1;
 	}
 
-	.pop-preset-btn {
-		background: var(--surface-2);
-		border: 1px solid var(--border);
-		border-radius: var(--r-full);
-		padding: 3px 8px;
-		font-size: 11px;
-		font-weight: 600;
-		color: var(--ink-2);
+	.preset-pill-btn {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 10.5px;
+		font-weight: 850;
+		padding: 3px 7px;
+		border: 1.5px solid #0f172a;
+		border-radius: 4px;
+		background: #faf8f5;
+		color: #0f172a;
 		cursor: pointer;
-		white-space: nowrap;
-		transition: all 120ms ease;
+		box-shadow: 1px 1px 0px #0f172a;
+		transition: all 80ms ease;
 	}
 
-	.pop-preset-btn:hover {
-		background: var(--primary-soft);
-		border-color: var(--primary-border);
-		color: var(--primary);
+	.preset-pill-btn:hover {
+		background: #facc15;
+		transform: translate(-1px, -1px);
 	}
 
-	.calendar-nav {
+	/* Header */
+	.neo-cal-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: 10px;
 	}
 
-	.nav-btn {
+	.cal-nav-btn {
 		width: 28px;
 		height: 28px;
-		border-radius: var(--r-md);
-		background: var(--surface-2);
-		border: 1px solid var(--border);
-		color: var(--ink-2);
+		border: 1.5px solid #0f172a;
+		border-radius: 5px;
+		background: #f1f5f9;
+		color: #0f172a;
 		display: grid;
 		place-items: center;
 		cursor: pointer;
-		transition: all 120ms ease;
+		box-shadow: 1.5px 1.5px 0px #0f172a;
 	}
 
-	.nav-btn:hover {
-		background: var(--primary-soft);
-		color: var(--primary);
-		border-color: var(--primary-border);
+	.cal-nav-btn:hover {
+		background: #fef08a;
+		transform: translate(-1px, -1px);
 	}
 
-	.month-year-title {
+	.cal-title-box {
 		display: flex;
 		align-items: center;
 		gap: 6px;
-		font-size: 13.5px;
-		font-weight: 700;
-		color: var(--ink);
+		font-family: "Cabinet Grotesk", "Outfit", sans-serif;
+		font-size: 14.5px;
+		font-weight: 950;
+		color: #0f172a;
+		background: #fef08a;
+		border: 1.5px solid #0f172a;
+		padding: 2px 10px;
+		border-radius: 5px;
+		box-shadow: 2px 2px 0px #0f172a;
 	}
 
-	.year-name {
-		color: var(--primary);
-	}
-
-	.weekdays-grid {
+	/* Weekdays */
+	.neo-weekdays-row {
 		display: grid;
 		grid-template-columns: repeat(7, 1fr);
 		gap: 2px;
-		margin-bottom: 4px;
 		text-align: center;
 	}
 
-	.weekday-header {
-		font-size: 11px;
-		font-weight: 700;
-		color: var(--muted);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-		padding: 4px 0;
+	.weekday-tag {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 10px;
+		font-weight: 900;
+		color: #64748b;
 	}
 
-	.days-grid {
+	/* Days Matrix */
+	.neo-days-grid {
 		display: grid;
 		grid-template-columns: repeat(7, 1fr);
 		gap: 3px;
 	}
 
-	.day-cell {
-		width: 100%;
+	.neo-day-btn {
 		height: 32px;
-		border-radius: var(--r-md);
-		border: 1px solid transparent;
-		background: transparent;
-		color: var(--ink);
-		font-size: 12px;
-		font-weight: 600;
 		display: grid;
 		place-items: center;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		background: transparent;
+		font-size: 12px;
+		font-weight: 750;
+		color: #0f172a;
 		cursor: pointer;
-		transition: all 110ms ease;
-		padding: 0;
+		transition: all 80ms ease;
 	}
 
-	.day-cell.out-month {
-		color: var(--faint-2);
-		font-weight: 400;
+	.neo-day-btn.out-month {
+		color: #cbd5e1;
+		font-weight: 500;
 	}
 
-	.day-cell.in-month:hover {
-		background: var(--primary-soft);
-		color: var(--primary);
+	.neo-day-btn.in-month:hover:not(:disabled) {
+		background: #fef08a;
+		border-color: #0f172a;
+		box-shadow: 1.5px 1.5px 0px #0f172a;
 	}
 
-	.day-cell.is-today {
-		border-color: var(--primary-border);
-		background: var(--surface-2);
-		color: var(--primary);
-		font-weight: 700;
+	.neo-day-btn.is-today {
+		border: 1.5px solid #0f172a;
+		background: #eff6ff;
 	}
 
-	.day-cell.is-selected {
-		background: var(--primary) !important;
+	.neo-day-btn.is-selected {
+		background: #4f46e5 !important;
 		color: #ffffff !important;
-		font-weight: 700;
-		box-shadow: 0 2px 6px rgba(79, 70, 229, 0.4);
+		border: 1.5px solid #0f172a !important;
+		box-shadow: 2px 2px 0px #0f172a !important;
+		font-weight: 900;
 	}
 
-	.day-cell[disabled] {
+	.neo-day-btn:disabled {
 		opacity: 0.25;
 		cursor: not-allowed;
-		pointer-events: none;
+		text-decoration: line-through;
 	}
 
-	.popover-footer {
-		margin-top: 10px;
+	/* Footer */
+	.neo-cal-footer {
 		padding-top: 8px;
-		border-top: 1px solid var(--border-subtle);
+		border-top: 1.5px dashed #cbd5e1;
+	}
+
+	.neo-today-shortcut {
+		width: 100%;
 		display: flex;
-		justify-content: center;
-	}
-
-	.btn-footer-today {
-		background: transparent;
-		border: none;
-		color: var(--primary);
-		font-size: 11.5px;
-		font-weight: 700;
-		display: inline-flex;
 		align-items: center;
-		gap: 5px;
+		justify-content: center;
+		gap: 6px;
+		padding: 6px;
+		border: 1.5px solid #0f172a;
+		border-radius: 5px;
+		background: #faf8f5;
+		color: #0f172a;
+		font-family: "JetBrains Mono", monospace;
+		font-size: 10.5px;
+		font-weight: 850;
 		cursor: pointer;
-		padding: 3px 8px;
-		border-radius: var(--r-md);
-		transition: all 120ms ease;
+		box-shadow: 1.5px 1.5px 0px #0f172a;
 	}
 
-	.btn-footer-today:hover {
-		background: var(--primary-soft);
-	}
-
-	@keyframes popInBottom {
-		from {
-			opacity: 0;
-			transform: scale(0.96) translateY(-6px);
-		}
-		to {
-			opacity: 1;
-			transform: scale(1) translateY(0);
-		}
-	}
-
-	@keyframes popInTop {
-		from {
-			opacity: 0;
-			transform: scale(0.96) translateY(6px);
-		}
-		to {
-			opacity: 1;
-			transform: scale(1) translateY(0);
-		}
+	.neo-today-shortcut:hover {
+		background: #fef08a;
+		transform: translate(-1px, -1px);
 	}
 </style>

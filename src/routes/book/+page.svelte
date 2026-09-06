@@ -3,6 +3,7 @@
 	import { formatRupiah as money } from "$lib/util";
 	import { makeT } from "$lib/i18n/t";
 	import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
+	import DatePicker from "$lib/components/DatePicker.svelte";
 	import {
 		PawPrint,
 		Scissors,
@@ -19,6 +20,7 @@
 		Plus,
 		ArrowRight,
 		ArrowLeft,
+		ArrowUpRight,
 		Sparkles,
 		ShieldCheck,
 		User,
@@ -26,14 +28,13 @@
 		Building2,
 		HeartHandshake,
 		ChevronRight,
-		ExternalLink,
-		Check
+		Check,
+		ExternalLink
 	} from "@lucide/svelte";
 
 	let { data } = $props();
 	const form = $derived(page.form);
 	const t = $derived(makeT(page.data.locale ?? "en"));
-
 	const isId = $derived(page.data.locale === "id");
 
 	// Active tab: 'book' (Online Booking Wizard) or 'lookup' (Booking Database & Status Tracker)
@@ -157,1609 +158,1695 @@
 </script>
 
 <svelte:head>
-	<title>{isId ? "Reservasi & Database Booking · PetCo" : "Client Booking & Reservation Database · PetCo"}</title>
+	<title>{isId ? "Reservasi & Database Booking · PetCo Semarang" : "Client Booking & Reservation Database · PetCo Semarang"}</title>
 </svelte:head>
 
-<div class="booking-portal-root">
+<div class="neobrutalist-booking-root overflow-x-hidden w-full max-w-full">
 	<!-- ==================== TOP NAVIGATION BAR ==================== -->
-	<header class="portal-header">
-		<div class="portal-header-container">
-			<div class="portal-brand">
-				<a href="/" class="brand-link">
-					<span class="brand-emblem"><PawPrint size={20} /></span>
-					<div class="brand-copy">
-						<span class="brand-title">PetCo</span>
-						<span class="brand-subtitle">{isId ? "Portal Reservasi Klien" : "Online Client Booking"}</span>
-					</div>
-				</a>
-			</div>
+	<header class="neo-header">
+		<div class="neo-header-inner">
+			<a href="/" class="neo-brand">
+				<span class="brand-box"><PawPrint size={19} strokeWidth={2.6} /></span>
+				<div class="brand-text-block">
+					<span class="brand-title">PETCO</span>
+					<span class="brand-city-tag">SEMARANG // BOOKING</span>
+				</div>
+			</a>
 
-			<!-- Tab Navigation -->
-			<div class="portal-nav" role="tablist">
+			<!-- Tab Mode Navigation -->
+			<div class="neo-tab-toggle" role="tablist">
 				<button
-					class="portal-nav-btn"
+					class="tab-toggle-btn"
 					class:active={activeTab === "book"}
 					onclick={() => (activeTab = "book")}
 					role="tab"
 					aria-selected={activeTab === "book"}
 				>
-					<Calendar size={16} />
-					<span>{isId ? "Reservasi Baru" : "New Booking"}</span>
+					<Calendar size={15} />
+					<span>{isId ? "[ RESERVASI BARU ]" : "[ NEW BOOKING ]"}</span>
 				</button>
 
 				<button
-					class="portal-nav-btn"
+					class="tab-toggle-btn"
 					class:active={activeTab === "lookup"}
 					onclick={() => (activeTab = "lookup")}
 					role="tab"
 					aria-selected={activeTab === "lookup"}
 				>
-					<Search size={16} />
-					<span>{isId ? "Cek Database Booking" : "Track My Bookings"}</span>
+					<Search size={15} />
+					<span>{isId ? "[ DATABASE STATUS ]" : "[ TRACK STATUS ]"}</span>
 				</button>
 			</div>
 
-			<!-- Header Right Controls -->
-			<div class="portal-header-right">
-				<a href="/" class="home-link">
+			<!-- Right Actions -->
+			<div class="neo-nav-actions">
+				<a href="/" class="neo-home-btn">
 					<ArrowLeft size={14} />
-					<span>{isId ? "Halaman Utama" : "Home"}</span>
+					<span>{isId ? "BERANDA" : "HOME"}</span>
 				</a>
 				<LanguageSwitcher value={page.data.locale ?? "en"} currentPath="/book" />
-				<a href="/dashboard" class="staff-link" title="Staff Management Console">
-					<User size={14} />
-					<span class="staff-text">{isId ? "Portal Staf" : "Staff Console"}</span>
+				<a href="/dashboard" class="neo-staff-btn" title="Staff Management Console">
+					<User size={13} />
+					<span class="staff-label">{isId ? "STAF" : "STAFF"}</span>
 				</a>
 			</div>
 		</div>
 	</header>
 
-	<!-- ==================== HERO BAR ==================== -->
-	<section class="portal-hero">
-		<div class="hero-container">
-			<div class="hero-badge">
-				<Sparkles size={14} class="sparkle-icon" />
-				<span>{isId ? "Reservasi Layanan Resmi & Database Klien" : "Official Pet Care Reservation System"}</span>
+	<!-- ==================== HERO HEADER STRIP ==================== -->
+	<section class="neo-booking-hero">
+		<div class="neo-container">
+			<div class="hero-tag-strip">
+				<span class="status-indicator"></span>
+				<span class="tag-label">{isId ? "KOTA SEMARANG // PORTAL RESERVASI RESMI" : "SEMARANG CITY // OFFICIAL RESERVATION PORTAL"}</span>
 			</div>
-			<h1 class="hero-heading">
+
+			<h1 class="hero-page-title">
 				{activeTab === "book"
-					? (isId ? "Reservasi Layanan Hewan Peliharaan" : "Book Your Pet Care Appointment")
-					: (isId ? "Database & Riwayat Booking Klien" : "Client Booking Tracker & History")}
+					? (isId ? "RESERVASI SALON GROOMING & HOTEL HEWAN SEMARANG." : "BOOK YOUR PET APPOINTMENT IN SEMARANG.")
+					: (isId ? "DATABASE & PELACAK STATUS BOOKING KLIEN." : "CLIENT BOOKING DATABASE & TRACKER.")}
 			</h1>
-			<p class="hero-description">
+
+			<p class="hero-page-sub">
 				{activeTab === "book"
-					? (isId ? "Lengkapi data hewan dan pilih cabang untuk membuat janji temu grooming, penginapan hotel, atau perawatan akuarium." : "Configure your pet details and branch location for instant booking confirmation.")
-					: (isId ? "Cari nomor WhatsApp atau kode booking Anda untuk memantau status konfirmasi dan jadwal kunjungan." : "Lookup your booking records and real-time appointment status by phone number or reference ID.")}
+					? (isId ? "Pilih cabang terdekat di Kota Semarang (Simpang Lima, Candi Baru, Banyumanik, Puri Anjasmoro, Ngaliyan) dan lengkapi data anabul untuk reservasi instan." : "Select your preferred Semarang facility and configure your pet's appointment in 5 simple steps.")
+					: (isId ? "Ketik Nomor WhatsApp atau Kode Booking (e.g. PET-00012) untuk melihat riwayat perawatan dan status konfirmasi anabul Anda." : "Lookup your booking history and live confirmation status using your phone number or reference code.")}
 			</p>
 		</div>
 	</section>
 
-	<!-- ==================== MAIN CONTENT ==================== -->
-	<main class="portal-main">
-		{#if form?.success && form.booking}
-			<!-- ==================== BOOKING CONFIRMATION TICKET ==================== -->
-			<div class="confirmation-wrap">
-				<div class="confirmation-card">
-					<div class="confirm-badge-banner">
-						<CheckCircle2 size={32} class="success-icon" />
-						<h2>{isId ? "Booking Berhasil Dibuat!" : "Booking Request Submitted!"}</h2>
-						<p>{isId ? "Terima kasih! Tim kami telah menerima reservasi Anda." : "Thank you! We have received your reservation request."}</p>
-					</div>
-
-					<div class="ticket-body">
-						<div class="ticket-header">
-							<div class="ticket-id-block">
-								<span class="ticket-label">{isId ? "KODE BOOKING" : "BOOKING REFERENCE"}</span>
-								<strong class="ticket-code">{form.booking.bookingCode}</strong>
-							</div>
-							<div class="ticket-status-pill">
-								<span class="status-dot"></span>
-								<span>{isId ? "Menunggu Konfirmasi" : "Pending Confirmation"}</span>
-							</div>
+	<!-- ==================== MAIN BOOKING / LOOKUP CONTAINER ==================== -->
+	<main class="neo-main-content">
+		<div class="neo-container">
+			{#if form?.success && form.booking}
+				<!-- ==================== NEOBRUTALIST CONFIRMATION TICKET ==================== -->
+				<div class="neo-ticket-wrapper">
+					<div class="neo-ticket-card">
+						<div class="ticket-badge-banner">
+							<span class="t-check-icon"><CheckCircle2 size={32} strokeWidth={2.5} /></span>
+							<h2>{isId ? "RESERVASI BERHASIL DIDAFTARKAN!" : "RESERVATION SUCCESSFULLY REGISTERED!"}</h2>
+							<p>{isId ? "Terima kasih! Jadwal Anda telah tercatat di sistem PetCo Semarang." : "Thank you! Your appointment has been recorded in the PetCo Semarang system."}</p>
 						</div>
 
-						<div class="ticket-grid">
-							<div class="ticket-item">
-								<span class="ticket-label">{isId ? "Layanan" : "Service"}</span>
-								<strong class="ticket-val">{form.booking.serviceName}</strong>
+						<div class="ticket-body-content">
+							<div class="ticket-top-meta">
+								<div class="ticket-code-group">
+									<span class="t-label">{isId ? "[ KODE BOOKING RESMI ]" : "[ OFFICIAL BOOKING CODE ]"}</span>
+									<strong class="t-huge-code">{form.booking.bookingCode}</strong>
+								</div>
+								<div class="t-status-badge yellow">
+									<span class="status-pulse"></span>
+									<span>{isId ? "MENUNGGU KONFIRMASI" : "PENDING CONFIRMATION"}</span>
+								</div>
 							</div>
-							<div class="ticket-item">
-								<span class="ticket-label">{isId ? "Cabang" : "Branch"}</span>
-								<strong class="ticket-val">{form.booking.branchName}</strong>
-								<small class="ticket-sub">{form.booking.branchAddress}</small>
-							</div>
-							<div class="ticket-item">
-								<span class="ticket-label">{isId ? "Nama Hewan" : "Pet Details"}</span>
-								<strong class="ticket-val">{form.booking.petName} ({form.booking.petSpecies})</strong>
-							</div>
-							<div class="ticket-item">
-								<span class="ticket-label">{isId ? "Waktu Jadwal" : "Scheduled Date"}</span>
-								<strong class="ticket-val">
-									{new Date(form.booking.startsAt).toLocaleDateString(isId ? "id-ID" : "en-US", {
-										weekday: "long",
-										year: "numeric",
-										month: "long",
-										day: "numeric"
-									})}
-								</strong>
-							</div>
-							<div class="ticket-item">
-								<span class="ticket-label">{isId ? "Pemilik / Klien" : "Client Contact"}</span>
-								<strong class="ticket-val">{form.booking.ownerName}</strong>
-								<small class="ticket-sub">{form.booking.ownerPhone}</small>
-							</div>
-							<div class="ticket-item">
-								<span class="ticket-label">{isId ? "Total Biaya Estimasi" : "Estimated Total"}</span>
-								<strong class="ticket-val price-highlight">{money(form.booking.priceCents)}</strong>
-								<small class="ticket-sub">{isId ? "Deposit 20%:" : "Estimated 20% Deposit:"} {money(form.booking.depositCents)}</small>
-							</div>
-						</div>
 
-						<div class="ticket-actions">
-							<a href="/book?lookup={form.booking.bookingCode}" class="btn btn-primary">
-								<Search size={16} />
-								<span>{isId ? "Lihat di Database Booking" : "View in Booking Database"}</span>
-							</a>
-							<a href="/book" class="btn btn-subtle">
-								<Plus size={16} />
-								<span>{isId ? "Buat Reservasi Lain" : "Make Another Booking"}</span>
-							</a>
+							<div class="ticket-perforated-line"></div>
+
+							<div class="ticket-data-grid">
+								<div class="t-data-cell">
+									<span class="t-label">{isId ? "Layanan" : "Service"}</span>
+									<strong class="t-val">{form.booking.serviceName}</strong>
+								</div>
+								<div class="t-data-cell">
+									<span class="t-label">{isId ? "Cabang Semarang" : "Semarang Facility"}</span>
+									<strong class="t-val">{form.booking.branchName}</strong>
+									<small class="t-sub">{form.booking.branchAddress}</small>
+								</div>
+								<div class="t-data-cell">
+									<span class="t-label">{isId ? "Data Anabul" : "Pet Details"}</span>
+									<strong class="t-val">{form.booking.petName} ({form.booking.petSpecies.toUpperCase()})</strong>
+								</div>
+								<div class="t-data-cell">
+									<span class="t-label">{isId ? "Waktu Jadwal" : "Scheduled Time"}</span>
+									<strong class="t-val">
+										{new Date(form.booking.startsAt).toLocaleDateString(isId ? "id-ID" : "en-US", {
+											weekday: "long",
+											year: "numeric",
+											month: "long",
+											day: "numeric"
+										})}
+									</strong>
+								</div>
+								<div class="t-data-cell">
+									<span class="t-label">{isId ? "Kontak Pemilik" : "Client Contact"}</span>
+									<strong class="t-val">{form.booking.ownerName}</strong>
+									<small class="t-sub">{form.booking.ownerPhone}</small>
+								</div>
+								<div class="t-data-cell highlight-cell">
+									<span class="t-label">{isId ? "Total Biaya Estimasi" : "Total Price Estimate"}</span>
+									<strong class="t-val price-large">{money(form.booking.priceCents)}</strong>
+									<small class="t-sub">{isId ? "Deposit DP 20%:" : "Estimated 20% Deposit:"} {money(form.booking.depositCents)}</small>
+								</div>
+							</div>
+
+							<div class="ticket-actions-bar">
+								<a href="/book?lookup={form.booking.bookingCode}" class="neo-btn neo-btn-primary">
+									<Search size={16} />
+									<span>{isId ? "LIHAT DI DATABASE BOOKING" : "VIEW IN DATABASE"}</span>
+								</a>
+								<a href="/book" class="neo-btn neo-btn-subtle">
+									<Plus size={16} />
+									<span>{isId ? "BUAT RESERVASI LAIN" : "MAKE ANOTHER BOOKING"}</span>
+								</a>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		{:else if activeTab === "book"}
-			<!-- ==================== BOOKING WIZARD FORM ==================== -->
-			<form method="POST" action="?/book" class="booking-form" onsubmit={() => (isSubmitting = true)}>
-				{#if form?.error}
-					<div class="alert alert-error">
-						<AlertCircle size={18} />
-						<span>{form.error}</span>
-					</div>
-				{/if}
-
-				<div class="wizard-grid">
-					<!-- LEFT COLUMN: INTERACTIVE FORM STEPS -->
-					<div class="wizard-steps-pane">
-						<!-- STEP 1: SERVICE CATEGORY -->
-						<div class="step-card">
-							<div class="step-header">
-								<span class="step-number">1</span>
-								<div class="step-title-wrap">
-									<h3>{isId ? "Pilih Kategori Layanan" : "Choose Service Category"}</h3>
-									<p>{isId ? "Pilih spesialisasi perawatan yang Anda butuhkan" : "Select the type of pet care required"}</p>
-								</div>
-							</div>
-
-							<div class="kind-selection-grid">
-								<button
-									type="button"
-									class="kind-card"
-									class:selected={selectedKind === "grooming"}
-									onclick={() => (selectedKind = "grooming")}
-								>
-									<span class="kind-icon grooming-icon"><Scissors size={24} /></span>
-									<span class="kind-name">{isId ? "Grooming & Spa" : "Grooming & Spa"}</span>
-									<span class="kind-desc">{isId ? "Mandi, potong bulu, kutu & spa" : "Styling, wash, bath & hygiene"}</span>
-								</button>
-
-								<button
-									type="button"
-									class="kind-card"
-									class:selected={selectedKind === "hotel"}
-									onclick={() => (selectedKind = "hotel")}
-								>
-									<span class="kind-icon hotel-icon"><Hotel size={24} /></span>
-									<span class="kind-name">{isId ? "Pet Hotel & Penitipan" : "Pet Hotel & Boarding"}</span>
-									<span class="kind-desc">{isId ? "Kamar AC, makan & jalan harian" : "Luxury suites & 24/7 care"}</span>
-								</button>
-
-								<button
-									type="button"
-									class="kind-card"
-									class:selected={selectedKind === "aquarium"}
-									onclick={() => (selectedKind = "aquarium")}
-								>
-									<span class="kind-icon aquarium-icon"><Fish size={24} /></span>
-									<span class="kind-name">{isId ? "Perawatan Akuarium" : "Aquarium Service"}</span>
-									<span class="kind-desc">{isId ? "Aquascape, tes air & filter" : "Biotope care & maintenance"}</span>
-								</button>
-							</div>
-							<input type="hidden" name="kind" value={selectedKind} />
+			{:else if activeTab === "book"}
+				<!-- ==================== 5-STEP NEOBRUTALIST BOOKING WIZARD ==================== -->
+				<form method="POST" action="?/book" class="booking-wizard-form" onsubmit={() => (isSubmitting = true)}>
+					{#if form?.error}
+						<div class="neo-alert-error">
+							<AlertCircle size={18} />
+							<span>{form.error}</span>
 						</div>
+					{/if}
 
-						<!-- STEP 2: BRANCH SELECTION -->
-						<div class="step-card">
-							<div class="step-header">
-								<span class="step-number">2</span>
-								<div class="step-title-wrap">
-									<h3>{isId ? "Pilih Cabang PetCo" : "Select Branch Location"}</h3>
-									<p>{isId ? "Pilih lokasi cabang terdekat dengan Anda" : "Choose the nearest PetCo facility"}</p>
+					<div class="wizard-two-column-layout">
+						<!-- LEFT COLUMN: INTERACTIVE FORM STEPS -->
+						<div class="wizard-steps-container">
+							<!-- STEP 1: SERVICE CATEGORY -->
+							<div class="neo-step-box">
+								<div class="step-head-strip">
+									<span class="step-num-box">01</span>
+									<div class="step-text-wrap">
+										<h3>{isId ? "PILIH KATEGORI LAYANAN" : "SELECT SERVICE DISCIPLINE"}</h3>
+										<p>{isId ? "Pilih spesialisasi perawatan yang Anda butuhkan di Semarang" : "Choose the type of pet care required"}</p>
+									</div>
 								</div>
-							</div>
 
-							<div class="branches-grid">
-								{#each data.branches as branch}
+								<div class="neo-kind-grid">
 									<button
 										type="button"
-										class="branch-select-card"
-										class:selected={selectedBranchId === branch.id}
-										onclick={() => (selectedBranchId = branch.id)}
+										class="kind-btn-neo"
+										class:selected={selectedKind === "grooming"}
+										onclick={() => (selectedKind = "grooming")}
 									>
-										<div class="branch-card-head">
-											<Building2 size={18} class="branch-icon" />
-											<strong>{branch.name}</strong>
-											{#if branch.isHeadOffice}
-												<span class="hq-badge">HQ</span>
-											{/if}
-										</div>
-										<p class="branch-card-city"><MapPin size={13} /> {branch.city || "Jakarta"}</p>
-										{#if branch.address}
-											<p class="branch-card-address">{branch.address}</p>
-										{/if}
+										<span class="kind-icon-square pink"><Scissors size={24} /></span>
+										<span class="kind-title">{isId ? "Grooming & Spa" : "Grooming & Spa"}</span>
+										<span class="kind-subtitle">{isId ? "Mandi, potong bulu & spa" : "Styling & hygiene"}</span>
 									</button>
-								{/each}
-							</div>
-							<input type="hidden" name="branchId" value={selectedBranchId} />
-						</div>
 
-						<!-- STEP 3: PACKAGE / ROOM SELECTION -->
-						<div class="step-card">
-							<div class="step-header">
-								<span class="step-number">3</span>
-								<div class="step-title-wrap">
-									<h3>
-										{#if selectedKind === "grooming"}
-											{isId ? "Pilih Paket Grooming" : "Select Grooming Package"}
-										{:else if selectedKind === "hotel"}
-											{isId ? "Pilih Tipe Kamar Hotel" : "Select Hotel Suite"}
-										{:else}
-											{isId ? "Pilih Paket Layanan Akuarium" : "Select Aquarium Service Plan"}
-										{/if}
-									</h3>
-									<p>{isId ? "Pilihan layanan resmi dengan standar kualitas PetCo" : "Certified packages with transparent rates"}</p>
+									<button
+										type="button"
+										class="kind-btn-neo"
+										class:selected={selectedKind === "hotel"}
+										onclick={() => (selectedKind = "hotel")}
+									>
+										<span class="kind-icon-square purple"><Hotel size={24} /></span>
+										<span class="kind-title">{isId ? "Pet Hotel 24 Jam" : "24/7 Pet Hotel"}</span>
+										<span class="kind-subtitle">{isId ? "Kamar AC & jalan harian" : "Luxury boarding"}</span>
+									</button>
+
+									<button
+										type="button"
+										class="kind-btn-neo"
+										class:selected={selectedKind === "aquarium"}
+										onclick={() => (selectedKind = "aquarium")}
+									>
+										<span class="kind-icon-square blue"><Fish size={24} /></span>
+										<span class="kind-title">{isId ? "Layanan Akuarium" : "Aquatic Care"}</span>
+										<span class="kind-subtitle">{isId ? "Aquascape & tes air" : "Biotope maintenance"}</span>
+									</button>
 								</div>
+								<input type="hidden" name="kind" value={selectedKind} />
 							</div>
 
-							{#if selectedKind === "grooming"}
-								<div class="packages-list">
-									{#each branchServices as svc}
+							<!-- STEP 2: SEMARANG BRANCH SELECTION -->
+							<div class="neo-step-box">
+								<div class="step-head-strip">
+									<span class="step-num-box">02</span>
+									<div class="step-text-wrap">
+										<h3>{isId ? "PILIH CABANG KOTA SEMARANG" : "SELECT SEMARANG FACILITY"}</h3>
+										<p>{isId ? "Pilih lokasi cabang PetCo terdekat dengan domisili Anda" : "Choose your preferred Semarang facility"}</p>
+									</div>
+								</div>
+
+								<div class="neo-branch-grid">
+									{#each data.branches as branch}
 										<button
 											type="button"
-											class="package-item"
-											class:selected={selectedServiceId === svc.id}
-											onclick={() => (selectedServiceId = svc.id)}
+											class="branch-btn-neo"
+											class:selected={selectedBranchId === branch.id}
+											onclick={() => (selectedBranchId = branch.id)}
 										>
-											<div class="package-info">
-												<strong>{svc.name}</strong>
-												<span class="package-meta"><Clock size={13} /> {svc.durationMinutes || 60} mins</span>
+											<div class="b-card-top">
+												<Building2 size={16} class="b-icon" />
+												<strong>{branch.name}</strong>
+												{#if branch.isHeadOffice}
+													<span class="b-tag-flag">HQ</span>
+												{/if}
 											</div>
-											<div class="package-price">{money(svc.priceCents)}</div>
+											<div class="b-card-loc"><MapPin size={12} /> {branch.city || "Semarang"}</div>
+											{#if branch.address}
+												<div class="b-card-detail">{branch.address}</div>
+											{/if}
 										</button>
 									{/each}
 								</div>
-								<input type="hidden" name="serviceId" value={selectedServiceId} />
+								<input type="hidden" name="branchId" value={selectedBranchId} />
+							</div>
 
-								<!-- Grooming Optional Add-ons -->
-								<div class="addons-section">
-									<h4 class="addons-heading">{isId ? "Layanan Tambahan (Opsional)" : "Optional Add-ons"}</h4>
-									<div class="addons-grid">
-										{#each data.services.filter((s) => s.name.toLowerCase().includes("flea") || s.name.toLowerCase().includes("teeth") || s.name.toLowerCase().includes("nail") || s.name.toLowerCase().includes("spa") || s.name.toLowerCase().includes("ear")) as addon}
-											<label class="addon-chip" class:checked={selectedAddonIds.includes(addon.id)}>
-												<input
-													type="checkbox"
-													name="addonIds"
-													value={addon.id}
-													checked={selectedAddonIds.includes(addon.id)}
-													onchange={() => toggleAddon(addon.id)}
-												/>
-												<div class="addon-chip-info">
-													<span class="addon-name">{addon.name}</span>
-													<span class="addon-price">+{money(addon.priceCents)}</span>
+							<!-- STEP 3: PACKAGE / ROOM SELECTION -->
+							<div class="neo-step-box">
+								<div class="step-head-strip">
+									<span class="step-num-box">03</span>
+									<div class="step-text-wrap">
+										<h3>
+											{#if selectedKind === "grooming"}
+												{isId ? "PILIH PAKET GROOMING" : "SELECT GROOMING PACKAGE"}
+											{:else if selectedKind === "hotel"}
+												{isId ? "PILIH TIPE KAMAR HOTEL" : "SELECT HOTEL SUITE"}
+											{:else}
+												{isId ? "PILIH LAYANAN AKUARIUM" : "SELECT AQUATIC SERVICE"}
+											{/if}
+										</h3>
+										<p>{isId ? "Tarif resmi terdaftar dengan standar kualitas PetCo" : "Certified service tier with itemized transparent rates"}</p>
+									</div>
+								</div>
+
+								{#if selectedKind === "grooming"}
+									<div class="neo-items-stack">
+										{#each branchServices as svc}
+											<button
+												type="button"
+												class="item-select-btn"
+												class:selected={selectedServiceId === svc.id}
+												onclick={() => (selectedServiceId = svc.id)}
+											>
+												<div class="item-meta">
+													<strong>{svc.name}</strong>
+													<span><Clock size={12} /> {svc.durationMinutes || 60} mins</span>
 												</div>
-											</label>
+												<div class="item-price">{money(svc.priceCents)}</div>
+											</button>
 										{/each}
 									</div>
-								</div>
-							{:else if selectedKind === "hotel"}
-								<div class="rooms-list">
-									{#each branchRooms as rm}
-										<button
-											type="button"
-											class="room-item"
-											class:selected={selectedRoomId === rm.id}
-											onclick={() => (selectedRoomId = rm.id)}
-										>
-											<div class="room-info">
-												<strong>{rm.name}</strong>
-												<span class="room-meta">
-													{rm.sizeLabel || "Spacious Suite"} · Max {rm.maxPetWeightKg || 20}kg
-												</span>
-											</div>
-											<div class="room-price">
-												<strong>{money(rm.pricePerNightCents)}</strong>
-												<small>/{isId ? "malam" : "night"}</small>
-											</div>
-										</button>
-									{/each}
-								</div>
-								<input type="hidden" name="roomId" value={selectedRoomId} />
-							{:else}
-								<div class="packages-list">
-									{#each branchServices as svc}
-										<button
-											type="button"
-											class="package-item"
-											class:selected={selectedServiceId === svc.id}
-											onclick={() => (selectedServiceId = svc.id)}
-										>
-											<div class="package-info">
-												<strong>{svc.name}</strong>
-												<span class="package-meta"><Clock size={13} /> {svc.durationMinutes || 60} mins</span>
-											</div>
-											<div class="package-price">{money(svc.priceCents)}</div>
-										</button>
-									{/each}
-								</div>
-								<input type="hidden" name="serviceId" value={selectedServiceId} />
-							{/if}
-						</div>
+									<input type="hidden" name="serviceId" value={selectedServiceId} />
 
-						<!-- STEP 4: SCHEDULE / DATES -->
-						<div class="step-card">
-							<div class="step-header">
-								<span class="step-number">4</span>
-								<div class="step-title-wrap">
-									<h3>{isId ? "Jadwal & Tanggal Kunjungan" : "Schedule & Date Selection"}</h3>
-									<p>{isId ? "Tentukan waktu kedatangan Anda" : "Choose your preferred appointment time"}</p>
-								</div>
-							</div>
-
-							{#if selectedKind === "hotel"}
-								<div class="dates-row">
-									<div class="form-group">
-										<label for="checkInDate">{isId ? "Tanggal Check-in" : "Check-in Date"}</label>
-										<input type="date" id="checkInDate" name="checkInDate" bind:value={checkInDate} required />
-									</div>
-									<div class="form-group">
-										<label for="checkOutDate">{isId ? "Tanggal Check-out" : "Check-out Date"}</label>
-										<input type="date" id="checkOutDate" name="checkOutDate" bind:value={checkOutDate} required />
-									</div>
-								</div>
-								<div class="hotel-duration-info">
-									<span>{isId ? "Durasi Menginap:" : "Stay Duration:"}</span>
-									<strong>{calculatedNights} {isId ? "Malam" : "Nights"}</strong>
-								</div>
-							{:else}
-								<div class="dates-row">
-									<div class="form-group">
-										<label for="bookingDate">{isId ? "Tanggal Layanan" : "Appointment Date"}</label>
-										<input type="date" id="bookingDate" name="date" bind:value={bookingDate} required />
-									</div>
-									<div class="form-group">
-										<label for="timeSlotGroup">{isId ? "Pilih Jam" : "Select Time Slot"}</label>
-										<div id="timeSlotGroup" class="slots-pill-group">
-											{#each timeSlots as slot}
-												<button
-													type="button"
-													class="slot-pill"
-													class:active={timeSlot === slot}
-													onclick={() => (timeSlot = slot)}
-												>
-													{slot}
-												</button>
+									<!-- Grooming Add-ons -->
+									<div class="neo-addons-compartment">
+										<span class="addons-tag">{isId ? "[ LAYANAN TAMBAHAN OPSIONAL ]" : "[ OPTIONAL ADD-ONS ]"}</span>
+										<div class="addons-chips-wrap">
+											{#each data.services.filter((s) => s.name.toLowerCase().includes("flea") || s.name.toLowerCase().includes("teeth") || s.name.toLowerCase().includes("nail") || s.name.toLowerCase().includes("spa") || s.name.toLowerCase().includes("ear")) as addon}
+												<label class="addon-toggle-neo" class:checked={selectedAddonIds.includes(addon.id)}>
+													<input
+														type="checkbox"
+														name="addonIds"
+														value={addon.id}
+														checked={selectedAddonIds.includes(addon.id)}
+														onchange={() => toggleAddon(addon.id)}
+													/>
+													<div class="addon-info-block">
+														<span class="a-title">{addon.name}</span>
+														<strong class="a-price">+{money(addon.priceCents)}</strong>
+													</div>
+												</label>
 											{/each}
 										</div>
-										<input type="hidden" name="timeSlot" value={timeSlot} />
 									</div>
-								</div>
-							{/if}
-						</div>
-
-						<!-- STEP 5: PET & OWNER INFORMATION -->
-						<div class="step-card">
-							<div class="step-header">
-								<span class="step-number">5</span>
-								<div class="step-title-wrap">
-									<h3>{isId ? "Informasi Hewan & Kontak Pemilik" : "Pet & Owner Information"}</h3>
-									<p>{isId ? "Lengkapi data untuk rekam medis dan konfirmasi WhatsApp/Email" : "Details for health dossier and booking confirmation"}</p>
-								</div>
-							</div>
-
-							<!-- Pet Dossier Section -->
-							<div class="sub-form-section">
-								<h4 class="sub-form-title"><PawPrint size={16} /> {isId ? "Data Hewan Peliharaan" : "Pet Information"}</h4>
-
-								<div class="form-row">
-									<div class="form-group">
-										<label for="petName">{isId ? "Nama Hewan *" : "Pet Name *"}</label>
-										<input id="petName" name="petName" type="text" placeholder="e.g. Milo, Luna, Bobby" bind:value={petName} required />
-									</div>
-									<div class="form-group">
-										<label for="speciesSelectGroup">{isId ? "Jenis / Spesies" : "Species"}</label>
-										<div id="speciesSelectGroup" class="species-select-grid">
-											{#each ["dog", "cat", "bird", "reptile", "fish", "other"] as sp}
-												<button
-													type="button"
-													class="species-btn"
-													class:active={species === sp}
-													onclick={() => (species = sp as any)}
-												>
-													<span class="species-emoji">{speciesIcons[sp]}</span>
-													<span class="species-label">{sp.toUpperCase()}</span>
-												</button>
-											{/each}
-										</div>
-										<input type="hidden" name="species" value={species} />
-									</div>
-								</div>
-
-								<div class="form-row">
-									<div class="form-group">
-										<label for="breed">{isId ? "Ras / Breed (Opsional)" : "Breed (Optional)"}</label>
-										<input id="breed" name="breed" type="text" placeholder="e.g. Golden Retriever, Poodle, Persian" bind:value={breed} />
-									</div>
-									<div class="form-group">
-										<label for="weightKg">{isId ? "Berat Badan (kg)" : "Weight (kg)"}</label>
-										<input id="weightKg" name="weightKg" type="number" step="0.1" min="0.1" max="100" placeholder="e.g. 5.5" bind:value={weightKg} />
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label for="healthNotes">{isId ? "Catatan Kesehatan / Alergi / Kebiasaan" : "Health Notes / Allergies / Habits"}</label>
-									<textarea id="healthNotes" name="healthNotes" rows="2" placeholder="e.g. Sensitive skin, dislikes nail clipper, special diet" bind:value={healthNotes}></textarea>
-								</div>
-							</div>
-
-							<!-- Owner Contact Section -->
-							<div class="sub-form-section">
-								<h4 class="sub-form-title"><User size={16} /> {isId ? "Kontak Pemilik" : "Owner Contact Details"}</h4>
-
-								<div class="form-row">
-									<div class="form-group">
-										<label for="firstName">{isId ? "Nama Depan *" : "First Name *"}</label>
-										<input id="firstName" name="firstName" type="text" placeholder="e.g. Budi" bind:value={firstName} required />
-									</div>
-									<div class="form-group">
-										<label for="lastName">{isId ? "Nama Belakang" : "Last Name"}</label>
-										<input id="lastName" name="lastName" type="text" placeholder="e.g. Santoso" bind:value={lastName} />
-									</div>
-								</div>
-
-								<div class="form-row">
-									<div class="form-group">
-										<label for="phone">{isId ? "Nomor WhatsApp / HP *" : "WhatsApp / Phone Number *"}</label>
-										<input id="phone" name="phone" type="tel" placeholder="e.g. 081234567890" bind:value={phone} required />
-									</div>
-									<div class="form-group">
-										<label for="email">{isId ? "Email" : "Email Address"}</label>
-										<input id="email" name="email" type="email" placeholder="e.g. customer@gmail.com" bind:value={email} />
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label for="notes">{isId ? "Permintaan Khusus Tambahan" : "Special Requests or Instructions"}</label>
-									<textarea id="notes" name="notes" rows="2" placeholder="e.g. Please pick up around 5pm, extra towel dry" bind:value={bookingNotes}></textarea>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- RIGHT COLUMN: LIVE SUMMARY & SUBMIT -->
-					<div class="wizard-summary-pane">
-						<div class="summary-card">
-							<h3 class="summary-title"><Receipt size={18} /> {isId ? "Ringkasan Reservasi" : "Reservation Summary"}</h3>
-
-							<div class="summary-items">
-								<div class="sum-row">
-									<span>{isId ? "Kategori" : "Category"}</span>
-									<strong>{selectedKind.toUpperCase()}</strong>
-								</div>
-								<div class="sum-row">
-									<span>{isId ? "Cabang" : "Branch"}</span>
-									<strong>{selectedBranch?.name ?? "PetCo Branch"}</strong>
-								</div>
-								{#if selectedKind === "grooming"}
-									<div class="sum-row">
-										<span>{isId ? "Paket" : "Package"}</span>
-										<strong>{selectedService?.name ?? "-"}</strong>
-									</div>
-									<div class="sum-row">
-										<span>{isId ? "Jadwal" : "Date & Time"}</span>
-										<strong>{bookingDate} @ {timeSlot}</strong>
-									</div>
-									{#if selectedAddonIds.length > 0}
-										<div class="sum-row addons-sum">
-											<span>{isId ? "Add-ons" : "Add-ons"} ({selectedAddonIds.length})</span>
-											<strong>+{money(estimatedTotal - (selectedService?.priceCents || 0))}</strong>
-										</div>
-									{/if}
 								{:else if selectedKind === "hotel"}
-									<div class="sum-row">
-										<span>{isId ? "Tipe Kamar" : "Room Suite"}</span>
-										<strong>{selectedRoom?.name ?? "-"}</strong>
+									<div class="neo-items-stack">
+										{#each branchRooms as rm}
+											<button
+												type="button"
+												class="item-select-btn"
+												class:selected={selectedRoomId === rm.id}
+												onclick={() => (selectedRoomId = rm.id)}
+											>
+												<div class="item-meta">
+													<strong>{rm.name}</strong>
+													<span>{rm.sizeLabel || "Private Suite"} · Max {rm.maxPetWeightKg || 20}kg</span>
+												</div>
+												<div class="item-price">
+													<strong>{money(rm.pricePerNightCents)}</strong>
+													<small>/{isId ? "malam" : "night"}</small>
+												</div>
+											</button>
+										{/each}
 									</div>
-									<div class="sum-row">
-										<span>{isId ? "Durasi" : "Duration"}</span>
+									<input type="hidden" name="roomId" value={selectedRoomId} />
+								{:else}
+									<div class="neo-items-stack">
+										{#each branchServices as svc}
+											<button
+												type="button"
+												class="item-select-btn"
+												class:selected={selectedServiceId === svc.id}
+												onclick={() => (selectedServiceId = svc.id)}
+											>
+												<div class="item-meta">
+													<strong>{svc.name}</strong>
+													<span><Clock size={12} /> {svc.durationMinutes || 60} mins</span>
+												</div>
+												<div class="item-price">{money(svc.priceCents)}</div>
+											</button>
+										{/each}
+									</div>
+									<input type="hidden" name="serviceId" value={selectedServiceId} />
+								{/if}
+							</div>
+
+							<!-- STEP 4: SCHEDULE & DATES -->
+							<div class="neo-step-box">
+								<div class="step-head-strip">
+									<span class="step-num-box">04</span>
+									<div class="step-text-wrap">
+										<h3>{isId ? "JADWAL & WAKTU KEDATANGAN" : "SCHEDULE & TIME SELECTION"}</h3>
+										<p>{isId ? "Tentukan waktu janji temu di cabang Semarang" : "Choose your appointment arrival window"}</p>
+									</div>
+								</div>
+
+								{#if selectedKind === "hotel"}
+									<div class="neo-form-row">
+										<div class="neo-form-group">
+											<DatePicker
+												id="checkInDate"
+												name="checkInDate"
+												label={isId ? "Tanggal Check-in" : "Check-in Date"}
+												bind:value={checkInDate}
+												required
+											/>
+										</div>
+										<div class="neo-form-group">
+											<DatePicker
+												id="checkOutDate"
+												name="checkOutDate"
+												label={isId ? "Tanggal Check-out" : "Check-out Date"}
+												bind:value={checkOutDate}
+												required
+											/>
+										</div>
+									</div>
+									<div class="hotel-stay-pill">
+										<span>{isId ? "Total Durasi Menginap:" : "Stay Duration:"}</span>
 										<strong>{calculatedNights} {isId ? "Malam" : "Nights"}</strong>
 									</div>
-									<div class="sum-row">
-										<span>{isId ? "Check-in / Out" : "Dates"}</span>
-										<small>{checkInDate} → {checkOutDate}</small>
-									</div>
 								{:else}
-									<div class="sum-row">
+									<div class="neo-form-row">
+										<div class="neo-form-group">
+											<DatePicker
+												id="bookingDate"
+												name="date"
+												label={isId ? "Tanggal Layanan" : "Appointment Date"}
+												bind:value={bookingDate}
+												required
+											/>
+										</div>
+										<div class="neo-form-group">
+											<label for="timeSlotContainer">{isId ? "Pilih Jam Kedatangan" : "Select Arrival Slot"}</label>
+											<div id="timeSlotContainer" class="time-slots-deck">
+												{#each timeSlots as slot}
+													<button
+														type="button"
+														class="slot-btn-neo"
+														class:active={timeSlot === slot}
+														onclick={() => (timeSlot = slot)}
+													>
+														{slot}
+													</button>
+												{/each}
+											</div>
+											<input type="hidden" name="timeSlot" value={timeSlot} />
+										</div>
+									</div>
+								{/if}
+							</div>
+
+							<!-- STEP 5: PET & OWNER DOSSIER -->
+							<div class="neo-step-box">
+								<div class="step-head-strip">
+									<span class="step-num-box">05</span>
+									<div class="step-text-wrap">
+										<h3>{isId ? "DATA HEWAN & KONTAK PEMILIK" : "PET & CLIENT DOSSIER"}</h3>
+										<p>{isId ? "Lengkapi rekam medis digital dan nomor WhatsApp untuk laporan berkala" : "Details for digital records and WhatsApp photo updates"}</p>
+									</div>
+								</div>
+
+								<!-- Pet Section -->
+								<div class="neo-sub-compartment">
+									<div class="sub-head"><PawPrint size={15} /> <span>{isId ? "[ DATA ANABUL ]" : "[ COMPANION PET ]"}</span></div>
+
+									<div class="neo-form-row">
+										<div class="neo-form-group">
+											<label for="petName">{isId ? "Nama Hewan *" : "Pet Name *"}</label>
+											<input id="petName" name="petName" type="text" placeholder="e.g. Milo, Luna, Bobby" bind:value={petName} required />
+										</div>
+										<div class="neo-form-group">
+											<label for="speciesContainer">{isId ? "Spesies" : "Species"}</label>
+											<div id="speciesContainer" class="species-chips-grid">
+												{#each ["dog", "cat", "bird", "reptile", "fish", "other"] as sp}
+													<button
+														type="button"
+														class="species-chip-neo"
+														class:active={species === sp}
+														onclick={() => (species = sp as any)}
+													>
+														<span>{speciesIcons[sp]}</span>
+														<strong>{sp.toUpperCase()}</strong>
+													</button>
+												{/each}
+											</div>
+											<input type="hidden" name="species" value={species} />
+										</div>
+									</div>
+
+									<div class="neo-form-row">
+										<div class="neo-form-group">
+											<label for="breed">{isId ? "Ras / Breed (Opsional)" : "Breed (Optional)"}</label>
+											<input id="breed" name="breed" type="text" placeholder="e.g. Toy Poodle, Golden, Persian" bind:value={breed} />
+										</div>
+										<div class="neo-form-group">
+											<label for="weightKg">{isId ? "Berat Badan (kg)" : "Weight (kg)"}</label>
+											<input id="weightKg" name="weightKg" type="number" step="0.1" min="0.1" max="100" placeholder="e.g. 4.5" bind:value={weightKg} />
+										</div>
+									</div>
+
+									<div class="neo-form-group">
+										<label for="healthNotes">{isId ? "Catatan Kesehatan / Alergi / Pantangan" : "Allergies & Medical Notes"}</label>
+										<textarea id="healthNotes" name="healthNotes" rows="2" placeholder="e.g. Sensitive skin, dislikes ear touch, special diet" bind:value={healthNotes}></textarea>
+									</div>
+								</div>
+
+								<!-- Owner Section -->
+								<div class="neo-sub-compartment">
+									<div class="sub-head"><User size={15} /> <span>{isId ? "[ KONTAK KLIEN ]" : "[ CLIENT CONTACT ]"}</span></div>
+
+									<div class="neo-form-row">
+										<div class="neo-form-group">
+											<label for="firstName">{isId ? "Nama Depan *" : "First Name *"}</label>
+											<input id="firstName" name="firstName" type="text" placeholder="e.g. Budi" bind:value={firstName} required />
+										</div>
+										<div class="neo-form-group">
+											<label for="lastName">{isId ? "Nama Belakang" : "Last Name"}</label>
+											<input id="lastName" name="lastName" type="text" placeholder="e.g. Santoso" bind:value={lastName} />
+										</div>
+									</div>
+
+									<div class="neo-form-row">
+										<div class="neo-form-group">
+											<label for="phone">{isId ? "Nomor WhatsApp / HP *" : "WhatsApp Phone Number *"}</label>
+											<input id="phone" name="phone" type="tel" placeholder="e.g. 081234567890" bind:value={phone} required />
+										</div>
+										<div class="neo-form-group">
+											<label for="email">{isId ? "Email" : "Email Address"}</label>
+											<input id="email" name="email" type="email" placeholder="e.g. client@gmail.com" bind:value={email} />
+										</div>
+									</div>
+
+									<div class="neo-form-group">
+										<label for="notes">{isId ? "Instruksi / Permintaan Khusus" : "Special Instructions"}</label>
+										<textarea id="notes" name="notes" rows="2" placeholder="e.g. Pick up at 5pm, extra towel dry" bind:value={bookingNotes}></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- RIGHT COLUMN: STICKY NEOBRUTALIST SUMMARY CARD -->
+						<div class="wizard-summary-col">
+							<div class="neo-summary-card">
+								<div class="sum-card-header">
+									<Receipt size={17} />
+									<h3>{isId ? "RINGKASAN RESERVASI" : "RESERVATION SUMMARY"}</h3>
+								</div>
+
+								<div class="sum-items-list">
+									<div class="sum-data-row">
 										<span>{isId ? "Layanan" : "Service"}</span>
-										<strong>{selectedService?.name ?? "-"}</strong>
+										<strong>{selectedKind.toUpperCase()}</strong>
 									</div>
-									<div class="sum-row">
-										<span>{isId ? "Jadwal" : "Date"}</span>
-										<strong>{bookingDate} @ {timeSlot}</strong>
+									<div class="sum-data-row">
+										<span>{isId ? "Cabang Semarang" : "Facility"}</span>
+										<strong>{selectedBranch?.name ?? "PetCo Semarang"}</strong>
 									</div>
-								{/if}
-
-								{#if petName}
-									<div class="sum-row pet-sum">
-										<span>{isId ? "Hewan" : "Pet"}</span>
-										<strong>{petName} ({species})</strong>
-									</div>
-								{/if}
-							</div>
-
-							<div class="summary-divider"></div>
-
-							<div class="summary-total-block">
-								<div class="total-line">
-									<span>{isId ? "Total Estimasi" : "Total Estimate"}</span>
-									<span class="total-amount">{money(estimatedTotal)}</span>
-								</div>
-								<div class="deposit-line">
-									<span>{isId ? "Deposit DP 20%:" : "Estimated 20% Deposit:"}</span>
-									<span>{money(estimatedDeposit)}</span>
-								</div>
-							</div>
-
-							<button type="submit" class="btn btn-primary submit-booking-btn" disabled={isSubmitting}>
-								{#if isSubmitting}
-									<span>{isId ? "Memproses Reservasi..." : "Processing..."}</span>
-								{:else}
-									<CheckCircle2 size={18} />
-									<span>{isId ? "Konfirmasi & Buat Booking" : "Confirm & Submit Booking"}</span>
-								{/if}
-							</button>
-
-							<p class="summary-note">
-								{isId
-									? "Pembayaran dapat dilakukan saat check-in di cabang atau melalui transfer saat konfirmasi WhatsApp."
-									: "No upfront payment required now. You can settle on arrival or via confirmation transfer."}
-							</p>
-						</div>
-					</div>
-				</div>
-			</form>
-		{:else}
-			<!-- ==================== BOOKING DATABASE / LOOKUP TRACKER ==================== -->
-			<div class="lookup-wrap">
-				<div class="lookup-search-card">
-					<h2>{isId ? "Database & Pelacak Status Booking" : "Client Booking Database & Tracker"}</h2>
-					<p>{isId ? "Masukkan Nomor WhatsApp / HP atau Kode Booking (e.g. PET-00012) untuk melihat riwayat reservasi Anda." : "Enter your Phone Number or Booking Reference ID (e.g. PET-00012) to view your reservations."}</p>
-
-					<form method="GET" action="/book" class="lookup-form">
-						<input type="hidden" name="lookup_tab" value="lookup" />
-						<div class="lookup-input-wrap">
-							<Search size={18} class="lookup-icon" />
-							<input
-								type="text"
-								name="lookup"
-								placeholder={isId ? "Ketik Nomor HP atau Kode Booking..." : "Type Phone Number or Booking Code..."}
-								bind:value={lookupInput}
-								required
-							/>
-						</div>
-						<button type="submit" class="btn btn-primary">
-							<Search size={16} />
-							<span>{isId ? "Cari Booking" : "Search"}</span>
-						</button>
-					</form>
-				</div>
-
-				<!-- RESULTS LIST -->
-				{#if data.lookupParam}
-					<div class="lookup-results-section">
-						<div class="results-header">
-							<h3>{isId ? "Hasil Pencarian:" : "Search Results for"} “{data.lookupParam}”</h3>
-							<span class="results-count">{data.lookupResults.length} {isId ? "ditemukan" : "found"}</span>
-						</div>
-
-						{#if data.lookupResults.length === 0}
-							<div class="empty-lookup-state">
-								<AlertCircle size={36} class="empty-icon" />
-								<h4>{isId ? "Tidak Ada Booking Ditemukan" : "No Bookings Found"}</h4>
-								<p>{isId ? "Periksa kembali nomor telepon atau kode booking yang Anda masukkan." : "Please check your phone number or booking code and try again."}</p>
-								<button class="btn btn-primary" onclick={() => (activeTab = "book")}>
-									<Plus size={16} />
-									<span>{isId ? "Buat Reservasi Baru" : "Make a New Booking"}</span>
-								</button>
-							</div>
-						{:else}
-							<div class="booking-cards-grid">
-								{#each data.lookupResults as item}
-									<div class="client-booking-card">
-										<div class="card-top-row">
-											<div class="code-and-kind">
-												<span class="booking-code-pill">{item.bookingCode}</span>
-												<span class="booking-kind-tag {item.kind}">{item.kind.toUpperCase()}</span>
-											</div>
-											<span class="status-badge {item.status}">
-												{item.status.replace("_", " ").toUpperCase()}
-											</span>
+									{#if selectedKind === "grooming"}
+										<div class="sum-data-row">
+											<span>{isId ? "Paket" : "Package"}</span>
+											<strong>{selectedService?.name ?? "-"}</strong>
 										</div>
-
-										<div class="card-main-info">
-											<h4 class="card-service-name">{item.serviceName || item.roomName || "Pet Care Service"}</h4>
-											<div class="card-pet-name"><PawPrint size={14} /> {item.petName ?? "Pet"} ({item.petSpecies ?? "dog"})</div>
+										<div class="sum-data-row">
+											<span>{isId ? "Jadwal" : "Schedule"}</span>
+											<strong>{bookingDate} @ {timeSlot}</strong>
 										</div>
-
-										<div class="card-details-grid">
-											<div class="detail-cell">
-												<span class="d-label">{isId ? "Cabang" : "Branch"}</span>
-												<strong class="d-val">{item.branchName ?? "PetCo"} ({item.branchCity ?? "City"})</strong>
+										{#if selectedAddonIds.length > 0}
+											<div class="sum-data-row addon-row">
+												<span>Add-ons ({selectedAddonIds.length})</span>
+												<strong>+{money(estimatedTotal - (selectedService?.priceCents || 0))}</strong>
 											</div>
-											<div class="detail-cell">
-												<span class="d-label">{isId ? "Jadwal" : "Scheduled"}</span>
-												<strong class="d-val">
-													{new Date(item.startsAt).toLocaleDateString(isId ? "id-ID" : "en-US", {
-														weekday: "short",
-														month: "short",
-														day: "numeric",
-														hour: "2-digit",
-														minute: "2-digit"
-													})}
-												</strong>
-											</div>
-											<div class="detail-cell">
-												<span class="d-label">{isId ? "Pemilik" : "Client"}</span>
-												<strong class="d-val">{item.ownerName}</strong>
-											</div>
-											<div class="detail-cell">
-												<span class="d-label">{isId ? "Total Biaya" : "Total Price"}</span>
-												<strong class="d-val price">{money(item.priceCents)}</strong>
-											</div>
-										</div>
-
-										{#if item.notes}
-											<p class="card-notes"><em>{item.notes}</em></p>
 										{/if}
+									{:else if selectedKind === "hotel"}
+										<div class="sum-data-row">
+											<span>{isId ? "Tipe Suite" : "Room Suite"}</span>
+											<strong>{selectedRoom?.name ?? "-"}</strong>
+										</div>
+										<div class="sum-data-row">
+											<span>{isId ? "Durasi" : "Duration"}</span>
+											<strong>{calculatedNights} {isId ? "Malam" : "Nights"}</strong>
+										</div>
+										<div class="sum-data-row">
+											<span>{isId ? "Tanggal Inap" : "Dates"}</span>
+											<small>{checkInDate} → {checkOutDate}</small>
+										</div>
+									{:else}
+										<div class="sum-data-row">
+											<span>{isId ? "Layanan" : "Service"}</span>
+											<strong>{selectedService?.name ?? "-"}</strong>
+										</div>
+										<div class="sum-data-row">
+											<span>{isId ? "Jadwal" : "Date"}</span>
+											<strong>{bookingDate} @ {timeSlot}</strong>
+										</div>
+									{/if}
+
+									{#if petName}
+										<div class="sum-data-row pet-row">
+											<span>{isId ? "Anabul" : "Pet"}</span>
+											<strong>{petName} ({species.toUpperCase()})</strong>
+										</div>
+									{/if}
+								</div>
+
+								<div class="sum-divider"></div>
+
+								<div class="sum-total-box">
+									<div class="t-line">
+										<span>{isId ? "ESTIMASI TOTAL" : "ESTIMATED TOTAL"}</span>
+										<strong class="t-amount">{money(estimatedTotal)}</strong>
 									</div>
-								{/each}
+									<div class="d-line">
+										<span>{isId ? "Deposit DP 20%:" : "Estimated 20% Deposit:"}</span>
+										<span>{money(estimatedDeposit)}</span>
+									</div>
+								</div>
+
+								<button type="submit" class="neo-btn neo-btn-lg neo-btn-primary w-full submit-cta" disabled={isSubmitting}>
+									{#if isSubmitting}
+										<span>{isId ? "MEMPROSES..." : "PROCESSING..."}</span>
+									{:else}
+										<CheckCircle2 size={18} />
+										<span>{isId ? "KONFIRMASI BOOKING" : "CONFIRM RESERVATION"}</span>
+									{/if}
+								</button>
+
+								<p class="sum-foot-note">
+									{isId
+										? "Pembayaran dapat diselesaikan saat check-in di cabang Semarang atau via transfer saat konfirmasi WhatsApp tim kami."
+										: "No immediate charge required. Settle on arrival or via confirmation transfer."}
+								</p>
 							</div>
-						{/if}
+						</div>
 					</div>
-				{/if}
-			</div>
-		{/if}
+				</form>
+			{:else}
+				<!-- ==================== CLIENT BOOKING DATABASE TRACKER ==================== -->
+				<div class="neo-lookup-container">
+					<div class="neo-search-card">
+						<span class="sec-index">[ SEARCH_TELEMETRY ]</span>
+						<h2>{isId ? "PELACAK STATUS & DATABASE BOOKING KLIEN" : "CLIENT BOOKING DATABASE & TRACKER"}</h2>
+						<p>{isId ? "Ketik Nomor WhatsApp / HP atau Kode Booking (e.g. PET-00012) untuk melihat riwayat reservasi anabul Anda di Semarang." : "Enter your WhatsApp phone number or booking reference code (e.g. PET-00012) to view your appointments."}</p>
+
+						<form method="GET" action="/book" class="neo-search-bar">
+							<input type="hidden" name="lookup_tab" value="lookup" />
+							<div class="search-input-wrap">
+								<Search size={18} class="search-ico" />
+								<input
+									type="text"
+									name="lookup"
+									placeholder={isId ? "Ketik Nomor HP WhatsApp atau Kode Booking..." : "Type Phone Number or Booking Code..."}
+									bind:value={lookupInput}
+									required
+								/>
+							</div>
+							<button type="submit" class="neo-btn neo-btn-primary">
+								<Search size={15} />
+								<span>{isId ? "CARI" : "SEARCH"}</span>
+							</button>
+						</form>
+					</div>
+
+					<!-- RESULTS -->
+					{#if data.lookupParam}
+						<div class="lookup-results-deck">
+							<div class="results-meta-bar">
+								<h3>{isId ? "HASIL PENCARIAN:" : "SEARCH RESULTS FOR"} “{data.lookupParam}”</h3>
+								<span class="results-badge">{data.lookupResults.length} {isId ? "RECORD DITEMUKAN" : "RECORDS FOUND"}</span>
+							</div>
+
+							{#if data.lookupResults.length === 0}
+								<div class="neo-empty-box">
+									<AlertCircle size={36} class="empty-icon" />
+									<h4>{isId ? "Tidak Ada Data Booking Ditemukan" : "No Booking Records Found"}</h4>
+									<p>{isId ? "Periksa kembali nomor telepon atau kode booking yang Anda masukkan." : "Please double-check your phone number or booking code."}</p>
+									<button class="neo-btn neo-btn-primary" onclick={() => (activeTab = "book")}>
+										<Plus size={16} />
+										<span>{isId ? "BUAT RESERVASI BARU" : "MAKE NEW BOOKING"}</span>
+									</button>
+								</div>
+							{:else}
+								<div class="neo-records-grid">
+									{#each data.lookupResults as item}
+										<div class="neo-record-card">
+											<div class="r-card-top">
+												<div class="r-code-group">
+													<span class="r-code-box">{item.bookingCode}</span>
+													<span class="r-kind-tag">{item.kind.toUpperCase()}</span>
+												</div>
+												<span class="r-status-badge {item.status}">
+													{item.status.replace("_", " ").toUpperCase()}
+												</span>
+											</div>
+
+											<div class="r-card-main">
+												<h4>{item.serviceName || item.roomName || "Pet Care Service"}</h4>
+												<div class="r-pet-name"><PawPrint size={14} /> {item.petName ?? "Pet"} ({item.petSpecies ?? "dog"})</div>
+											</div>
+
+											<div class="r-data-grid">
+												<div class="r-cell">
+													<span class="rc-label">{isId ? "Cabang Semarang" : "Facility"}</span>
+													<strong class="rc-val">{item.branchName ?? "PetCo"} ({item.branchCity ?? "Semarang"})</strong>
+												</div>
+												<div class="r-cell">
+													<span class="rc-label">{isId ? "Waktu Jadwal" : "Scheduled Time"}</span>
+													<strong class="rc-val">
+														{new Date(item.startsAt).toLocaleDateString(isId ? "id-ID" : "en-US", {
+															weekday: "short",
+															month: "short",
+															day: "numeric",
+															hour: "2-digit",
+															minute: "2-digit"
+														})}
+													</strong>
+												</div>
+												<div class="r-cell">
+													<span class="rc-label">{isId ? "Pemilik / Klien" : "Client"}</span>
+													<strong class="rc-val">{item.ownerName}</strong>
+												</div>
+												<div class="r-cell">
+													<span class="rc-label">{isId ? "Total Biaya" : "Total Price"}</span>
+													<strong class="rc-val price">{money(item.priceCents)}</strong>
+												</div>
+											</div>
+
+											{#if item.notes}
+												<p class="r-notes"><em>{item.notes}</em></p>
+											{/if}
+										</div>
+									{/each}
+								</div>
+							{/if}
+						</div>
+					{/if}
+				</div>
+			{/if}
+		</div>
 	</main>
 
-	<!-- ==================== FOOTER ==================== -->
-	<footer class="portal-footer">
-		<div class="footer-container">
-			<div class="footer-brand">
-				<span class="footer-logo"><PawPrint size={16} /> PetCo</span>
-				<p>{isId ? "Sistem Layanan Hewan Peliharaan Terpadu · Grooming, Hotel & Akuarium" : "Integrated Pet Care, Grooming & Hotel System"}</p>
+	<!-- ==================== SWISS INDUSTRIAL FOOTER ==================== -->
+	<footer class="neo-footer">
+		<div class="neo-container">
+			<div class="footer-grid-neo">
+				<div class="footer-brand-col">
+					<div class="f-brand">
+						<span class="f-box"><PawPrint size={18} strokeWidth={2.6} /></span>
+						<span class="f-title">PETCO SEMARANG</span>
+					</div>
+					<p class="f-tagline">
+						{isId
+							? "Pusat ekosistem perawatan hewan peliharaan, salon grooming berstandar ras, hotel 24 jam ber-AC, dan rekayasa aquascape profesional di Kota Semarang."
+							: "Integrated companion animal wellness, certified styling salons, 24/7 climate-controlled boarding suites, and aquatic biotope engineering in Semarang City."}
+					</p>
+					<div class="f-cert-row">
+						<span>[ SEMARANG ONLY ]</span>
+						<span>[ VET-GATED ]</span>
+						<span>[ HEPA-FILTERED ]</span>
+					</div>
+				</div>
+
+				<div class="footer-nav-col">
+					<h5>{isId ? "LAYANAN" : "SERVICES"}</h5>
+					<a href="/book?kind=grooming">{isId ? "Grooming & Spa" : "Styling & Spa"}</a>
+					<a href="/book?kind=hotel">{isId ? "Hotel Penitipan 24 Jam" : "24/7 Hotel Boarding"}</a>
+					<a href="/book?kind=aquarium">{isId ? "Layanan Akuarium" : "Aquatic Ecosystems"}</a>
+					<a href="/#pricing">{isId ? "Katalog Tarif" : "Pricing Catalog"}</a>
+				</div>
+
+				<div class="footer-nav-col">
+					<h5>{isId ? "CABANG SEMARANG" : "SEMARANG FACILITIES"}</h5>
+					<a href="/book?branch=1">Kantor Pusat (Simpang Lima)</a>
+					<a href="/book?branch=2">Cabang Candi Hills (Gajahmungkur)</a>
+					<a href="/book?branch=3">Cabang Banyumanik (Semarang Atas)</a>
+					<a href="/book?branch=4">Cabang Puri Anjasmoro (Semarang Barat)</a>
+					<a href="/book?branch=5">Cabang Ngaliyan (Semarang Barat)</a>
+				</div>
+
+				<div class="footer-nav-col">
+					<h5>{isId ? "SISTEM" : "SYSTEM"}</h5>
+					<a href="/book">{isId ? "Portal Reservasi Klien" : "Client Booking Portal"}</a>
+					<a href="/book?lookup=1">{isId ? "Cek Database Booking" : "Track Booking Database"}</a>
+					<a href="/dashboard" class="f-staff-tag">{isId ? "Portal Staf →" : "Staff Console →"}</a>
+				</div>
 			</div>
-			<div class="footer-links">
-				<a href="/">{isId ? "Halaman Utama" : "Home"}</a>
-				<a href="/book">{isId ? "Reservasi Online" : "Online Booking"}</a>
-				<a href="/dashboard">{isId ? "Masuk Portal Staf" : "Staff Console Login"}</a>
+
+			<div class="footer-bottom-neo">
+				<span>© {new Date().getFullYear()} PETCO SEMARANG. ALL RIGHTS RESERVED.</span>
+				<div class="f-meta-links">
+					<span>KOTA SEMARANG, JAWA TENGAH</span>
+					<span>·</span>
+					<span>BILINGUAL SYSTEM (EN / ID)</span>
+				</div>
 			</div>
 		</div>
 	</footer>
 </div>
 
 <style>
-	/* ============ BASE STYLES ============ */
-	.booking-portal-root {
+	/* ============ BASE NEOBRUTALIST TOKENS ============ */
+	.neobrutalist-booking-root {
+		background: #faf8f5;
+		color: #0f172a;
+		font-family: "Satoshi", "Plus Jakarta Sans", -apple-system, sans-serif;
 		min-height: 100vh;
-		background: #f8fafc;
-		color: var(--ink);
-		font-family: var(--font-sans);
 		display: flex;
 		flex-direction: column;
 	}
 
-	.portal-header {
-		position: sticky;
-		top: 0;
-		z-index: 200;
-		background: #ffffff;
-		border-bottom: 1px solid var(--border);
-		box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
+	h1, h2, h3, h4, h5, .brand-title, .f-title {
+		font-family: "Cabinet Grotesk", "Outfit", "Satoshi", sans-serif;
+		letter-spacing: -0.02em;
 	}
 
-	.portal-header-container {
+	.neo-container {
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 10px 20px;
+		padding: 0 24px;
+		width: 100%;
+	}
+
+	/* Buttons */
+	.neo-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		font-family: "Cabinet Grotesk", "Outfit", sans-serif;
+		font-weight: 850;
+		text-decoration: none;
+		border: 2px solid #0f172a;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: transform 100ms ease, box-shadow 100ms ease;
+		user-select: none;
+	}
+
+	.neo-btn-sm {
+		padding: 7px 14px;
+		font-size: 12px;
+		box-shadow: 3px 3px 0px #0f172a;
+	}
+
+	.neo-btn-lg {
+		padding: 14px 28px;
+		font-size: 14.5px;
+		box-shadow: 4px 4px 0px #0f172a;
+	}
+
+	.neo-btn-primary {
+		background: #4f46e5;
+		color: #ffffff;
+	}
+
+	.neo-btn-primary:hover {
+		background: #4338ca;
+		transform: translate(-1px, -1px);
+		box-shadow: 5px 5px 0px #0f172a;
+	}
+
+	.neo-btn-primary:active {
+		transform: translate(2px, 2px);
+		box-shadow: 1px 1px 0px #0f172a;
+	}
+
+	.neo-btn-secondary {
+		background: #ffffff;
+		color: #0f172a;
+	}
+
+	.neo-btn-secondary:hover {
+		background: #f8fafc;
+		transform: translate(-1px, -1px);
+		box-shadow: 5px 5px 0px #0f172a;
+	}
+
+	.neo-btn-secondary:active {
+		transform: translate(2px, 2px);
+		box-shadow: 1px 1px 0px #0f172a;
+	}
+
+	.neo-btn-subtle {
+		background: #ffffff;
+		color: #0f172a;
+		padding: 9px 14px;
+		font-size: 12.5px;
+		box-shadow: 3px 3px 0px #0f172a;
+	}
+
+	.neo-btn-subtle:hover {
+		background: #fef08a;
+		transform: translate(-1px, -1px);
+		box-shadow: 4px 4px 0px #0f172a;
+	}
+
+	.w-full {
+		width: 100%;
+	}
+
+	/* ============ HEADER ============ */
+	.neo-header {
+		position: sticky;
+		top: 0;
+		z-index: 500;
+		background: #ffffff;
+		border-bottom: 2.5px solid #0f172a;
+	}
+
+	.neo-header-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 12px 24px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 16px;
 	}
 
-	.brand-link {
+	.neo-brand {
 		display: flex;
 		align-items: center;
 		gap: 10px;
 		text-decoration: none;
-		color: var(--ink);
+		color: #0f172a;
 	}
 
-	.brand-emblem {
-		width: 36px;
-		height: 36px;
-		border-radius: 10px;
-		background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-		color: #ffffff;
+	.brand-box {
+		width: 34px;
+		height: 34px;
+		border: 2px solid #0f172a;
+		background: #facc15;
 		display: grid;
 		place-items: center;
-		box-shadow: 0 3px 8px rgba(79, 70, 229, 0.3);
+		border-radius: 6px;
+		box-shadow: 2px 2px 0px #0f172a;
 	}
 
-	.brand-copy {
+	.brand-text-block {
 		display: flex;
 		flex-direction: column;
-		line-height: 1.15;
+		line-height: 1.1;
 	}
 
 	.brand-title {
-		font-size: 16px;
-		font-weight: 800;
-		letter-spacing: -0.02em;
+		font-size: 19px;
+		font-weight: 950;
+		letter-spacing: -0.03em;
 	}
 
-	.brand-subtitle {
-		font-size: 11px;
-		color: var(--muted);
-		font-weight: 600;
+	.brand-city-tag {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 9.5px;
+		font-weight: 850;
+		color: #4f46e5;
+		letter-spacing: 0.06em;
 	}
 
-	.portal-nav {
+	/* Tab Toggle */
+	.neo-tab-toggle {
 		display: flex;
 		align-items: center;
 		gap: 6px;
-		background: var(--surface-2);
+		background: #f1f5f9;
 		padding: 4px;
-		border-radius: var(--r-full);
-		border: 1px solid var(--border);
+		border: 2px solid #0f172a;
+		border-radius: 8px;
+		box-shadow: 2px 2px 0px #0f172a;
 	}
 
-	.portal-nav-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 6px 14px;
-		border-radius: var(--r-full);
-		border: 1px solid transparent;
-		background: transparent;
-		color: var(--muted);
-		font-size: 13px;
-		font-weight: 700;
-		cursor: pointer;
-		transition: all 140ms ease;
-	}
-
-	.portal-nav-btn:hover:not(.active) {
-		color: var(--ink);
-	}
-
-	.portal-nav-btn.active {
-		background: #ffffff;
-		color: var(--primary);
-		border-color: var(--primary-border);
-		box-shadow: 0 1px 4px rgba(79, 70, 229, 0.1);
-	}
-
-	.portal-header-right {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.home-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 5px;
-		font-size: 12.5px;
-		font-weight: 700;
-		color: var(--muted);
-		text-decoration: none;
-		transition: color 120ms ease;
-	}
-
-	.home-link:hover {
-		color: var(--primary);
-	}
-
-	.staff-link {
+	.tab-toggle-btn {
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
 		padding: 6px 12px;
-		border-radius: var(--r-md);
-		border: 1px solid var(--border);
-		background: var(--surface);
-		color: var(--ink-2);
-		font-size: 12px;
-		font-weight: 700;
-		text-decoration: none;
-		transition: all 120ms ease;
+		border-radius: 5px;
+		border: 1.5px solid transparent;
+		background: transparent;
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11.5px;
+		font-weight: 850;
+		color: #475569;
+		cursor: pointer;
+		transition: all 100ms ease;
 	}
 
-	.staff-link:hover {
-		background: var(--surface-3);
-		color: var(--ink);
-		border-color: var(--border-strong);
+	.tab-toggle-btn.active {
+		background: #ffffff;
+		color: #0f172a;
+		border-color: #0f172a;
+		box-shadow: 2px 2px 0px #0f172a;
 	}
 
-	/* Hero */
-	.portal-hero {
-		background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-		color: #ffffff;
-		padding: 40px 20px 32px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-	}
-
-	.hero-container {
-		max-width: 1200px;
-		margin: 0 auto;
+	.neo-nav-actions {
 		display: flex;
-		flex-direction: column;
 		align-items: center;
-		text-align: center;
+		gap: 10px;
 	}
 
-	.hero-badge {
+	.neo-home-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: 6px;
-		background: rgba(99, 102, 241, 0.2);
-		border: 1px solid rgba(129, 140, 248, 0.35);
-		color: #c7d2fe;
-		padding: 5px 14px;
-		border-radius: var(--r-full);
-		font-size: 12px;
-		font-weight: 700;
+		gap: 4px;
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11.5px;
+		font-weight: 850;
+		color: #0f172a;
+		text-decoration: none;
+		padding: 6px 10px;
+		border: 2px solid #0f172a;
+		border-radius: 6px;
+		background: #ffffff;
+		box-shadow: 2px 2px 0px #0f172a;
+	}
+
+	.neo-home-btn:hover {
+		background: #fef08a;
+		transform: translate(-1px, -1px);
+	}
+
+	.neo-staff-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		padding: 7px 11px;
+		border: 2px solid #0f172a;
+		border-radius: 6px;
+		background: #f1f5f9;
+		color: #0f172a;
+		font-size: 11px;
+		font-weight: 850;
+		text-decoration: none;
+		box-shadow: 2px 2px 0px #0f172a;
+	}
+
+	/* ============ HERO STRIP ============ */
+	.neo-booking-hero {
+		padding: 44px 0 36px;
+		background: #f4f1ea;
+		border-bottom: 2.5px solid #0f172a;
+	}
+
+	.hero-tag-strip {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		background: #ffffff;
+		border: 2px solid #0f172a;
+		padding: 4px 10px;
+		border-radius: 6px;
+		box-shadow: 2px 2px 0px #0f172a;
 		margin-bottom: 14px;
 	}
 
-	.sparkle-icon {
-		color: #fbbf24;
+	.status-indicator {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #10b981;
+		border: 1.5px solid #0f172a;
 	}
 
-	.hero-heading {
-		font-size: clamp(24px, 3.6vw, 34px);
+	.tag-label {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 10.5px;
 		font-weight: 850;
+		color: #0f172a;
+	}
+
+	.hero-page-title {
+		font-size: clamp(24px, 3.6vw, 38px);
+		font-weight: 950;
 		letter-spacing: -0.03em;
+		color: #0f172a;
 		margin: 0 0 10px;
-		color: #ffffff;
 	}
 
-	.hero-description {
-		font-size: clamp(13.5px, 1.6vw, 15.5px);
-		color: #94a3b8;
-		max-width: 680px;
-		margin: 0;
+	.hero-page-sub {
+		font-size: 14px;
+		color: #475569;
+		max-width: 720px;
 		line-height: 1.5;
+		margin: 0;
 	}
 
-	/* Main */
-	.portal-main {
-		max-width: 1200px;
-		width: 100%;
-		margin: 0 auto;
-		padding: 32px 20px 64px;
+	/* ============ MAIN CONTENT ============ */
+	.neo-main-content {
+		padding: 44px 0 72px;
 		flex: 1;
 	}
 
-	/* Wizard Grid */
-	.wizard-grid {
+	.wizard-two-column-layout {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) 380px;
 		gap: 28px;
 		align-items: start;
 	}
 
-	.wizard-steps-pane {
+	.wizard-steps-container {
 		display: flex;
 		flex-direction: column;
 		gap: 24px;
 	}
 
-	.step-card {
+	.neo-step-box {
 		background: #ffffff;
-		border: 1px solid var(--border);
-		border-radius: 16px;
+		border: 2px solid #0f172a;
+		border-radius: 10px;
 		padding: 24px;
-		box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+		box-shadow: 4px 4px 0px #0f172a;
 	}
 
-	.step-header {
+	.step-head-strip {
 		display: flex;
 		align-items: center;
-		gap: 14px;
+		gap: 12px;
 		margin-bottom: 20px;
 	}
 
-	.step-number {
+	.step-num-box {
 		width: 32px;
 		height: 32px;
-		border-radius: 50%;
-		background: var(--primary-soft);
-		color: var(--primary);
-		border: 1px solid var(--primary-border);
+		background: #facc15;
+		border: 2px solid #0f172a;
+		border-radius: 6px;
 		display: grid;
 		place-items: center;
-		font-weight: 800;
-		font-size: 14px;
+		font-family: "JetBrains Mono", monospace;
+		font-size: 13px;
+		font-weight: 950;
+		box-shadow: 2px 2px 0px #0f172a;
 		flex-shrink: 0;
 	}
 
-	.step-title-wrap h3 {
+	.step-text-wrap h3 {
 		font-size: 16px;
-		font-weight: 800;
-		margin: 0 0 3px;
-		color: var(--ink);
+		font-weight: 900;
+		margin: 0 0 2px;
+		color: #0f172a;
 	}
 
-	.step-title-wrap p {
-		font-size: 12.5px;
-		color: var(--muted);
+	.step-text-wrap p {
+		font-size: 12px;
+		color: #64748b;
 		margin: 0;
 	}
 
-	.kind-selection-grid {
+	/* Kind Selection */
+	.neo-kind-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 		gap: 14px;
 	}
 
-	.kind-card {
-		background: var(--surface);
-		border: 1.5px solid var(--border);
-		border-radius: 14px;
-		padding: 18px 14px;
+	.kind-btn-neo {
+		background: #faf8f5;
+		border: 2px solid #0f172a;
+		border-radius: 8px;
+		padding: 16px 12px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		text-align: center;
 		cursor: pointer;
-		transition: all 140ms ease;
+		box-shadow: 3px 3px 0px #0f172a;
+		transition: all 100ms ease;
 	}
 
-	.kind-card:hover {
-		border-color: var(--primary-border);
-		background: var(--primary-soft);
-		transform: translateY(-2px);
+	.kind-btn-neo:hover {
+		background: #fef08a;
+		transform: translate(-1px, -1px);
 	}
 
-	.kind-card.selected {
-		border-color: var(--primary);
-		background: var(--primary-soft);
-		box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+	.kind-btn-neo.selected {
+		background: #fef08a;
+		border-width: 2.5px;
+		box-shadow: 4px 4px 0px #0f172a;
 	}
 
-	.kind-icon {
-		width: 48px;
-		height: 48px;
-		border-radius: 12px;
+	.kind-icon-square {
+		width: 44px;
+		height: 44px;
+		border: 2px solid #0f172a;
+		border-radius: 8px;
 		display: grid;
 		place-items: center;
-		margin-bottom: 12px;
+		margin-bottom: 10px;
+		box-shadow: 2px 2px 0px #0f172a;
 	}
 
-	.grooming-icon { background: #fdf2f8; color: #ec4899; }
-	.hotel-icon { background: #ede9fe; color: #8b5cf6; }
-	.aquarium-icon { background: #e0f2fe; color: #0284c7; }
+	.kind-icon-square.pink { background: #fbcfe8; color: #db2777; }
+	.kind-icon-square.purple { background: #e9d5ff; color: #7c3aed; }
+	.kind-icon-square.blue { background: #bae6fd; color: #0284c7; }
 
-	.kind-name {
+	.kind-title {
 		font-size: 14px;
-		font-weight: 800;
-		color: var(--ink);
-		margin-bottom: 4px;
+		font-weight: 900;
+		color: #0f172a;
+		margin-bottom: 2px;
 	}
 
-	.kind-desc {
+	.kind-subtitle {
 		font-size: 11.5px;
-		color: var(--muted);
-		line-height: 1.3;
+		color: #64748b;
 	}
 
-	.branches-grid {
+	/* Branch Selection */
+	.neo-branch-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 		gap: 12px;
 	}
 
-	.branch-select-card {
-		background: var(--surface);
-		border: 1.5px solid var(--border);
-		border-radius: 12px;
+	.branch-btn-neo {
+		background: #faf8f5;
+		border: 2px solid #0f172a;
+		border-radius: 8px;
 		padding: 14px;
 		text-align: left;
 		cursor: pointer;
-		transition: all 130ms ease;
+		box-shadow: 3px 3px 0px #0f172a;
+		transition: all 100ms ease;
 	}
 
-	.branch-select-card:hover {
-		border-color: var(--primary-border);
-		background: var(--primary-soft);
+	.branch-btn-neo:hover {
+		background: #eff6ff;
+		transform: translate(-1px, -1px);
 	}
 
-	.branch-select-card.selected {
-		border-color: var(--primary);
-		background: var(--primary-soft);
-		box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+	.branch-btn-neo.selected {
+		background: #eff6ff;
+		border-color: #4f46e5;
+		box-shadow: 4px 4px 0px #4f46e5;
 	}
 
-	.branch-card-head {
+	.b-card-top {
 		display: flex;
 		align-items: center;
 		gap: 6px;
 		margin-bottom: 6px;
 	}
 
-	.branch-card-head strong {
+	.b-card-top strong {
 		font-size: 13px;
-		color: var(--ink);
+		color: #0f172a;
 		flex: 1;
 	}
 
-	.branch-icon {
-		color: var(--primary);
-		flex-shrink: 0;
-	}
-
-	.hq-badge {
+	.b-tag-flag {
+		font-family: "JetBrains Mono", monospace;
 		font-size: 9px;
-		font-weight: 800;
-		background: var(--primary);
-		color: #ffffff;
-		padding: 2px 6px;
-		border-radius: var(--r-full);
+		font-weight: 900;
+		background: #0f172a;
+		color: #facc15;
+		padding: 1px 5px;
+		border-radius: 3px;
 	}
 
-	.branch-card-city {
+	.b-card-loc {
 		display: flex;
 		align-items: center;
 		gap: 4px;
-		font-size: 11.5px;
-		font-weight: 700;
-		color: var(--primary);
-		margin: 0 0 4px;
-	}
-
-	.branch-card-address {
 		font-size: 11px;
-		color: var(--muted);
-		margin: 0;
-		line-height: 1.3;
+		font-weight: 800;
+		color: #4f46e5;
+		margin-bottom: 4px;
 	}
 
-	.packages-list,
-	.rooms-list {
+	.b-card-detail {
+		font-size: 11px;
+		color: #64748b;
+		line-height: 1.35;
+	}
+
+	/* Items Selection */
+	.neo-items-stack {
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
 	}
 
-	.package-item,
-	.room-item {
+	.item-select-btn {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 14px;
-		background: var(--surface);
-		border: 1.5px solid var(--border);
-		border-radius: 12px;
+		background: #faf8f5;
+		border: 2px solid #0f172a;
+		border-radius: 8px;
 		padding: 14px 16px;
 		cursor: pointer;
 		text-align: left;
-		transition: all 130ms ease;
+		box-shadow: 3px 3px 0px #0f172a;
+		transition: all 100ms ease;
 	}
 
-	.package-item:hover,
-	.room-item:hover {
-		border-color: var(--primary-border);
-		background: var(--primary-soft);
+	.item-select-btn:hover {
+		background: #fefce8;
+		transform: translate(-1px, -1px);
 	}
 
-	.package-item.selected,
-	.room-item.selected {
-		border-color: var(--primary);
-		background: var(--primary-soft);
-		box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+	.item-select-btn.selected {
+		background: #fefce8;
+		border-color: #0f172a;
+		box-shadow: 4px 4px 0px #0f172a;
 	}
 
-	.package-info,
-	.room-info {
-		display: flex;
-		flex-direction: column;
-		gap: 3px;
-	}
-
-	.package-info strong,
-	.room-info strong {
+	.item-meta strong {
 		font-size: 14px;
-		font-weight: 750;
-		color: var(--ink);
-	}
-
-	.package-meta,
-	.room-meta {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-		font-size: 12px;
-		color: var(--muted);
-	}
-
-	.package-price,
-	.room-price {
-		font-size: 14px;
-		font-weight: 800;
-		color: var(--primary);
-		white-space: nowrap;
-		text-align: right;
-	}
-
-	.room-price small {
-		font-size: 10px;
-		color: var(--muted);
+		font-weight: 850;
+		color: #0f172a;
 		display: block;
 	}
 
-	.addons-section {
+	.item-meta span {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		font-size: 11.5px;
+		color: #64748b;
+		margin-top: 2px;
+	}
+
+	.item-price {
+		font-size: 15px;
+		font-weight: 950;
+		color: #0f172a;
+		text-align: right;
+	}
+
+	/* Add-ons Compartment */
+	.neo-addons-compartment {
 		margin-top: 18px;
 		padding-top: 16px;
-		border-top: 1px solid var(--border);
+		border-top: 2px dashed #cbd5e1;
 	}
 
-	.addons-heading {
-		font-size: 13px;
-		font-weight: 800;
-		color: var(--ink);
-		margin: 0 0 10px;
+	.addons-tag {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11px;
+		font-weight: 850;
+		color: #4f46e5;
+		display: block;
+		margin-bottom: 10px;
 	}
 
-	.addons-grid {
+	.addons-chips-wrap {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 		gap: 8px;
 	}
 
-	.addon-chip {
+	.addon-toggle-neo {
 		display: flex;
 		align-items: center;
 		gap: 8px;
 		padding: 8px 12px;
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		background: var(--surface-2);
+		border: 1.5px solid #0f172a;
+		border-radius: 6px;
+		background: #faf8f5;
 		cursor: pointer;
-		font-size: 12px;
-		transition: all 120ms ease;
+		box-shadow: 2px 2px 0px #0f172a;
 	}
 
-	.addon-chip:hover {
-		background: var(--surface-3);
+	.addon-toggle-neo.checked {
+		background: #fef08a;
 	}
 
-	.addon-chip.checked {
-		background: var(--primary-soft);
-		border-color: var(--primary-border);
-		color: var(--primary);
-	}
-
-	.addon-chip-info {
+	.addon-info-block {
 		display: flex;
 		flex-direction: column;
 	}
 
-	.addon-name {
-		font-weight: 700;
-	}
+	.a-title { font-size: 11.5px; font-weight: 750; color: #0f172a; }
+	.a-price { font-size: 11px; font-weight: 900; color: #4f46e5; }
 
-	.addon-price {
-		font-size: 11px;
-		color: var(--primary);
-		font-weight: 800;
-	}
-
-	.dates-row {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: 16px;
-	}
-
-	.hotel-duration-info {
-		margin-top: 12px;
-		padding: 8px 14px;
-		background: var(--primary-soft);
-		border: 1px solid var(--primary-border);
-		border-radius: 10px;
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 13px;
-		color: var(--primary);
-	}
-
-	.slots-pill-group {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 6px;
-		margin-top: 4px;
-	}
-
-	.slot-pill {
-		padding: 6px 12px;
-		border-radius: var(--r-md);
-		border: 1px solid var(--border);
-		background: var(--surface);
-		color: var(--ink);
-		font-size: 12px;
-		font-weight: 700;
-		cursor: pointer;
-		transition: all 120ms ease;
-	}
-
-	.slot-pill:hover {
-		border-color: var(--primary-border);
-		background: var(--primary-soft);
-	}
-
-	.slot-pill.active {
-		background: var(--primary);
-		color: #ffffff;
-		border-color: var(--primary);
-	}
-
-	.sub-form-section {
-		padding: 16px;
-		background: var(--surface-2);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		margin-bottom: 16px;
-	}
-
-	.sub-form-section:last-child {
-		margin-bottom: 0;
-	}
-
-	.sub-form-title {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 13.5px;
-		font-weight: 800;
-		color: var(--ink);
-		margin: 0 0 14px;
-	}
-
-	.form-row {
+	/* Form Elements */
+	.neo-form-row {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 		gap: 12px;
 	}
 
-	.form-group {
+	.neo-form-group {
 		display: flex;
 		flex-direction: column;
 		gap: 5px;
 		margin-bottom: 12px;
 	}
 
-	.form-group:last-child {
+	.neo-form-group:last-child {
 		margin-bottom: 0;
 	}
 
-	.form-group label {
+	.neo-form-group label {
 		font-size: 12px;
-		font-weight: 750;
-		color: var(--ink-2);
+		font-weight: 850;
+		color: #0f172a;
 	}
 
-	.form-group input,
-	.form-group textarea {
-		padding: 8px 12px;
-		border: 1px solid var(--border);
-		border-radius: var(--r-md);
+	.neo-form-group input,
+	.neo-form-group textarea {
+		padding: 9px 12px;
+		border: 2px solid #0f172a;
+		border-radius: 6px;
 		font-size: 13px;
-		color: var(--ink);
+		color: #0f172a;
 		background: #ffffff;
 		outline: none;
-		transition: border-color 130ms ease;
+		box-shadow: 2px 2px 0px #0f172a;
 	}
 
-	.form-group input:focus,
-	.form-group textarea:focus {
-		border-color: var(--primary);
+	.neo-form-group input:focus,
+	.neo-form-group textarea:focus {
+		border-color: #4f46e5;
+		box-shadow: 3px 3px 0px #4f46e5;
 	}
 
-	.species-select-grid {
+	/* Time Slots */
+	.time-slots-deck {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+
+	.slot-btn-neo {
+		padding: 6px 12px;
+		border: 1.5px solid #0f172a;
+		border-radius: 6px;
+		background: #ffffff;
+		color: #0f172a;
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11.5px;
+		font-weight: 850;
+		cursor: pointer;
+		box-shadow: 2px 2px 0px #0f172a;
+	}
+
+	.slot-btn-neo.active {
+		background: #0f172a;
+		color: #facc15;
+	}
+
+	.hotel-stay-pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 14px;
+		background: #fef08a;
+		border: 2px solid #0f172a;
+		border-radius: 6px;
+		box-shadow: 2px 2px 0px #0f172a;
+		font-size: 12.5px;
+		color: #0f172a;
+		margin-top: 8px;
+	}
+
+	/* Sub Compartment */
+	.neo-sub-compartment {
+		background: #faf8f5;
+		border: 2px solid #0f172a;
+		border-radius: 8px;
+		padding: 18px;
+		margin-bottom: 16px;
+	}
+
+	.sub-head {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11px;
+		font-weight: 900;
+		color: #4f46e5;
+		margin-bottom: 14px;
+	}
+
+	/* Species Chips */
+	.species-chips-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 6px;
 	}
 
-	.species-btn {
+	.species-chip-neo {
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: 4px;
-		padding: 6px 8px;
-		border: 1px solid var(--border);
-		border-radius: var(--r-md);
+		padding: 6px 4px;
+		border: 1.5px solid #0f172a;
+		border-radius: 6px;
 		background: #ffffff;
 		cursor: pointer;
 		font-size: 11px;
-		font-weight: 750;
-		color: var(--ink-2);
-		transition: all 120ms ease;
+		font-weight: 850;
+		color: #0f172a;
 	}
 
-	.species-btn:hover {
-		background: var(--surface-3);
+	.species-chip-neo.active {
+		background: #facc15;
+		box-shadow: 2px 2px 0px #0f172a;
 	}
 
-	.species-btn.active {
-		border-color: var(--primary);
-		background: var(--primary-soft);
-		color: var(--primary);
-	}
-
-	.summary-card {
+	/* Sticky Summary Card */
+	.neo-summary-card {
 		position: sticky;
 		top: 80px;
 		background: #ffffff;
-		border: 1px solid var(--border);
-		border-radius: 16px;
-		padding: 22px;
-		box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+		border: 2.5px solid #0f172a;
+		border-radius: 12px;
+		padding: 24px;
+		box-shadow: 5px 5px 0px #0f172a;
 	}
 
-	.summary-title {
+	.sum-card-header {
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		font-size: 16px;
-		font-weight: 800;
-		color: var(--ink);
-		margin: 0 0 16px;
 		padding-bottom: 12px;
-		border-bottom: 1px solid var(--border);
+		border-bottom: 2px solid #0f172a;
+		margin-bottom: 16px;
 	}
 
-	.summary-items {
+	.sum-card-header h3 {
+		font-size: 15px;
+		font-weight: 950;
+		margin: 0;
+		color: #0f172a;
+	}
+
+	.sum-items-list {
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		gap: 8px;
 	}
 
-	.sum-row {
+	.sum-data-row {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
-		font-size: 12.5px;
-		color: var(--muted);
+		font-size: 12px;
+		color: #64748b;
 	}
 
-	.sum-row strong {
-		color: var(--ink);
-		font-weight: 750;
-		text-align: right;
+	.sum-data-row strong {
+		color: #0f172a;
+		font-weight: 800;
 	}
 
-	.sum-row.pet-sum {
-		padding: 6px 10px;
-		background: var(--surface-2);
-		border-radius: var(--r-md);
-		border: 1px solid var(--border-subtle);
+	.sum-data-row.pet-row {
+		padding: 6px 8px;
+		background: #fef08a;
+		border: 1.5px solid #0f172a;
+		border-radius: 6px;
 	}
 
-	.summary-divider {
-		height: 1px;
-		background: var(--border);
+	.sum-divider {
+		height: 2px;
+		border-top: 2px dashed #cbd5e1;
 		margin: 16px 0;
 	}
 
-	.summary-total-block {
-		background: var(--primary-soft);
-		border: 1px solid var(--primary-border);
-		border-radius: 12px;
+	.sum-total-box {
+		background: #faf8f5;
+		border: 2px solid #0f172a;
+		border-radius: 8px;
 		padding: 14px;
 		margin-bottom: 18px;
 	}
 
-	.total-line {
+	.t-line {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
-		font-size: 13.5px;
-		font-weight: 750;
-		color: var(--primary);
+		align-items: baseline;
+		font-size: 12px;
+		font-weight: 900;
 	}
 
-	.total-amount {
-		font-size: 18px;
-		font-weight: 800;
+	.t-amount {
+		font-size: 20px;
+		color: #4f46e5;
 	}
 
-	.deposit-line {
+	.d-line {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
 		font-size: 11px;
-		color: var(--muted);
+		color: #64748b;
 		margin-top: 4px;
 	}
 
-	.submit-booking-btn {
-		width: 100%;
-		padding: 12px;
-		font-size: 14px;
-		font-weight: 800;
-		display: inline-flex;
-		justify-content: center;
-		align-items: center;
-		gap: 8px;
+	.submit-cta {
+		padding: 13px;
 	}
 
-	.summary-note {
-		font-size: 11px;
-		color: var(--muted);
+	.sum-foot-note {
+		font-size: 10.5px;
+		color: #64748b;
 		text-align: center;
-		margin: 12px 0 0;
+		margin: 10px 0 0;
 		line-height: 1.35;
 	}
 
-	/* Confirmation Ticket */
-	.confirmation-wrap {
+	/* ============ TICKET SCREEN ============ */
+	.neo-ticket-wrapper {
 		max-width: 680px;
 		margin: 0 auto;
 	}
 
-	.confirmation-card {
+	.neo-ticket-card {
 		background: #ffffff;
-		border: 1px solid var(--border);
-		border-radius: 20px;
+		border: 3px solid #0f172a;
+		border-radius: 14px;
 		overflow: hidden;
-		box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+		box-shadow: 6px 6px 0px #0f172a;
 	}
 
-	.confirm-badge-banner {
-		background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-		color: #ffffff;
-		padding: 28px 20px;
+	.ticket-badge-banner {
+		background: #facc15;
+		border-bottom: 2.5px solid #0f172a;
+		padding: 24px 20px;
 		text-align: center;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
+		color: #0f172a;
 	}
 
-	.confirm-badge-banner h2 {
-		font-size: 22px;
-		font-weight: 800;
-		margin: 8px 0 6px;
+	.ticket-badge-banner h2 {
+		font-size: 20px;
+		font-weight: 950;
+		margin: 6px 0 2px;
 	}
 
-	.confirm-badge-banner p {
-		font-size: 13.5px;
-		color: #d1fae5;
+	.ticket-badge-banner p {
+		font-size: 12.5px;
+		font-weight: 600;
 		margin: 0;
 	}
 
-	.ticket-body {
+	.ticket-body-content {
 		padding: 28px;
 	}
 
-	.ticket-header {
+	.ticket-top-meta {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding-bottom: 20px;
-		border-bottom: 1.5px dashed var(--border);
-		margin-bottom: 20px;
+		margin-bottom: 18px;
 	}
 
-	.ticket-id-block {
+	.ticket-code-group {
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
 	}
 
-	.ticket-code {
-		font-size: 22px;
-		font-weight: 900;
-		color: var(--primary);
-		letter-spacing: 0.04em;
+	.t-label {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 10px;
+		font-weight: 850;
+		color: #64748b;
 	}
 
-	.ticket-status-pill {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 5px 12px;
-		border-radius: var(--r-full);
-		background: #fef3c7;
-		color: #b45309;
-		font-size: 12px;
-		font-weight: 750;
-	}
-
-	.status-dot {
-		width: 7px;
-		height: 7px;
-		border-radius: 50%;
-		background: #f59e0b;
-	}
-
-	.ticket-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 16px;
-		margin-bottom: 24px;
-	}
-
-	.ticket-item {
-		display: flex;
-		flex-direction: column;
-		gap: 3px;
-	}
-
-	.ticket-label {
-		font-size: 10.5px;
-		font-weight: 800;
-		color: var(--muted);
-		text-transform: uppercase;
+	.t-huge-code {
+		font-size: 24px;
+		font-weight: 950;
+		color: #4f46e5;
 		letter-spacing: 0.05em;
 	}
 
-	.ticket-val {
-		font-size: 14px;
-		font-weight: 750;
-		color: var(--ink);
+	.t-status-badge {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 10px;
+		font-weight: 900;
+		padding: 4px 10px;
+		border: 1.5px solid #0f172a;
+		border-radius: 6px;
+		background: #fef08a;
+		color: #0f172a;
+		box-shadow: 2px 2px 0px #0f172a;
 	}
 
-	.ticket-val.price-highlight {
+	.ticket-perforated-line {
+		height: 2px;
+		border-top: 2px dashed #0f172a;
+		margin-bottom: 20px;
+	}
+
+	.ticket-data-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 14px;
+		margin-bottom: 24px;
+	}
+
+	.t-data-cell {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.t-val {
+		font-size: 13.5px;
+		font-weight: 800;
+		color: #0f172a;
+	}
+
+	.t-val.price-large {
 		font-size: 16px;
-		color: var(--primary);
+		color: #4f46e5;
 	}
 
-	.ticket-sub {
+	.t-sub {
 		font-size: 11px;
-		color: var(--muted);
+		color: #64748b;
 	}
 
-	.ticket-actions {
+	.ticket-actions-bar {
 		display: flex;
 		gap: 12px;
 	}
 
-	.ticket-actions a,
-	.ticket-actions button {
+	.ticket-actions-bar a {
 		flex: 1;
-		display: inline-flex;
-		justify-content: center;
-		align-items: center;
-		gap: 6px;
-		padding: 10px;
-		font-size: 13px;
-		font-weight: 750;
-		text-decoration: none;
 	}
 
-	/* Lookup */
-	.lookup-wrap {
+	/* ============ LOOKUP ============ */
+	.neo-lookup-container {
 		max-width: 900px;
 		margin: 0 auto;
 		display: flex;
@@ -1767,89 +1854,92 @@
 		gap: 28px;
 	}
 
-	.lookup-search-card {
+	.neo-search-card {
 		background: #ffffff;
-		border: 1px solid var(--border);
-		border-radius: 16px;
-		padding: 28px;
+		border: 2.5px solid #0f172a;
+		border-radius: 12px;
+		padding: 32px 24px;
 		text-align: center;
-		box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+		box-shadow: 5px 5px 0px #0f172a;
 	}
 
-	.lookup-search-card h2 {
+	.neo-search-card h2 {
 		font-size: 22px;
-		font-weight: 800;
-		margin: 0 0 8px;
-		color: var(--ink);
+		font-weight: 950;
+		margin: 4px 0 8px;
+		color: #0f172a;
 	}
 
-	.lookup-search-card p {
+	.neo-search-card p {
 		font-size: 13.5px;
-		color: var(--muted);
+		color: #475569;
 		max-width: 600px;
 		margin: 0 auto 20px;
-		line-height: 1.45;
 	}
 
-	.lookup-form {
+	.neo-search-bar {
 		display: flex;
 		gap: 10px;
 		max-width: 520px;
 		margin: 0 auto;
 	}
 
-	.lookup-input-wrap {
+	.search-input-wrap {
 		flex: 1;
 		position: relative;
 		display: flex;
 		align-items: center;
 	}
 
-	.lookup-icon {
+	.search-ico {
 		position: absolute;
 		left: 14px;
-		color: var(--muted);
-		pointer-events: none;
+		color: #64748b;
 	}
 
-	.lookup-input-wrap input {
+	.search-input-wrap input {
 		width: 100%;
 		padding: 10px 14px 10px 40px;
-		border: 1.5px solid var(--border);
-		border-radius: var(--r-md);
-		font-size: 13.5px;
+		border: 2px solid #0f172a;
+		border-radius: 6px;
+		font-size: 13px;
+		color: #0f172a;
 		outline: none;
-		transition: border-color 130ms ease;
+		box-shadow: 2px 2px 0px #0f172a;
 	}
 
-	.lookup-input-wrap input:focus {
-		border-color: var(--primary);
+	.lookup-results-deck {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
 	}
 
-	.results-header {
+	.results-meta-bar {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: 16px;
 	}
 
-	.results-header h3 {
-		font-size: 16px;
-		font-weight: 800;
-		color: var(--ink);
+	.results-meta-bar h3 {
+		font-size: 14px;
+		font-weight: 900;
 		margin: 0;
 	}
 
-	.results-count {
-		font-size: 12px;
-		color: var(--muted);
-		font-weight: 700;
+	.results-badge {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11px;
+		font-weight: 850;
+		background: #facc15;
+		border: 1.5px solid #0f172a;
+		padding: 2px 7px;
+		border-radius: 4px;
 	}
 
-	.empty-lookup-state {
+	.neo-empty-box {
 		background: #ffffff;
-		border: 1px dashed var(--border-strong);
-		border-radius: 16px;
+		border: 2px dashed #0f172a;
+		border-radius: 10px;
 		padding: 40px 20px;
 		text-align: center;
 		display: flex;
@@ -1858,225 +1948,293 @@
 		gap: 12px;
 	}
 
-	.empty-icon {
-		color: var(--muted);
-	}
-
-	.empty-lookup-state h4 {
-		font-size: 16px;
-		font-weight: 800;
-		margin: 0;
-	}
-
-	.empty-lookup-state p {
-		font-size: 13px;
-		color: var(--muted);
-		margin: 0 0 8px;
-	}
-
-	.booking-cards-grid {
+	.neo-records-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
 		gap: 16px;
 	}
 
-	.client-booking-card {
+	.neo-record-card {
 		background: #ffffff;
-		border: 1px solid var(--border);
-		border-radius: 16px;
+		border: 2px solid #0f172a;
+		border-radius: 10px;
 		padding: 20px;
 		display: flex;
 		flex-direction: column;
-		gap: 14px;
-		box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+		gap: 12px;
+		box-shadow: 4px 4px 0px #0f172a;
 	}
 
-	.card-top-row {
+	.r-card-top {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 	}
 
-	.code-and-kind {
+	.r-code-group {
 		display: flex;
 		align-items: center;
 		gap: 8px;
 	}
 
-	.booking-code-pill {
-		font-size: 13px;
-		font-weight: 850;
-		color: var(--primary);
-		letter-spacing: 0.03em;
+	.r-code-box {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 12.5px;
+		font-weight: 950;
+		color: #4f46e5;
 	}
 
-	.booking-kind-tag {
+	.r-kind-tag {
+		font-size: 9.5px;
+		font-weight: 900;
+		background: #f1f5f9;
+		border: 1.5px solid #0f172a;
+		padding: 1px 6px;
+		border-radius: 3px;
+	}
+
+	.r-status-badge {
+		font-family: "JetBrains Mono", monospace;
 		font-size: 10px;
-		font-weight: 800;
-		padding: 2px 7px;
-		border-radius: var(--r-full);
-		text-transform: uppercase;
+		font-weight: 900;
+		padding: 3px 8px;
+		border: 1.5px solid #0f172a;
+		border-radius: 4px;
 	}
 
-	.booking-kind-tag.grooming { background: #fdf2f8; color: #db2777; }
-	.booking-kind-tag.hotel { background: #ede9fe; color: #7c3aed; }
-	.booking-kind-tag.aquarium { background: #e0f2fe; color: #0284c7; }
+	.r-status-badge.pending { background: #fef08a; }
+	.r-status-badge.confirmed { background: #a7f3d0; }
+	.r-status-badge.checked_in { background: #bae6fd; }
+	.r-status-badge.completed { background: #e9d5ff; }
+	.r-status-badge.cancelled { background: #fecaca; }
 
-	.status-badge {
-		font-size: 11px;
-		font-weight: 800;
-		padding: 3px 9px;
-		border-radius: var(--r-full);
-	}
-
-	.status-badge.pending { background: #fef3c7; color: #b45309; }
-	.status-badge.confirmed { background: #d1fae5; color: #047857; }
-	.status-badge.checked_in { background: #dbeafe; color: #1d4ed8; }
-	.status-badge.completed { background: #f3e8ff; color: #6b21a8; }
-	.status-badge.cancelled { background: #fee2e2; color: #b91c1c; }
-
-	.card-service-name {
+	.r-card-main h4 {
 		font-size: 15px;
-		font-weight: 800;
-		color: var(--ink);
-		margin: 0 0 3px;
+		font-weight: 900;
+		margin: 0 0 2px;
+		color: #0f172a;
 	}
 
-	.card-pet-name {
+	.r-pet-name {
 		display: flex;
 		align-items: center;
-		gap: 5px;
-		font-size: 12.5px;
-		color: var(--muted);
+		gap: 4px;
+		font-size: 12px;
+		color: #64748b;
 		font-weight: 600;
 	}
 
-	.card-details-grid {
+	.r-data-grid {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: 10px;
+		gap: 8px;
 		padding-top: 10px;
-		border-top: 1px solid var(--border);
+		border-top: 1.5px dashed #cbd5e1;
 	}
 
-	.detail-cell {
+	.r-cell {
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 1px;
 	}
 
-	.d-label {
-		font-size: 10.5px;
-		font-weight: 750;
-		color: var(--muted);
+	.rc-label {
+		font-size: 9.5px;
+		font-weight: 850;
+		color: #64748b;
 		text-transform: uppercase;
 	}
 
-	.d-val {
-		font-size: 12px;
-		font-weight: 700;
-		color: var(--ink);
-	}
-
-	.d-val.price {
-		color: var(--primary);
+	.rc-val {
+		font-size: 11.5px;
 		font-weight: 800;
+		color: #0f172a;
 	}
 
-	.card-notes {
+	.rc-val.price {
+		color: #4f46e5;
+	}
+
+	.r-notes {
 		font-size: 11px;
-		color: var(--muted);
+		color: #64748b;
+		background: #f8fafc;
+		border: 1px solid #cbd5e1;
+		padding: 5px 8px;
+		border-radius: 4px;
 		margin: 0;
-		padding: 6px 10px;
-		background: var(--surface-2);
-		border-radius: var(--r-sm);
 	}
 
-	/* Footer */
-	.portal-footer {
-		background: #ffffff;
-		border-top: 1px solid var(--border);
-		padding: 24px 20px;
+	.neo-alert-error {
+		background: #fecaca;
+		border: 2px solid #0f172a;
+		border-radius: 8px;
+		padding: 12px 16px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		color: #991b1b;
+		font-weight: 750;
+		font-size: 13px;
+		margin-bottom: 20px;
+		box-shadow: 3px 3px 0px #0f172a;
+	}
+
+	/* ============ FOOTER ============ */
+	.neo-footer {
+		background: #0f172a;
+		color: #ffffff;
+		border-top: 3px solid #0f172a;
+		padding: 60px 0 28px;
 		margin-top: auto;
 	}
 
-	.footer-container {
-		max-width: 1200px;
-		margin: 0 auto;
+	.footer-grid-neo {
+		display: grid;
+		grid-template-columns: 2fr 1fr 1fr 1.2fr;
+		gap: 36px;
+		padding-bottom: 40px;
+		border-bottom: 1px solid #334155;
+	}
+
+	.footer-brand-col {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.f-brand {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.f-box {
+		width: 30px;
+		height: 30px;
+		background: #facc15;
+		color: #0f172a;
+		border: 1.5px solid #ffffff;
+		display: grid;
+		place-items: center;
+		border-radius: 4px;
+	}
+
+	.f-title {
+		font-size: 18px;
+		font-weight: 950;
+		color: #ffffff;
+	}
+
+	.f-tagline {
+		font-size: 12.5px;
+		color: #94a3b8;
+		line-height: 1.55;
+		margin: 0;
+		max-width: 340px;
+	}
+
+	.f-cert-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		font-family: "JetBrains Mono", monospace;
+		font-size: 10px;
+		font-weight: 850;
+		color: #facc15;
+	}
+
+	.footer-nav-col h5 {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 12px;
+		font-weight: 900;
+		letter-spacing: 0.08em;
+		color: #facc15;
+		margin: 0 0 14px;
+	}
+
+	.footer-nav-col a {
+		display: block;
+		font-size: 13px;
+		color: #cbd5e1;
+		text-decoration: none;
+		margin-bottom: 8px;
+		transition: color 100ms ease;
+	}
+
+	.footer-nav-col a:hover {
+		color: #facc15;
+	}
+
+	.f-staff-tag {
+		display: inline-block;
+		margin-top: 6px;
+		background: #1e293b;
+		border: 1.5px solid #475569;
+		color: #facc15 !important;
+		padding: 4px 9px;
+		border-radius: 4px;
+		font-size: 11px;
+		font-weight: 850;
+	}
+
+	.footer-bottom-neo {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
-		gap: 16px;
+		padding-top: 22px;
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11px;
+		color: #64748b;
+		gap: 10px;
 	}
 
-	.footer-logo {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		font-weight: 800;
-		color: var(--primary);
-		font-size: 14px;
-	}
-
-	.footer-brand p {
-		font-size: 11.5px;
-		color: var(--muted);
-		margin: 3px 0 0;
-	}
-
-	.footer-links {
+	.f-meta-links {
 		display: flex;
-		gap: 18px;
+		gap: 8px;
 	}
 
-	.footer-links a {
-		color: var(--muted);
-		font-size: 12px;
-		font-weight: 600;
-		text-decoration: none;
-		transition: color 120ms ease;
-	}
-
-	.footer-links a:hover {
-		color: var(--primary);
-	}
-
+	/* ============ RESPONSIVE BREAKPOINTS ============ */
 	@media (max-width: 960px) {
-		.wizard-grid {
+		.wizard-two-column-layout {
 			grid-template-columns: 1fr;
 		}
 
-		.booking-cards-grid {
-			grid-template-columns: 1fr;
+		.footer-grid-neo {
+			grid-template-columns: 1fr 1fr;
 		}
 	}
 
 	@media (max-width: 640px) {
-		.portal-header-container {
+		.neo-header-inner {
 			flex-wrap: wrap;
 		}
 
-		.portal-nav {
+		.neo-tab-toggle {
 			order: 3;
 			width: 100%;
 			justify-content: center;
 		}
 
-		.ticket-grid {
+		.ticket-data-grid {
 			grid-template-columns: 1fr;
 		}
 
-		.ticket-actions {
+		.ticket-actions-bar {
 			flex-direction: column;
 		}
 
-		.lookup-form {
+		.neo-search-bar {
 			flex-direction: column;
 		}
 
-		.staff-text {
+		.staff-label {
 			display: none;
+		}
+
+		.footer-grid-neo {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>
