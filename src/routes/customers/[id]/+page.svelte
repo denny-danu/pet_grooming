@@ -39,6 +39,7 @@
 	} from "@lucide/svelte";
 	import { formatRupiah as money } from "$lib/util";
 	import { getSpeciesEmoji } from "$lib/ui/species";
+	import { prettyStatus } from "$lib/ui/booking";
 	import DatePicker from "$lib/components/DatePicker.svelte";
 	import Modal from "$lib/components/Modal.svelte";
 
@@ -473,7 +474,7 @@
 									<td class="small muted">{b.serviceName ?? b.roomName ?? '—'}</td>
 									<td class="num mono cell-strong">{money(b.priceCents)}</td>
 									<td>
-										<span class="badge status-{b.status}">{b.status.replace('_', ' ')}</span>
+										<span class="badge status-{b.status}">{prettyStatus(b.status)}</span>
 									</td>
 									<td class="num">
 										<a href="/bookings/{b.id}" class="btn btn-ghost btn-sm" onclick={(e) => e.stopPropagation()}>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/state";
 	import { makeT } from "$lib/i18n/t";
+	import { getKindIcon, prettyStatus } from "$lib/ui/booking";
 	import { getSpeciesEmoji } from "$lib/ui/species";
 	import {
 		LogIn,
@@ -39,12 +40,6 @@
 		day: 'numeric',
 		year: 'numeric'
 	});
-
-	function getKindIcon(k: string) {
-		if (k === 'hotel') return Hotel;
-		if (k === 'aquarium') return Fish;
-		return Scissors;
-	}
 
 	const pending = $derived(
 		data.rows.filter((r) => r.status === 'pending' || r.status === 'confirmed')
@@ -207,7 +202,7 @@
 								{r.roomName ?? r.serviceName ?? '—'}
 							</td>
 							<td>
-								<span class="badge status-{r.status}">{r.status.replace('_', ' ')}</span>
+								<span class="badge status-{r.status}">{prettyStatus(r.status)}</span>
 							</td>
 							<td class="num" onclick={(e) => e.stopPropagation()}>
 								{#if r.status === 'confirmed' || r.status === 'pending'}

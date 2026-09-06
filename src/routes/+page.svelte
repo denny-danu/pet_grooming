@@ -25,6 +25,7 @@
 	} from "@lucide/svelte";
 	import { formatRupiah as money } from "$lib/util";
 	import { makeT } from "$lib/i18n/t";
+	import { getKindIcon, prettyStatus } from "$lib/ui/booking";
 	import { getSpeciesEmoji } from "$lib/ui/species";
 	import { page } from "$app/state";
 
@@ -38,12 +39,6 @@
 	const fmtDay = (d: Date | string) =>
 		new Date(d).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 	const todayDateLabel = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-
-	function getKindIcon(kind: string) {
-		if (kind === 'hotel') return Hotel;
-		if (kind === 'aquarium') return Fish;
-		return Scissors;
-	}
 
 </script>
 
@@ -199,7 +194,7 @@
 								</td>
 								<td class="num mono cell-strong">{money(b.priceCents)}</td>
 								<td>
-									<span class="badge status-{b.status}">{b.status.replace('_', ' ')}</span>
+									<span class="badge status-{b.status}">{prettyStatus(b.status)}</span>
 								</td>
 								<td class="num">
 									<a href="/bookings/{b.id}" class="btn btn-ghost btn-sm" onclick={(e) => e.stopPropagation()}>
@@ -281,7 +276,7 @@
 								</td>
 								<td class="num mono small cell-strong">{money(b.priceCents)}</td>
 								<td>
-									<span class="badge status-{b.status}">{b.status.replace('_', ' ')}</span>
+									<span class="badge status-{b.status}">{prettyStatus(b.status)}</span>
 								</td>
 								<td class="num">
 									<a href="/bookings/{b.id}" class="btn btn-ghost btn-sm" onclick={(e) => e.stopPropagation()}>

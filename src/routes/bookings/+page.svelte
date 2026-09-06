@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/state";
 	import { makeT } from "$lib/i18n/t";
+	import { getKindIcon, prettyStatus } from "$lib/ui/booking";
 	import { getSpeciesEmoji } from "$lib/ui/species";
 	import {
 		CalendarDays,
@@ -63,12 +64,6 @@
 	);
 
 	const totalFilteredItems = $derived(filteredDays.reduce((acc, d) => acc + d.items.length, 0));
-
-	function getKindIcon(k: string) {
-		if (k === 'hotel') return Hotel;
-		if (k === 'aquarium') return Fish;
-		return Scissors;
-	}
 
 </script>
 
@@ -279,7 +274,7 @@
 									</td>
 									<td class="num mono cell-strong">{money(b.priceCents)}</td>
 									<td>
-										<span class="badge status-{b.status}">{b.status.replace('_', ' ')}</span>
+										<span class="badge status-{b.status}">{prettyStatus(b.status)}</span>
 									</td>
 									<td class="num">
 										<a href="/bookings/{b.id}" class="btn btn-ghost btn-sm" onclick={(e) => e.stopPropagation()}>
