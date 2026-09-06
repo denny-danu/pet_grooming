@@ -14,382 +14,373 @@
 		Phone,
 		Mail,
 		CheckCircle2,
-		AlertCircle,
-		Search,
-		Plus,
-		ArrowRight,
-		Sparkles,
 		ShieldCheck,
 		User,
 		Receipt,
 		Building2,
 		HeartHandshake,
 		ChevronRight,
+		ArrowRight,
+		ArrowUpRight,
+		Sparkles,
 		Star,
-		ShoppingBag,
-		HelpCircle,
 		Award,
 		Zap,
-		Check
+		Check,
+		Search,
+		HelpCircle,
+		ExternalLink
 	} from "@lucide/svelte";
 
 	let { data } = $props();
 	const t = $derived(makeT(page.data.locale ?? "en"));
 	const isId = $derived(page.data.locale === "id");
 
-	function scrollToSection(id: string) {
+	function scrollTo(id: string) {
 		const el = document.getElementById(id);
-		if (el) {
-			el.scrollIntoView({ behavior: "smooth" });
-		}
+		if (el) el.scrollIntoView({ behavior: "smooth" });
 	}
 </script>
 
 <svelte:head>
-	<title>{isId ? "PetCo · Pusat Perawatan Hewan, Grooming, Hotel & Akuarium" : "PetCo · Premier Pet Care, Luxury Hotel & Aquarium Center"}</title>
+	<title>{isId ? "PetCo · Ekosistem Perawatan, Grooming & Hotel Hewan Modern" : "PetCo · Modern Pet Care, Luxury Hotel & Aquatic Center"}</title>
 	<meta
 		name="description"
 		content={isId
-			? "Pusat layanan hewan peliharaan terpadu di Indonesia. Grooming profesional, pet hotel 24 jam ber-AC, aquascape & toko kebutuhan hewan di Jakarta, Tangerang & Surabaya."
-			: "Indonesia's leading pet care destination. Professional styling, 24/7 climate-controlled boarding, aquarium maintenance & premium pet retail across Jakarta & Java."}
+			? "Pusat ekosistem perawatan hewan peliharaan terlengkap di Indonesia. Grooming standar ras, hotel 24 jam ber-AC, rekam medis terintegrasi & spesialis akuarium di Jakarta, Tangerang & Surabaya."
+			: "Indonesia's premier integrated pet wellness ecosystem. Certified styling salons, 24/7 climate-controlled boarding suites, veterinary health gate & custom aquascaping across Jakarta & Java."}
 	/>
 </svelte:head>
 
-<div class="landing-page-root">
-	<!-- ==================== TOP NAVBAR ==================== -->
-	<header class="top-nav">
-		<div class="nav-container">
-			<div class="nav-brand">
-				<a href="/" class="brand-link">
-					<span class="brand-emblem"><PawPrint size={20} /></span>
-					<div class="brand-copy">
-						<span class="brand-title">PetCo</span>
-						<span class="brand-tagline">Care · Hotel · Aquarium</span>
-					</div>
-				</a>
-			</div>
+<div class="neobrutalist-root overflow-x-hidden w-full max-w-full">
+	<!-- ==================== TOP NAVIGATION BAR ==================== -->
+	<header class="neo-header">
+		<div class="neo-header-inner">
+			<a href="/" class="neo-brand">
+				<span class="brand-box"><PawPrint size={19} strokeWidth={2.6} /></span>
+				<span class="brand-title">PETCO</span>
+				<span class="brand-badge-tag">SYSTEM v2.4</span>
+			</a>
 
-			<!-- Main Navigation Links -->
-			<nav class="nav-links-center" aria-label="Main Navigation">
-				<a href="#about" onclick={(e) => { e.preventDefault(); scrollToSection('about'); }}>{isId ? "Tentang Kami" : "About"}</a>
-				<a href="#services" onclick={(e) => { e.preventDefault(); scrollToSection('services'); }}>{isId ? "Layanan" : "Services"}</a>
-				<a href="#why-petco" onclick={(e) => { e.preventDefault(); scrollToSection('why-petco'); }}>{isId ? "Keunggulan" : "Why PetCo"}</a>
-				<a href="#branches" onclick={(e) => { e.preventDefault(); scrollToSection('branches'); }}>{isId ? "Cabang" : "Locations"}</a>
-				<a href="#pricing" onclick={(e) => { e.preventDefault(); scrollToSection('pricing'); }}>{isId ? "Tarif" : "Pricing"}</a>
-				<a href="#reviews" onclick={(e) => { e.preventDefault(); scrollToSection('reviews'); }}>{isId ? "Ulasan" : "Reviews"}</a>
-				<a href="#faq" onclick={(e) => { e.preventDefault(); scrollToSection('faq'); }}>FAQ</a>
+			<nav class="neo-nav-links" aria-label="Main Navigation">
+				<a href="#about" onclick={(e) => { e.preventDefault(); scrollTo('about'); }}>{isId ? "[ TENTANG ]" : "[ ABOUT ]"}</a>
+				<a href="#services" onclick={(e) => { e.preventDefault(); scrollTo('services'); }}>{isId ? "[ LAYANAN ]" : "[ SERVICES ]"}</a>
+				<a href="#safety" onclick={(e) => { e.preventDefault(); scrollTo('safety'); }}>{isId ? "[ KEAMANAN ]" : "[ SAFETY ]"}</a>
+				<a href="#branches" onclick={(e) => { e.preventDefault(); scrollTo('branches'); }}>{isId ? "[ CABANG ]" : "[ FACILITIES ]"}</a>
+				<a href="#pricing" onclick={(e) => { e.preventDefault(); scrollTo('pricing'); }}>{isId ? "[ TARIF ]" : "[ PRICING ]"}</a>
 			</nav>
 
-			<!-- Header Right Controls -->
-			<div class="nav-right-actions">
+			<div class="neo-nav-actions">
 				<LanguageSwitcher value={page.data.locale ?? "en"} currentPath="/" />
-				<a href="/book" class="btn btn-primary btn-sm header-book-btn">
+				<a href="/book" class="neo-btn neo-btn-sm neo-btn-primary">
 					<Calendar size={14} />
-					<span>{isId ? "Reservasi Online" : "Book Online"}</span>
+					<span>{isId ? "RESERVASI" : "BOOK NOW"}</span>
+					<ArrowRight size={13} />
 				</a>
-				<a href="/dashboard" class="staff-link" title={isId ? "Masuk Portal Staf" : "Staff Console"}>
-					<User size={14} />
-					<span class="staff-text">{isId ? "Staf" : "Staff"}</span>
+				<a href="/dashboard" class="neo-staff-btn" title="Staff Management Console">
+					<User size={13} />
+					<span class="staff-label">{isId ? "STAF" : "STAFF"}</span>
 				</a>
 			</div>
 		</div>
 	</header>
 
-	<!-- ==================== HERO SECTION ==================== -->
-	<section class="hero-section">
-		<div class="hero-backdrop-glow"></div>
-		<div class="hero-container">
-			<div class="hero-pill-badge">
-				<Sparkles size={14} class="badge-sparkle" />
-				<span>{isId ? "Pusat Layanan Hewan Peliharaan & Akuarium Terpadu" : "Indonesia's Premier Pet Care & Aquatic Ecosystem"}</span>
+	<!-- ==================== HERO SECTION (NEOBRUTALIST) ==================== -->
+	<section class="neo-hero-section">
+		<div class="neo-container">
+			<div class="hero-tag-strip">
+				<span class="status-indicator"></span>
+				<span class="tag-label">{isId ? "PUSAT LAYANAN & PERAWATAN HEWAN TERPADU // JAKARTA · TANGERANG · SURABAYA" : "INTEGRATED COMPANION ANIMAL CARE // JAKARTA · TANGERANG · SURABAYA"}</span>
 			</div>
 
-			<h1 class="hero-title">
+			<h1 class="hero-huge-title">
 				{#if isId}
-					Perawatan Mewah, Hotel 24 Jam &amp; <span class="gradient-text">Spesialis Hewan Terpercaya</span>
+					STANDAR PERAWATAN MEWAH, HOTEL 24 JAM &amp; <span class="highlight-box">SPESIALIS AKUARIUM</span> RESMI.
 				{:else}
-					Luxury Pet Care, 24/7 Boarding &amp; <span class="gradient-text">Trusted Veterinary Standards</span>
+					CLINICAL PET STYLING, 24/7 LUXURY HOTEL &amp; <span class="highlight-box">CERTIFIED REEF CARE</span>.
 				{/if}
 			</h1>
 
-			<p class="hero-lead">
+			<p class="hero-lead-text">
 				{#if isId}
-					PetCo menghadirkan layanan grooming dengan sertifikasi internasional, hotel ber-AC dengan pemantauan CCTV 24/7, perawatan aquascape profesional, dan rekam medis digital terpusat di seluruh jaringan cabang kami.
+					PetCo menyatukan salon grooming bersertifikasi ras, hotel ber-AC dengan pemantauan CCTV 24/7 dan laporan foto WhatsApp harian, verifikasi medis bebas penyakit menular, serta rekayasa aquascape profesional.
 				{:else}
-					PetCo provides certified breed-specific styling, climate-controlled luxury boarding suites with 24/7 live updates, custom aquascape biotope engineering, and centralized health dossiers across all branch facilities.
+					PetCo combines certified breed-standard scissor sculpting, 24/7 HEPA-filtered boarding suites with daily WhatsApp telemetry, clinical contagion prevention gates, and professional aquatic biotope engineering.
 				{/if}
 			</p>
 
-			<div class="hero-cta-group">
-				<a href="/book" class="btn btn-primary hero-btn-main">
+			<div class="hero-actions-row">
+				<a href="/book" class="neo-btn neo-btn-lg neo-btn-primary">
 					<Calendar size={18} />
-					<span>{isId ? "Reservasi Layanan Sekarang" : "Book an Appointment"}</span>
-					<ArrowRight size={16} />
+					<span>{isId ? "RESERVASI ONLINE SEKARANG" : "BOOK AN APPOINTMENT"}</span>
+					<ArrowUpRight size={18} />
 				</a>
 
-				<a href="/book?lookup=1" class="btn hero-btn-subtle">
+				<a href="/book?lookup=1" class="neo-btn neo-btn-lg neo-btn-secondary">
 					<Search size={16} />
-					<span>{isId ? "Lacak Status Booking Anda" : "Check Booking Status"}</span>
+					<span>{isId ? "LACAK STATUS BOOKING" : "TRACK EXISTING BOOKING"}</span>
 				</a>
 			</div>
 
-			<!-- Live Trust Metrics Strip -->
-			<div class="trust-metrics-strip">
-				<div class="metric-card">
-					<div class="metric-num">5+</div>
-					<div class="metric-lbl">{isId ? "Cabang Resmi di Jabodetabek & Jatim" : "Facilities in Jakarta, Tangerang & Java"}</div>
+			<!-- Quick Telemetry Strip -->
+			<div class="neo-metrics-grid">
+				<div class="metric-box">
+					<span class="m-code">[ METRIC_01 ]</span>
+					<strong class="m-val">5+ CABANG</strong>
+					<span class="m-sub">{isId ? "Jakarta, Tangerang & Surabaya" : "Metro Facilities in Java"}</span>
 				</div>
-				<div class="metric-divider"></div>
-				<div class="metric-card">
-					<div class="metric-num">15,000+</div>
-					<div class="metric-lbl">{isId ? "Hewan Peliharaan Terlayani Bahagia" : "Happy Pets Styled & Cared For"}</div>
+				<div class="metric-box">
+					<span class="m-code">[ METRIC_02 ]</span>
+					<strong class="m-val">15,000+</strong>
+					<span class="m-sub">{isId ? "Hewan Terlayani & Tercatat" : "Dossiers on Unified Record"}</span>
 				</div>
-				<div class="metric-divider"></div>
-				<div class="metric-card">
-					<div class="metric-num">24 / 7</div>
-					<div class="metric-lbl">{isId ? "Caretaker Hotel & Pemantauan Medis" : "On-Duty Caretaker & Vet Triage"}</div>
+				<div class="metric-box">
+					<span class="m-code">[ METRIC_03 ]</span>
+					<strong class="m-val">24 / 7 CARE</strong>
+					<span class="m-sub">{isId ? "Caretaker On-Duty & CCTV Live" : "On-Duty Attendant & Video Logs"}</span>
 				</div>
-				<div class="metric-divider"></div>
-				<div class="metric-card">
-					<div class="metric-num">4.9 ★</div>
-					<div class="metric-lbl">{isId ? "Kepuasan Pemilik Hewan (2,400+ Ulasan)" : "Pet Parent Rating (2,400+ Reviews)"}</div>
+				<div class="metric-box">
+					<span class="m-code">[ METRIC_04 ]</span>
+					<strong class="m-val">4.9 ★ RATING</strong>
+					<span class="m-sub">{isId ? "2,400+ Ulasan Pemilik Hewan" : "From 2,400+ Verified Owners"}</span>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- ==================== ABOUT PETCO / WHAT WE DO ==================== -->
-	<section id="about" class="section-about">
-		<div class="section-container">
-			<div class="section-heading-block text-center">
-				<span class="section-kicker"><Building2 size={14} /> {isId ? "Mengenal PetCo" : "About PetCo"}</span>
-				<h2 class="section-title">{isId ? "Ekosistem Perawatan Hewan Modern Terlengkap" : "A Modern, Comprehensive Pet Wellness Ecosystem"}</h2>
-				<p class="section-subtitle">
+	<!-- ==================== MARQUEE TICKER ==================== -->
+	<section class="neo-ticker-section" aria-hidden="true">
+		<div class="ticker-wrapper">
+			<div class="ticker-content">
+				<span>/// CLINICAL VACCINE GATE</span>
+				<span class="sep">■</span>
+				<span>FEAR-FREE GENTLE HANDLING</span>
+				<span class="sep">■</span>
+				<span>24/7 CLIMATE-CONTROLLED BOARDING</span>
+				<span class="sep">■</span>
+				<span>CENTRALIZED DIGITAL HEALTH DOSSIERS</span>
+				<span class="sep">■</span>
+				<span>CERTIFIED BREED SCISSOR STYLING</span>
+				<span class="sep">■</span>
+				<span>CUSTOM REEF & AQUASCAPE BIOTOPES</span>
+				<span class="sep">■</span>
+			</div>
+			<div class="ticker-content">
+				<span>/// CLINICAL VACCINE GATE</span>
+				<span class="sep">■</span>
+				<span>FEAR-FREE GENTLE HANDLING</span>
+				<span class="sep">■</span>
+				<span>24/7 CLIMATE-CONTROLLED BOARDING</span>
+				<span class="sep">■</span>
+				<span>CENTRALIZED DIGITAL HEALTH DOSSIERS</span>
+				<span class="sep">■</span>
+				<span>CERTIFIED BREED SCISSOR STYLING</span>
+				<span class="sep">■</span>
+				<span>CUSTOM REEF & AQUASCAPE BIOTOPES</span>
+				<span class="sep">■</span>
+			</div>
+		</div>
+	</section>
+
+	<!-- ==================== ABOUT / PHILOSOPHY ==================== -->
+	<section id="about" class="neo-section bg-cream">
+		<div class="neo-container">
+			<div class="section-title-strip">
+				<span class="sec-index">[ 01 / PHILOSOPHY ]</span>
+				<h2>{isId ? "EKOSISTEM PERAWATAN TANPA KOMPROMI" : "ZERO-COMPROMISE COMPANION CARE"}</h2>
+				<p class="sec-lead">
 					{isId
-						? "PetCo didirikan untuk memberikan standar perawatan premium tanpa kompromi. Kami menggabungkan kenyamanan hewan, protokol higienis tinggi, dan teknologi pemantauan digital real-time."
-						: "PetCo was built to eliminate compromise in pet care. We fuse animal comfort, clinical-grade sanitization, and real-time digital transparency for discerning pet parents."}
+						? "PetCo didirikan untuk mengakhiri keraguan dalam memilih fasilitas hewan peliharaan. Kami menggabungkan kenyamanan hewan tanpa kekerasan, higienitas setara ruang medis, dan transparansi laporan langsung ke ponsel Anda."
+						: "PetCo was engineered to eliminate ambiguity in pet care. We fuse fear-free animal comfort, clinical-grade sanitization, and real-time digital transparency directly to your mobile device."}
 				</p>
 			</div>
 
-			<div class="about-grid">
-				<div class="about-feature-box">
-					<div class="about-icon-circle blue"><Award size={22} /></div>
-					<h3>{isId ? "Groomer & Stylist Bersertifikasi" : "Certified Master Stylists"}</h3>
-					<p>{isId ? "Setiap staf telah melalui pelatihan teknik handling bebas stres, standar pemotongan ras, dan penanganan kulit sensitif." : "Trained in low-stress handling, breed-specific symmetry, dermatological coat therapy, and behavioral soothing."}</p>
+			<div class="pillars-3-grid">
+				<div class="pillar-card-neo">
+					<div class="pillar-top-meta">
+						<span class="p-num">[ 01 ]</span>
+						<span class="p-badge blue">CERTIFIED</span>
+					</div>
+					<h3>{isId ? "Groomer & Stylist Berlisensi" : "Certified Master Stylists"}</h3>
+					<p>{isId ? "Setiap stylist terlatih dalam pemotongan simetris ras, handling bebas stres, terapi kulit sensitif, dan sanitasi alat higienis." : "Trained in breed-specific symmetry, fear-free calming techniques, dermatological coat recovery, and strict tool disinfection."}</p>
+					<div class="pillar-foot-tag"><Check size={14} /> <span>100% Gentle Zero-Force Handling</span></div>
 				</div>
-				<div class="about-feature-box">
-					<div class="about-icon-circle purple"><ShieldCheck size={22} /></div>
-					<h3>{isId ? "Gerbang Kepatuhan Vaksin" : "Clinical Vaccine Gate"}</h3>
-					<p>{isId ? "Sistem rekam medis otomatis memverifikasi vaksin rabies & parvo sebelum check-in hotel demi mencegah penularan penyakit." : "Automated digital health gates verify core inoculations (DHPP, Rabies, FPV) before boarding to guarantee zero contagion."}</p>
+
+				<div class="pillar-card-neo">
+					<div class="pillar-top-meta">
+						<span class="p-num">[ 02 ]</span>
+						<span class="p-badge purple">CLINICAL GATE</span>
+					</div>
+					<h3>{isId ? "Gerbang Verifikasi Vaksin Medis" : "Clinical Vaccine Verification"}</h3>
+					<p>{isId ? "Sistem rekam medis otomatis mewajibkan vaksin Rabies & Parvo/DHPP sebelum hotel check-in untuk menjamin lingkungan 100% steril." : "Automated digital verification of core vaccines (DHPP, Rabies, FPV) before boarding to guarantee zero disease contagion."}</p>
+					<div class="pillar-foot-tag"><Check size={14} /> <span>Zero Contagion Guarantee</span></div>
 				</div>
-				<div class="about-feature-box">
-					<div class="about-icon-circle emerald"><HeartHandshake size={22} /></div>
-					<h3>{isId ? "Laporan Harian WhatsApp & CCTV" : "Live Photo & WhatsApp Updates"}</h3>
-					<p>{isId ? "Pantau aktivitas makan, minum obat, jalan sore, dan mood anabul Anda setiap hari langsung dari ponsel." : "Receive mealtime logs, medication verifications, play session snapshots, and mood notes directly to your WhatsApp."}</p>
+
+				<div class="pillar-card-neo">
+					<div class="pillar-top-meta">
+						<span class="p-num">[ 03 ]</span>
+						<span class="p-badge green">LIVE TELEMETRY</span>
+					</div>
+					<h3>{isId ? "Laporan Harian WhatsApp & CCTV" : "Daily Photo & WhatsApp Reports"}</h3>
+					<p>{isId ? "Pantau jadwal makan, minum obat, aktivitas jalan sore, dan mood anabul Anda setiap pagi dan malam langsung dari chat WhatsApp." : "Daily photo verification of meals, prescription medication dosing, playtime sessions, and mood logs sent straight to WhatsApp."}</p>
+					<div class="pillar-foot-tag"><Check size={14} /> <span>2x Daily Real-Time Updates</span></div>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- ==================== CORE SERVICES SHOWCASE ==================== -->
-	<section id="services" class="section-services">
-		<div class="section-container">
-			<div class="section-heading-block text-center">
-				<span class="section-kicker"><Sparkles size={14} /> {isId ? "Layanan Unggulan" : "Core Services"}</span>
-				<h2 class="section-title">{isId ? "Pilihan Layanan Khusus untuk Hewan Kesayangan" : "Specialized Care for Dogs, Cats & Aquatics"}</h2>
-				<p class="section-subtitle">{isId ? "Dari spa relaksasi hingga suite hotel VIP dan perawatan tangki terumbu karang." : "From therapeutic grooming to climate-controlled boarding suites and reef biotope maintenance."}</p>
+	<!-- ==================== CORE SERVICES BREAKDOWN ==================== -->
+	<section id="services" class="neo-section bg-white">
+		<div class="neo-container">
+			<div class="section-title-strip">
+				<span class="sec-index">[ 02 / SERVICES ]</span>
+				<h2>{isId ? "PILAR LAYANAN SPESIALIS PETCO" : "SPECIALIZED SERVICE DISCIPLINES"}</h2>
+				<p class="sec-lead">
+					{isId
+						? "Pilihan paket resmi untuk anjing, kucing, dan akuarium dengan tarif transparan tanpa biaya siluman."
+						: "Certified packages for dogs, cats, and aquatics with transparent itemized pricing."}
+				</p>
 			</div>
 
-			<div class="services-pillars-grid">
-				<!-- Pillar 1: Grooming -->
-				<div class="pillar-card">
-					<div class="pillar-badge grooming">{isId ? "Grooming & Spa" : "Grooming & Styling"}</div>
-					<div class="pillar-icon-wrap grooming-bg">
-						<Scissors size={32} />
+			<div class="services-stacked-grid">
+				<!-- Service 1: Grooming -->
+				<div class="service-box-neo">
+					<div class="service-left">
+						<span class="svc-code">[ SVC-01 // GROOMING & SPA ]</span>
+						<h3>{isId ? "Spa & Grooming Profesional Berstandar Ras" : "Certified Breed Styling & Hydrotherapy Spa"}</h3>
+						<p>{isId ? "Mandi busa hypoallergenic, blow-dry lembut, pembersihan kantung telinga, potong kuku dremel, sikat gigi, terapi kutu medicated, dan styling bulu profesional." : "Hydrotherapy bath, gentle blow-drying, ear canal cleansing, nail dremel shaping, teeth brushing, medicated flea treatments, and custom breed styling."}</p>
+						<ul class="svc-list">
+							<li><Check size={14} /> {isId ? "Shampoo organik bebas paraben & hypoallergenic" : "Botanical paraben-free & hypoallergenic shampoos"}</li>
+							<li><Check size={14} /> {isId ? "Tercatat rapi di Kartu Potongan Bulu Digital" : "Recorded in your pet's permanent digital cut card"}</li>
+						</ul>
 					</div>
-					<h3>{isId ? "Spa & Grooming Profesional" : "Professional Styling & Spa"}</h3>
-					<p class="pillar-desc">
-						{isId
-							? "Mandi higienis, blow-dry lembut, pembersihan telinga, pemotongan kuku, sikat gigi, terapi kutu medicated, dan styling potongan bulu sesuai standar ras."
-							: "Hydrotherapy bath, high-velocity blow dry, ear canal cleansing, nail dremel shaping, teeth brushing, medicated flea baths, and breed styling."}
-					</p>
-					<ul class="pillar-bullet-list">
-						<li><Check size={14} /> {isId ? "Shampoo hypoallergenic & bebas paraben" : "Hypoallergenic, tearless & paraben-free shampoos"}</li>
-						<li><Check size={14} /> {isId ? "Teknik penanganan lembut tanpa kekerasan" : "Fear-free gentle handling protocols"}</li>
-						<li><Check size={14} /> {isId ? "Kartu spesifikasi potongan bulu digital" : "Digital grooming cut specification cards"}</li>
-					</ul>
-					<a href="/book?kind=grooming" class="btn btn-primary btn-sm pillar-cta">
-						<span>{isId ? "Pesan Grooming" : "Book Grooming"}</span>
-						<ChevronRight size={14} />
-					</a>
+					<div class="service-right">
+						<div class="price-banner">
+							<span class="p-from">{isId ? "TARIF MULAI" : "STARTING AT"}</span>
+							<strong class="p-amount">Rp 60.000</strong>
+						</div>
+						<a href="/book?kind=grooming" class="neo-btn neo-btn-primary w-full">
+							<span>{isId ? "RESERVASI GROOMING" : "BOOK GROOMING"}</span>
+							<ArrowRight size={14} />
+						</a>
+					</div>
 				</div>
 
-				<!-- Pillar 2: Pet Hotel -->
-				<div class="pillar-card featured">
-					<div class="featured-ribbon">{isId ? "Terpopuler" : "Most Popular"}</div>
-					<div class="pillar-badge hotel">{isId ? "Hotel & Boarding" : "Luxury Boarding"}</div>
-					<div class="pillar-icon-wrap hotel-bg">
-						<Hotel size={32} />
+				<!-- Service 2: Pet Hotel -->
+				<div class="service-box-neo featured-box">
+					<div class="featured-tag">{isId ? "★ REKOMENDASI TERBAIK" : "★ HIGH-DEMAND FACILITY"}</div>
+					<div class="service-left">
+						<span class="svc-code">[ SVC-02 // 24/7 PET HOTEL ]</span>
+						<h3>{isId ? "Hotel Penitipan Hewan 24 Jam Ber-AC & CCTV" : "24/7 Climate-Controlled Luxury Boarding"}</h3>
+						<p>{isId ? "Kamar privat bersih dengan sirkulasi udara HEPA, pemisahan 100% area kucing dan anjing, rutinitas makan terjadwal, jalan pagi/sore, dan laporan video berkala." : "Private air-conditioned suites with HEPA air filtration, 100% feline/canine wing isolation, scheduled nutrition routines, and daily exercise."}</p>
+						<ul class="svc-list">
+							<li><Check size={14} /> {isId ? "Pemberian obat & diet sesuai instruksi pemilik" : "Custom dietary and prescription medication administration"}</li>
+							<li><Check size={14} /> {isId ? "Jalan pagi dan sore di area bermain terproteksi" : "Morning and evening daily exercise sessions"}</li>
+						</ul>
 					</div>
-					<h3>{isId ? "Hotel Penitipan Hewan 24 Jam" : "24/7 Climate-Controlled Hotel"}</h3>
-					<p class="pillar-desc">
-						{isId
-							? "Kamar ber-AC bersih dengan sirkulasi udara HEPA, area bermain outdoor/indoor terpisah, rutinitas makan terjadwal, dan laporan foto/video berkala."
-							: "Private air-conditioned suites with HEPA filtration, separate dog and cat wings, daily exercise schedules, and real-time photo logs."}
-					</p>
-					<ul class="pillar-bullet-list">
-						<li><Check size={14} /> {isId ? "Ruang Kucing & Anjing 100% terpisah" : "100% sound & scent-isolated feline/canine wings"}</li>
-						<li><Check size={14} /> {isId ? "Pemberian obat & diet sesuai instruksi pemilik" : "Custom dietary & prescription medication management"}</li>
-						<li><Check size={14} /> {isId ? "Jalan pagi dan sore setiap hari" : "Morning & evening daily walk & playtime"}</li>
-					</ul>
-					<a href="/book?kind=hotel" class="btn btn-primary btn-sm pillar-cta">
-						<span>{isId ? "Pesan Kamar Hotel" : "Reserve Hotel Suite"}</span>
-						<ChevronRight size={14} />
-					</a>
+					<div class="service-right">
+						<div class="price-banner">
+							<span class="p-from">{isId ? "TARIF PER MALAM" : "RATE PER NIGHT"}</span>
+							<strong class="p-amount">Rp 120.000</strong>
+							<span class="p-unit">/{isId ? "malam" : "night"}</span>
+						</div>
+						<a href="/book?kind=hotel" class="neo-btn neo-btn-primary w-full">
+							<span>{isId ? "RESERVASI KAMAR HOTEL" : "RESERVE SUITE"}</span>
+							<ArrowRight size={14} />
+						</a>
+					</div>
 				</div>
 
-				<!-- Pillar 3: Aquarium -->
-				<div class="pillar-card">
-					<div class="pillar-badge aquarium">{isId ? "Aquarium Hub" : "Aquatic Care"}</div>
-					<div class="pillar-icon-wrap aquarium-bg">
-						<Fish size={32} />
+				<!-- Service 3: Aquarium -->
+				<div class="service-box-neo">
+					<div class="service-left">
+						<span class="svc-code">[ SVC-03 // AQUATIC ENGINEERING ]</span>
+						<h3>{isId ? "Layanan Desain Aquascape & Perawatan Tangki" : "Custom Aquascaping & Ecosystem Maintenance"}</h3>
+						<p>{isId ? "Instalasi ekosistem air tawar dan laut, uji kimia air digital (pH, Ammonia, Salinitas, Nitrat), pembersihan filter mekanis, dan perawatan terumbu karang." : "Freshwater biotope & marine reef architecture, digital water parameter testing (pH, NH3, Salinity), filter overhauls, and coral maintenance."}</p>
+						<ul class="svc-list">
+							<li><Check size={14} /> {isId ? "Dikerjakan oleh teknisi biologi akuatik berpengalaman" : "Performed by certified aquatic biologists and technicians"}</li>
+							<li><Check size={14} /> {isId ? "Tersedia paket langganan kunjungan berkala" : "Weekly and monthly recurring service maintenance plans"}</li>
+						</ul>
 					</div>
-					<h3>{isId ? "Layanan Aquascape & Akuarium" : "Custom Aquascaping & Service"}</h3>
-					<p class="pillar-desc">
-						{isId
-							? "Desain aquascape air tawar & laut, tes kimia air (pH, Ammonia, Salinitas, Nitrat), perawatan filter berkala, dan penanganan karang terumbu."
-							: "Custom freshwater biotope & marine reef installations, chemical telemetry logging (pH, NH3, Salinity), and recurring maintenance visits."}
-					</p>
-					<ul class="pillar-bullet-list">
-						<li><Check size={14} /> {isId ? "Teknisi aquarist berpengalaman" : "Certified aquatic biologists & reef technicians"}</li>
-						<li><Check size={14} /> {isId ? "Kalibrasi parameter air digital" : "Digital water chemistry logs on your dossier"}</li>
-						<li><Check size={14} /> {isId ? "Paket langganan kunjungan berkala" : "Weekly & monthly recurring service contracts"}</li>
-					</ul>
-					<a href="/book?kind=aquarium" class="btn btn-primary btn-sm pillar-cta">
-						<span>{isId ? "Pesan Layanan Akuarium" : "Book Aquarium Service"}</span>
-						<ChevronRight size={14} />
-					</a>
+					<div class="service-right">
+						<div class="price-banner">
+							<span class="p-from">{isId ? "TARIF KUNJUNGAN" : "VISIT RATE"}</span>
+							<strong class="p-amount">Rp 150.000</strong>
+						</div>
+						<a href="/book?kind=aquarium" class="neo-btn neo-btn-primary w-full">
+							<span>{isId ? "RESERVASI AKUARIUM" : "BOOK AQUATIC SERVICE"}</span>
+							<ArrowRight size={14} />
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- ==================== WHY CHOOSE PETCO / TRUST & SAFETY ==================== -->
-	<section id="why-petco" class="section-why">
-		<div class="section-container">
-			<div class="why-split-layout">
-				<div class="why-text-col">
-					<span class="section-kicker"><ShieldCheck size={14} /> {isId ? "Standar Keamanan" : "Safety Standards"}</span>
-					<h2 class="section-title">{isId ? "Standar Keamanan Medis & Higienis Tertinggi" : "Clinical Sanitation & Transparent Care"}</h2>
-					<p class="why-lead-desc">
-						{isId
-							? "Kesehatan dan kenyamanan hewan peliharaan Anda adalah prioritas utama kami. PetCo menerapkan SOP ketat yang setara dengan fasilitas klinik modern."
-							: "Your pet's well-being is our non-negotiable responsibility. Every PetCo facility adheres to veterinary-grade sanitation and digital transparency."}
-					</p>
+	<!-- ==================== SAFETY STANDARDS (NEOBRUTALIST DOSSIER) ==================== -->
+	<section id="safety" class="neo-section bg-dark">
+		<div class="neo-container">
+			<div class="section-title-strip dark">
+				<span class="sec-index yellow">[ 03 / SAFETY PROTOCOLS ]</span>
+				<h2>{isId ? "PROTOKOL KESELAMATAN & HIGIENIS TERTINGGI" : "CLINICAL SANITATION ARCHITECTURE"}</h2>
+				<p class="sec-lead">
+					{isId
+						? "Kesehatan dan keselamatan anabul Anda adalah tanggung jawab mutlak kami. Setiap cabang beroperasi dengan SOP klinik modern."
+						: "Your pet's well-being is our non-negotiable responsibility. Every facility operates under strict medical-grade SOPs."}
+				</p>
+			</div>
 
-					<div class="why-points-list">
-						<div class="why-point-row">
-							<div class="why-icon-badge"><ShieldCheck size={18} /></div>
-							<div class="why-point-text">
-								<strong>{isId ? "Sterilisasi Alat UV & Sanitasi Menyeluruh" : "UV Tool Sterilization & Antimicrobial Suites"}</strong>
-								<p>{isId ? "Semua sisir, pisau clipper, meja grooming, dan kandang dibersihkan dan disterilkan dengan sinar UV sebelum digunakan untuk hewan berikutnya." : "Every blade, shear, table, and suite is sanitized and UV-sterilized between appointments."}</p>
-							</div>
-						</div>
-
-						<div class="why-point-row">
-							<div class="why-icon-badge"><Zap size={18} /></div>
-							<div class="why-point-text">
-								<strong>{isId ? "Notifikasi & Pengingat Otomatis" : "24h & 2h Automated Pre-Visit Reminders"}</strong>
-								<p>{isId ? "Sistem kami mengirimkan pengingat jadwal melalui WhatsApp dan SMS sehingga Anda tidak pernah melewatkan sesi perawatan atau check-in." : "Automated WhatsApp and SMS alerts keep you informed 24h and 2h prior to arrival."}</p>
-							</div>
-						</div>
-
-						<div class="why-point-row">
-							<div class="why-icon-badge"><MapPin size={18} /></div>
-							<div class="why-point-text">
-								<strong>{isId ? "Rekam Medis & Riwayat Terpusat Multi-Cabang" : "Centralized Multi-Branch Dossiers"}</strong>
-								<p>{isId ? "Data alergi, preferensi potongan, dan riwayat menginap dapat diakses di semua cabang PetCo di mana pun Anda berkunjung." : "Your pet's preferences, allergies, and cut cards seamlessly follow them across any PetCo facility."}</p>
-							</div>
-						</div>
-					</div>
+			<div class="safety-grid-neo">
+				<div class="safety-cell">
+					<div class="s-icon"><ShieldCheck size={26} /></div>
+					<h4>{isId ? "Sterilisasi Alat UV-C" : "UV-C Tool Sterilization"}</h4>
+					<p>{isId ? "Semua pisau clipper, gunting, meja, dan handuk disterilisasi sebelum digunakan pada hewan berikutnya." : "Every blade, shear, table, and towel is sanitized and UV-sterilized between appointments."}</p>
 				</div>
-
-				<div class="why-visual-col">
-					<div class="trust-card-mockup">
-						<div class="mockup-header">
-							<div class="mockup-avatar"><PawPrint size={18} /></div>
-							<div>
-								<div class="mockup-name">Milo · Golden Retriever</div>
-								<div class="mockup-sub">PetCo Health Dossier #PET-00124</div>
-							</div>
-							<span class="mockup-status-tag">VACCINE VERIFIED</span>
-						</div>
-
-						<div class="mockup-body">
-							<div class="mockup-metric-row">
-								<span>Rabies &amp; Parvo Status</span>
-								<strong class="text-green">✓ Valid until Dec 2026</strong>
-							</div>
-							<div class="mockup-metric-row">
-								<span>Skin &amp; Coat Protocol</span>
-								<strong>Hypoallergenic Oatmeal Wash</strong>
-							</div>
-							<div class="mockup-metric-row">
-								<span>Hotel Boarding Suite</span>
-								<strong>Deluxe Room #304 (AC + Balcony)</strong>
-							</div>
-							<div class="mockup-metric-row">
-								<span>Special Diet</span>
-								<strong>Salmon Grain-Free · 2x / day</strong>
-							</div>
-						</div>
-
-						<div class="mockup-footer">
-							<span class="mockup-timestamp"><Clock size={12} /> Last sanitized today 08:30 WIB</span>
-							<span class="mockup-cert">ISO-Certified Facility</span>
-						</div>
-					</div>
+				<div class="safety-cell">
+					<div class="s-icon"><Award size={26} /></div>
+					<h4>{isId ? "Pemisahan Spesies 100%" : "100% Sound & Scent Isolation"}</h4>
+					<p>{isId ? "Ruang inap dan area grooming anjing dan kucing terpisah total untuk meminimalkan kecemasan dan stres." : "Dog and cat wings are acoustically and olfactory isolated to eliminate sensory anxiety."}</p>
+				</div>
+				<div class="safety-cell">
+					<div class="s-icon"><Zap size={26} /></div>
+					<h4>{isId ? "Rekam Medis Digital Multi-Cabang" : "Unified Multi-Branch Dossier"}</h4>
+					<p>{isId ? "Data alergi, preferensi potongan, dan riwayat menginap sinkron di seluruh cabang Jakarta & Surabaya." : "Your pet's allergies, cut cards, and stay records seamlessly sync across all facility locations."}</p>
 				</div>
 			</div>
 		</div>
 	</section>
 
 	<!-- ==================== LOCATIONS & BRANCHES ==================== -->
-	<section id="branches" class="section-branches">
-		<div class="section-container">
-			<div class="section-heading-block text-center">
-				<span class="section-kicker"><MapPin size={14} /> {isId ? "Jaringan Cabang" : "Branch Network"}</span>
-				<h2 class="section-title">{isId ? "Temukan Cabang PetCo Terdekat" : "Find Your Nearest PetCo Location"}</h2>
-				<p class="section-subtitle">{isId ? "Fasilitas lengkap kami tersebar di lokasi strategis untuk melayani Anda." : "State-of-the-art facilities located across major metropolitan hubs."}</p>
+	<section id="branches" class="neo-section bg-cream">
+		<div class="neo-container">
+			<div class="section-title-strip">
+				<span class="sec-index">[ 04 / LOCATIONS ]</span>
+				<h2>{isId ? "JARINGAN FASILITAS CABANG PETCO" : "METROPOLITAN FACILITY DIRECTORY"}</h2>
+				<p class="sec-lead">
+					{isId
+						? "Fasilitas lengkap kami tersebar di lokasi strategis untuk memberikan akses mudah bagi Anda dan anabul."
+						: "State-of-the-art facilities located across major metropolitan hubs in Java."}
+				</p>
 			</div>
 
-			<div class="branches-display-grid">
+			<div class="branches-grid-neo">
 				{#each data.branches as branch}
-					<div class="branch-detail-box" class:is-hq={branch.isHeadOffice}>
-						<div class="branch-top-bar">
-							<div class="branch-city-tag"><MapPin size={12} /> {branch.city || "Jakarta"}</div>
+					<div class="branch-card-neo" class:hq-border={branch.isHeadOffice}>
+						<div class="b-head-row">
+							<span class="b-city-tag"><MapPin size={13} /> {branch.city || "Jakarta"}</span>
 							{#if branch.isHeadOffice}
-								<span class="hq-label">HEAD OFFICE &amp; SPA</span>
+								<span class="b-hq-badge">HQ &amp; FLAGSHIP</span>
 							{/if}
 						</div>
-
-						<h3 class="branch-name">{branch.name}</h3>
-						<p class="branch-address">{branch.address || "Jl. Sudirman No. 128, Jakarta Pusat"}</p>
-
-						<div class="branch-meta-row">
-							<div class="branch-meta-item">
-								<Phone size={13} />
-								<span>{branch.phone || "+62 21 555-0199"}</span>
-							</div>
-							<div class="branch-meta-item">
-								<Clock size={13} />
-								<span>08:00 - 20:00 WIB</span>
-							</div>
+						<h3>{branch.name}</h3>
+						<p class="b-addr">{branch.address || "Jl. Sudirman No. 128, Jakarta Pusat"}</p>
+						<div class="b-meta-block">
+							<div><Clock size={13} /> <span>08:00 - 20:00 WIB</span></div>
+							<div><Phone size={13} /> <span>{branch.phone || "+62 21 555-0199"}</span></div>
 						</div>
-
-						<a href="/book?branch={branch.id}" class="btn btn-subtle btn-sm branch-book-action">
-							<span>{isId ? "Pilih Cabang Ini" : "Book at this Branch"}</span>
-							<ArrowRight size={14} />
+						<a href="/book?branch={branch.id}" class="neo-btn neo-btn-sm neo-btn-subtle w-full">
+							<span>{isId ? "RESERVASI DI CABANG INI" : "BOOK AT THIS FACILITY"}</span>
+							<ArrowRight size={13} />
 						</a>
 					</div>
 				{/each}
@@ -397,162 +388,115 @@
 		</div>
 	</section>
 
-	<!-- ==================== PRICING & PACKAGES ==================== -->
-	<section id="pricing" class="section-pricing">
-		<div class="section-container">
-			<div class="section-heading-block text-center">
-				<span class="section-kicker"><Receipt size={14} /> {isId ? "Transparansi Biaya" : "Transparent Pricing"}</span>
-				<h2 class="section-title">{isId ? "Daftar Harga Layanan PetCo" : "Certified Service Rates & Packages"}</h2>
-				<p class="section-subtitle">{isId ? "Semua harga transparan tanpa biaya tersembunyi." : "Transparent pricing with no surprise add-on charges."}</p>
+	<!-- ==================== TRANSPARENT PRICING ==================== -->
+	<section id="pricing" class="neo-section bg-white">
+		<div class="neo-container">
+			<div class="section-title-strip">
+				<span class="sec-index">[ 05 / PRICING ]</span>
+				<h2>{isId ? "KATALOG TARIF LAYANAN RESMI" : "CERTIFIED SERVICE RATES"}</h2>
+				<p class="sec-lead">
+					{isId
+						? "Semua tarif tertera jelas dan transparan. Tidak ada biaya siluman atau tambahan tanpa persetujuan."
+						: "All rates are transparent with no surprise add-on charges."}
+				</p>
 			</div>
 
-			<div class="pricing-cards-grid">
-				<!-- Grooming Pricing Card -->
-				<div class="pricing-tier-card">
-					<div class="tier-head">
-						<span class="tier-type grooming"><Scissors size={14} /> {isId ? "Grooming & Styling" : "Grooming & Styling"}</span>
-						<div class="tier-price-row">
-							<span class="from-text">{isId ? "Mulai" : "From"}</span>
-							<strong class="tier-price">Rp 60.000</strong>
-						</div>
-						<p class="tier-summary">{isId ? "Perawatan higienis menyeluruh & styling bulu profesional." : "Complete hygiene wash, ear cleaning & breed styling."}</p>
+			<div class="pricing-grid-neo">
+				<!-- Tier 1: Grooming -->
+				<div class="pricing-box-neo">
+					<div class="pr-badge pink">GROOMING</div>
+					<h3>{isId ? "Grooming & Styling" : "Styling & Spa"}</h3>
+					<div class="pr-amount-row">
+						<span class="pr-from">{isId ? "Mulai" : "From"}</span>
+						<strong class="pr-price">Rp 60.000</strong>
 					</div>
-					<ul class="tier-features">
+					<ul class="pr-features">
 						<li><Check size={14} /> Bath &amp; Brush (Mandi &amp; Sisir): <strong>Rp 60.000</strong></li>
-						<li><Check size={14} /> Full Groom (Potong Bulu Lengkap): <strong>Rp 150.000</strong></li>
-						<li><Check size={14} /> Flea &amp; Tick Medicated Bath: <strong>Rp 90.000</strong></li>
-						<li><Check size={14} /> Nail Trim &amp; Teeth Clean: <strong>Rp 30.000</strong></li>
+						<li><Check size={14} /> Full Groom (Potong Lengkap): <strong>Rp 150.000</strong></li>
+						<li><Check size={14} /> Flea Medicated Bath: <strong>Rp 90.000</strong></li>
+						<li><Check size={14} /> Sikat Gigi &amp; Gunting Kuku: <strong>Rp 30.000</strong></li>
 					</ul>
-					<a href="/book?kind=grooming" class="btn btn-subtle tier-btn">
-						<span>{isId ? "Reservasi Grooming" : "Book Grooming"}</span>
+					<a href="/book?kind=grooming" class="neo-btn neo-btn-subtle w-full">
+						<span>{isId ? "RESERVASI GROOMING" : "BOOK GROOMING"}</span>
 					</a>
 				</div>
 
-				<!-- Hotel Pricing Card -->
-				<div class="pricing-tier-card featured-tier">
-					<div class="tier-popular-tag">{isId ? "Paling Diminati" : "Best Value"}</div>
-					<div class="tier-head">
-						<span class="tier-type hotel"><Hotel size={14} /> {isId ? "Hotel & Boarding" : "Luxury Hotel Boarding"}</span>
-						<div class="tier-price-row">
-							<span class="from-text">{isId ? "Mulai" : "From"}</span>
-							<strong class="tier-price">Rp 120.000</strong>
-							<span class="per-night">/{isId ? "malam" : "night"}</span>
-						</div>
-						<p class="tier-summary">{isId ? "Kamar ber-AC privat, pemantauan CCTV & jalan sore harian." : "Air-conditioned private suites, daily walk & photo updates."}</p>
+				<!-- Tier 2: Hotel -->
+				<div class="pricing-box-neo highlight-pricing">
+					<div class="pr-pop-tag">{isId ? "POPULER" : "FEATURED"}</div>
+					<div class="pr-badge purple">PET HOTEL</div>
+					<h3>{isId ? "Hotel & Penitipan" : "Luxury Boarding"}</h3>
+					<div class="pr-amount-row">
+						<span class="pr-from">{isId ? "Mulai" : "From"}</span>
+						<strong class="pr-price">Rp 120.000</strong>
+						<span class="pr-per">/{isId ? "malam" : "night"}</span>
 					</div>
-					<ul class="tier-features">
-						<li><Check size={14} /> Standard Suite (AC, Makan 2x): <strong>Rp 120.000/mlm</strong></li>
-						<li><Check size={14} /> Deluxe Room (Balcony, Playtime): <strong>Rp 180.000/mlm</strong></li>
-						<li><Check size={14} /> VIP Penthouse Suite (CCTV Live): <strong>Rp 300.000/mlm</strong></li>
-						<li><Check size={14} /> Free daily WhatsApp photo reports</li>
+					<ul class="pr-features">
+						<li><Check size={14} /> Standard Suite (AC, Makan 2x): <strong>Rp 120.000</strong></li>
+						<li><Check size={14} /> Deluxe Suite (Playtime): <strong>Rp 180.000</strong></li>
+						<li><Check size={14} /> VIP Penthouse (CCTV Live): <strong>Rp 300.000</strong></li>
+						<li><Check size={14} /> Laporan foto WhatsApp harian gratis</li>
 					</ul>
-					<a href="/book?kind=hotel" class="btn btn-primary tier-btn">
-						<span>{isId ? "Reservasi Kamar Hotel" : "Book Hotel Suite"}</span>
+					<a href="/book?kind=hotel" class="neo-btn neo-btn-primary w-full">
+						<span>{isId ? "RESERVASI KAMAR HOTEL" : "RESERVE SUITE"}</span>
 					</a>
 				</div>
 
-				<!-- Aquarium Pricing Card -->
-				<div class="pricing-tier-card">
-					<div class="tier-head">
-						<span class="tier-type aquarium"><Fish size={14} /> {isId ? "Perawatan Akuarium" : "Aquarium Service"}</span>
-						<div class="tier-price-row">
-							<span class="from-text">{isId ? "Mulai" : "From"}</span>
-							<strong class="tier-price">Rp 150.000</strong>
-						</div>
-						<p class="tier-summary">{isId ? "Kunjungan aquarist ke lokasi untuk tes air & perawatan sistem." : "On-site aquarist visit, water testing & filter maintenance."}</p>
+				<!-- Tier 3: Aquarium -->
+				<div class="pricing-box-neo">
+					<div class="pr-badge blue">AQUARIUM</div>
+					<h3>{isId ? "Layanan Akuarium" : "Aquatic Care"}</h3>
+					<div class="pr-amount-row">
+						<span class="pr-from">{isId ? "Mulai" : "From"}</span>
+						<strong class="pr-price">Rp 150.000</strong>
 					</div>
-					<ul class="tier-features">
-						<li><Check size={14} /> Water Parameter Testing &amp; Tune: <strong>Rp 150.000</strong></li>
-						<li><Check size={14} /> Biotope Algae &amp; Filter Scrape: <strong>Rp 250.000</strong></li>
-						<li><Check size={14} /> Full Reef Ecosystem Overhaul: <strong>Rp 500.000</strong></li>
-						<li><Check size={14} /> Custom tank design consultation</li>
+					<ul class="pr-features">
+						<li><Check size={14} /> Tes Kimia Air &amp; Kalibrasi: <strong>Rp 150.000</strong></li>
+						<li><Check size={14} /> Pembersihan Filter &amp; Algae: <strong>Rp 250.000</strong></li>
+						<li><Check size={14} /> Overhaul Ekosistem Terumbu: <strong>Rp 500.000</strong></li>
+						<li><Check size={14} /> Konsultasi desain tangki kustom</li>
 					</ul>
-					<a href="/book?kind=aquarium" class="btn btn-subtle tier-btn">
-						<span>{isId ? "Reservasi Akuarium" : "Book Aquarium Service"}</span>
+					<a href="/book?kind=aquarium" class="neo-btn neo-btn-subtle w-full">
+						<span>{isId ? "RESERVASI AKUARIUM" : "BOOK AQUATICS"}</span>
 					</a>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- ==================== CALL TO ACTION BANNER ==================== -->
-	<section class="section-cta-banner">
-		<div class="section-container">
-			<div class="cta-banner-box">
-				<div class="cta-banner-content">
-					<h2>{isId ? "Siap Memberikan Perawatan Terbaik untuk Anabul Anda?" : "Ready to Experience Premium Pet Care?"}</h2>
-					<p>{isId ? "Pesan jadwal secara online dalam hitungan menit atau lacak status reservasi aktif Anda di portal klien." : "Book your appointment online in under 2 minutes or track your existing reservations instantly."}</p>
-					<div class="cta-banner-actions">
-						<a href="/book" class="btn btn-primary btn-lg">
-							<Calendar size={18} />
-							<span>{isId ? "Reservasi Online Sekarang" : "Book an Appointment Now"}</span>
-							<ArrowRight size={16} />
-						</a>
-						<a href="/book?lookup=1" class="btn btn-subtle btn-lg">
-							<Search size={16} />
-							<span>{isId ? "Cek Database Booking" : "Track My Booking"}</span>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- ==================== CUSTOMER TESTIMONIALS & REVIEWS ==================== -->
-	<section id="reviews" class="section-reviews">
-		<div class="section-container">
-			<div class="section-heading-block text-center">
-				<span class="section-kicker"><Star size={14} /> {isId ? "Ulasan Pelanggan" : "Client Testimonials"}</span>
-				<h2 class="section-title">{isId ? "Apa Kata Para Pemilik Hewan?" : "Loved by 2,400+ Pet Parents"}</h2>
-				<p class="section-subtitle">{isId ? "Pengalaman nyata dari pelanggan setia di seluruh cabang PetCo." : "Real experiences from satisfied pet owners across our facilities."}</p>
+	<!-- ==================== REVIEWS / SOCIAL PROOF ==================== -->
+	<section class="neo-section bg-cream">
+		<div class="neo-container">
+			<div class="section-title-strip">
+				<span class="sec-index">[ 06 / TESTIMONIALS ]</span>
+				<h2>{isId ? "PENGALAMAN NYATA PEMILIK HEWAN" : "VERIFIED PET PARENT TESTIMONIALS"}</h2>
 			</div>
 
-			<div class="reviews-grid">
-				<div class="review-card">
-					<div class="review-stars">★★★★★</div>
-					<p class="review-text">
-						{isId
-							? "“Grooming di PetCo Kemang benar-benar memuaskan! Anjing Poodle saya biasanya penakut kalau potong kuku, tapi groomer PetCo sangat sabar dan hasilnya rapi sekali. Rekam medisnya juga tercatat rapi.”"
-							: "“Grooming at PetCo Kemang was exceptional! My anxious Poodle usually hates nail trimming, but the groomer was so gentle. The digital dossier is super convenient.”"}
-					</p>
-					<div class="reviewer-meta">
-						<div class="reviewer-avatar">🐕</div>
-						<div>
-							<strong>Amanda S.</strong>
-							<span>Owner of Milo (Toy Poodle) · PetCo Kemang</span>
-						</div>
+			<div class="reviews-3-grid">
+				<div class="review-box-neo">
+					<div class="stars-line">★★★★★</div>
+					<p>{isId ? "“Grooming di PetCo Kemang hasilnya selalu memuaskan. Anjing Poodle saya biasanya takut potong kuku, tapi groomernya sangat tenang dan sabar. Rekam medis digitalnya sangat praktis.”" : "“Grooming at PetCo Kemang is consistently flawless. My anxious Poodle is handled with total calm. The digital cut dossier is brilliant.”"}</p>
+					<div class="reviewer-line">
+						<strong>Amanda S.</strong>
+						<span>Owner of Milo (Toy Poodle) · PetCo Kemang</span>
 					</div>
 				</div>
 
-				<div class="review-card">
-					<div class="review-stars">★★★★★</div>
-					<p class="review-text">
-						{isId
-							? "“Nitip kucing 5 hari saat dinas luar kota di PetCo Senopati. Setiap pagi dan sore dikirimi video WhatsApp pas makan dan main. Kamarnya bersih ber-AC, kucing saya pulang dalam kondisi sehat & wangi.”"
-							: "“Boarded my cat for 5 days during a business trip. Received morning & evening WhatsApp videos of his feeding and playtime. Clean suites, returned happy and healthy.”"}
-					</p>
-					<div class="reviewer-meta">
-						<div class="reviewer-avatar">🐈</div>
-						<div>
-							<strong>Dimas Prasetyo</strong>
-							<span>Owner of Simba (British Shorthair) · PetCo Senopati</span>
-						</div>
+				<div class="review-box-neo">
+					<div class="stars-line">★★★★★</div>
+					<p>{isId ? "“Nitip kucing 5 hari saat dinas luar kota di PetCo Senopati. Setiap pagi dan sore dikirimi video WhatsApp pas makan dan main. Kamarnya ber-AC bersih dan wangi saat pulang.”" : "“Boarded my British Shorthair for 5 days. Daily WhatsApp videos of meals and play gave total peace of mind. Clean, pristine suites.”"}</p>
+					<div class="reviewer-line">
+						<strong>Dimas Prasetyo</strong>
+						<span>Owner of Simba (British Shorthair) · PetCo Senopati</span>
 					</div>
 				</div>
 
-				<div class="review-card">
-					<div class="review-stars">★★★★★</div>
-					<p class="review-text">
-						{isId
-							? "“Layanan aquascape PetCo BSD sangat profesional. Tim datang tepat waktu, parameter air dites lengkap, dan tanaman karang dibersihkan dengan teliti. Sangat recommended untuk aquarist!”"
-							: "“PetCo BSD's aquascape maintenance is top-notch. The team arrived on time, tested water chemistry thoroughly, and pruned the plants expertly.”"}
-					</p>
-					<div class="reviewer-meta">
-						<div class="reviewer-avatar">🐠</div>
-						<div>
-							<strong>Hendrawan K.</strong>
-							<span>Marine Reef Enthusiast · PetCo BSD City</span>
-						</div>
+				<div class="review-box-neo">
+					<div class="stars-line">★★★★★</div>
+					<p>{isId ? "“Perawatan aquascape di PetCo BSD sangat profesional. Parameter air dites detail, tanaman karang dipruning rapi, dan filtrasi bekerja sempurna. Sangat recommended!”" : "“Aquascape maintenance at PetCo BSD is top tier. Water chemistry is dialed in, and the reef looks pristine.”"}</p>
+					<div class="reviewer-line">
+						<strong>Hendrawan K.</strong>
+						<span>Marine Reef Enthusiast · PetCo BSD City</span>
 					</div>
 				</div>
 			</div>
@@ -560,68 +504,87 @@
 	</section>
 
 	<!-- ==================== FAQ SECTION ==================== -->
-	<section id="faq" class="section-faq">
-		<div class="section-container">
-			<div class="section-heading-block text-center">
-				<span class="section-kicker"><HelpCircle size={14} /> FAQ</span>
-				<h2 class="section-title">{isId ? "Pertanyaan yang Sering Diajukan" : "Frequently Asked Questions"}</h2>
-				<p class="section-subtitle">{isId ? "Informasi penting mengenai persyaratan vaksin, sistem pembayaran, dan penitipan." : "Everything you need to know before booking your appointment."}</p>
+	<section id="faq" class="neo-section bg-white">
+		<div class="neo-container">
+			<div class="section-title-strip">
+				<span class="sec-index">[ 07 / FAQ ]</span>
+				<h2>{isId ? "PERTANYAAN UMUM" : "FREQUENTLY ASKED QUESTIONS"}</h2>
 			</div>
 
-			<div class="faq-grid">
-				<div class="faq-item">
-					<h4>{isId ? "Apakah hewan harus sudah divaksin sebelum menginap?" : "Are vaccinations required before hotel boarding?"}</h4>
-					<p>{isId ? "Ya. Demi keselamatan semua tamu anabul, kami mewajibkan vaksin inti (Rabies & Parvo/DHPP untuk anjing, FPV/FVRCP untuk kucing) yang masih berlaku." : "Yes. To ensure a 100% safe environment, all dogs and cats must have up-to-date core vaccinations before boarding."}</p>
+			<div class="faq-2-grid">
+				<div class="faq-box-neo">
+					<h4>{isId ? "Apakah wajib vaksin sebelum menginap di pet hotel?" : "Are vaccines mandatory before hotel boarding?"}</h4>
+					<p>{isId ? "Ya. Demi melindungi seluruh tamu anabul, kami mewajibkan vaksin inti (Rabies & Parvo/DHPP untuk anjing, FPV/FVRCP untuk kucing) yang masih berlaku." : "Yes. To ensure a 100% safe environment, all dogs and cats must have active core inoculations before boarding."}</p>
 				</div>
-
-				<div class="faq-item">
-					<h4>{isId ? "Apakah saya perlu membayar langsung saat reservasi online?" : "Is upfront payment required when booking online?"}</h4>
-					<p>{isId ? "Tidak. Reservasi online tidak memotong kartu Anda seketika. Anda dapat membayar saat tiba di cabang atau mentransfer DP saat konfirmasi WhatsApp tim kami." : "No immediate payment is charged online. You can settle on arrival or via confirmation bank transfer."}</p>
+				<div class="faq-box-neo">
+					<h4>{isId ? "Apakah harus membayar langsung saat booking online?" : "Is upfront payment charged during booking?"}</h4>
+					<p>{isId ? "Tidak. Booking online tidak memotong kartu Anda seketika. Anda dapat membayar saat tiba di cabang atau mentransfer DP saat konfirmasi WhatsApp tim kami." : "No immediate online charge is required. You can settle on arrival or via confirmation transfer."}</p>
 				</div>
-
-				<div class="faq-item">
-					<h4>{isId ? "Bagaimana jika hewan saya memiliki alergi atau resep obat?" : "Can you handle special diets or medication?"}</h4>
-					<p>{isId ? "Tentu saja. Anda dapat mencantumkan catatan alergi pada form booking. Staf caretaker kami terlatih memberikan obat sesuai dosis dan jadwal pemilik." : "Absolutely. You can provide dosage instructions and dietary requirements during booking, and our caretakers administer them rigorously."}</p>
+				<div class="faq-box-neo">
+					<h4>{isId ? "Bagaimana jika hewan memiliki alergi atau obat khusus?" : "Can you administer special diets and medication?"}</h4>
+					<p>{isId ? "Tentu saja. Anda dapat mencantumkan catatan resep dan pantangan diet pada form booking. Staf caretaker kami terlatih memberikan obat sesuai jadwal." : "Absolutely. You can specify medical dosage and dietary needs during reservation, and our caretakers administer them rigorously."}</p>
 				</div>
-
-				<div class="faq-item">
-					<h4>{isId ? "Apakah saya bisa membatalkan atau mengubah jadwal booking?" : "Can I reschedule or cancel my booking?"}</h4>
-					<p>{isId ? "Bisa. Anda dapat menghubungi cabang yang bersangkutan melalui WhatsApp atau menelepon langsung minimal 6 jam sebelum waktu jadwal." : "Yes. Contact the branch directly via WhatsApp or phone at least 6 hours in advance to adjust your booking without penalty."}</p>
+				<div class="faq-box-neo">
+					<h4>{isId ? "Bagaimana cara membatalkan atau mengubah jadwal?" : "How do I reschedule or cancel?"}</h4>
+					<p>{isId ? "Hubungi cabang terkait melalui WhatsApp atau telepon langsung minimal 6 jam sebelum jadwal tanpa biaya penalti." : "Contact the facility directly via WhatsApp or phone at least 6 hours in advance without penalty."}</p>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- ==================== FOOTER ==================== -->
-	<footer class="landing-footer">
-		<div class="footer-inner">
-			<div class="footer-top-grid">
+	<!-- ==================== MASSIVE CALL TO ACTION ==================== -->
+	<section class="neo-cta-section">
+		<div class="neo-container">
+			<div class="cta-box-huge">
+				<span class="cta-mini-tag">{isId ? "PORTAL RESERVASI & DATABASE RESMI" : "OFFICIAL RESERVATION SYSTEM"}</span>
+				<h2>{isId ? "BERIKAN PERAWATAN TERBAIK UNTUK ANABUL ANDA HARI INI." : "ELEVATE YOUR COMPANION'S CARE EXPERIENCE."}</h2>
+				<p>{isId ? "Reservasi jadwal dalam 2 menit atau lacak status booking Anda langsung di portal klien." : "Book your appointment in under 2 minutes or track existing reservations in real time."}</p>
+				<div class="cta-btns-group">
+					<a href="/book" class="neo-btn neo-btn-lg neo-btn-primary">
+						<Calendar size={18} />
+						<span>{isId ? "BUKA FORM RESERVASI ONLINE" : "LAUNCH ONLINE BOOKING"}</span>
+						<ArrowUpRight size={18} />
+					</a>
+					<a href="/book?lookup=1" class="neo-btn neo-btn-lg neo-btn-secondary">
+						<Search size={16} />
+						<span>{isId ? "CEK STATUS & DATABASE BOOKING" : "TRACK BOOKING STATUS"}</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- ==================== SWISS INDUSTRIAL FOOTER ==================== -->
+	<footer class="neo-footer">
+		<div class="neo-container">
+			<div class="footer-grid-neo">
 				<div class="footer-brand-col">
-					<div class="footer-logo">
-						<span class="footer-emblem"><PawPrint size={18} /></span>
-						<span class="footer-name">PetCo</span>
+					<div class="f-brand">
+						<span class="f-box"><PawPrint size={18} strokeWidth={2.6} /></span>
+						<span class="f-title">PETCO SYSTEM</span>
 					</div>
-					<p class="footer-tagline">
+					<p class="f-tagline">
 						{isId
-							? "Pusat ekosistem perawatan hewan peliharaan, grooming profesional, pet hotel bintang lima, dan spesialis akuarium terdepan di Indonesia."
-							: "Indonesia's premier integrated pet wellness ecosystem, certified grooming salon, luxury pet hotel, and aquarium biotope specialists."}
+							? "Pusat ekosistem perawatan hewan peliharaan, grooming standar ras, hotel 24 jam ber-AC, dan rekayasa aquascape profesional di Indonesia."
+							: "Integrated companion animal wellness, certified styling salons, 24/7 climate-controlled boarding suites, and aquatic biotope engineering."}
 					</p>
-					<div class="footer-certs">
-						<span class="cert-pill">✓ Certified Groomers</span>
-						<span class="cert-pill">✓ Vet-Monitored</span>
+					<div class="f-cert-row">
+						<span>[ ISO-VERIFIED ]</span>
+						<span>[ VET-GATED ]</span>
+						<span>[ HEPA-FILTERED ]</span>
 					</div>
 				</div>
 
-				<div class="footer-links-col">
-					<h4>{isId ? "Layanan" : "Services"}</h4>
-					<a href="/book?kind=grooming">{isId ? "Grooming & Spa" : "Grooming & Styling"}</a>
-					<a href="/book?kind=hotel">{isId ? "Pet Hotel 24 Jam" : "24/7 Hotel Boarding"}</a>
-					<a href="/book?kind=aquarium">{isId ? "Layanan Akuarium" : "Aquatic Care"}</a>
-					<a href="#pricing" onclick={(e) => { e.preventDefault(); scrollToSection('pricing'); }}>{isId ? "Daftar Harga" : "Pricing Catalog"}</a>
+				<div class="footer-nav-col">
+					<h5>{isId ? "LAYANAN" : "SERVICES"}</h5>
+					<a href="/book?kind=grooming">{isId ? "Grooming & Spa" : "Styling & Spa"}</a>
+					<a href="/book?kind=hotel">{isId ? "Hotel 24 Jam" : "24/7 Hotel Boarding"}</a>
+					<a href="/book?kind=aquarium">{isId ? "Layanan Akuarium" : "Aquatic Ecosystems"}</a>
+					<a href="#pricing" onclick={(e) => { e.preventDefault(); scrollTo('pricing'); }}>{isId ? "Katalog Tarif" : "Pricing Catalog"}</a>
 				</div>
 
-				<div class="footer-links-col">
-					<h4>{isId ? "Cabang Resmi" : "Locations"}</h4>
+				<div class="footer-nav-col">
+					<h5>{isId ? "CABANG RESMI" : "FACILITIES"}</h5>
 					<a href="/book?branch=1">Kantor Pusat (Jakarta Pusat)</a>
 					<a href="/book?branch=2">Cabang Kemang (Jakarta Selatan)</a>
 					<a href="/book?branch=3">Cabang Senopati (Jakarta Selatan)</a>
@@ -629,20 +592,20 @@
 					<a href="/book?branch=5">Cabang Surabaya (Jawa Timur)</a>
 				</div>
 
-				<div class="footer-links-col">
-					<h4>{isId ? "Akses Portal" : "Portal Access"}</h4>
-					<a href="/book" class="footer-nav-link">{isId ? "Reservasi Online" : "Online Booking"}</a>
-					<a href="/book?lookup=1" class="footer-nav-link">{isId ? "Cek Status Booking" : "Track My Booking"}</a>
-					<a href="/login" class="footer-staff-link">{isId ? "Masuk Portal Staf" : "Staff Console Login"}</a>
+				<div class="footer-nav-col">
+					<h5>{isId ? "SISTEM" : "SYSTEM"}</h5>
+					<a href="/book">{isId ? "Portal Reservasi Klien" : "Client Booking Portal"}</a>
+					<a href="/book?lookup=1">{isId ? "Cek Database Booking" : "Track Booking Database"}</a>
+					<a href="/dashboard" class="f-staff-tag">{isId ? "Portal Staf →" : "Staff Console →"}</a>
 				</div>
 			</div>
 
-			<div class="footer-bottom-bar">
-				<p>© {new Date().getFullYear()} PetCo Indonesia. All rights reserved.</p>
-				<div class="footer-bottom-meta">
-					<span>Bilingual System (EN / ID)</span>
-					<span>•</span>
-					<span>Multi-Branch Operating System</span>
+			<div class="footer-bottom-neo">
+				<span>© {new Date().getFullYear()} PETCO INDONESIA. ALL RIGHTS RESERVED.</span>
+				<div class="f-meta-links">
+					<span>BILINGUAL SYSTEM (EN / ID)</span>
+					<span>·</span>
+					<span>MULTI-BRANCH CRM ARCHITECTURE</span>
 				</div>
 			</div>
 		</div>
@@ -650,1196 +613,1057 @@
 </div>
 
 <style>
-	/* ============ BASE LANDING STYLES ============ */
-	.landing-page-root {
+	/* ============ NEOBRUTALIST BASE TOKENS ============ */
+	.neobrutalist-root {
+		background: #faf8f5;
+		color: #0f172a;
+		font-family: "Satoshi", "Plus Jakarta Sans", -apple-system, sans-serif;
 		min-height: 100vh;
-		background: #ffffff;
-		color: var(--ink);
-		font-family: var(--font-sans);
-		display: flex;
-		flex-direction: column;
-		overflow-x: hidden;
 	}
 
-	.section-container {
+	h1, h2, h3, h4, h5, .brand-title, .hero-huge-title, .f-title {
+		font-family: "Cabinet Grotesk", "Outfit", "Satoshi", sans-serif;
+		letter-spacing: -0.02em;
+	}
+
+	.neo-container {
 		max-width: 1200px;
 		margin: 0 auto;
 		padding: 0 24px;
 	}
 
-	.text-center {
-		text-align: center;
-	}
+	/* Backgrounds */
+	.bg-white { background: #ffffff; }
+	.bg-cream { background: #f4f1ea; }
+	.bg-dark { background: #0f172a; color: #ffffff; }
 
-	.section-heading-block {
-		margin-bottom: 48px;
-	}
-
-	.section-kicker {
+	/* Buttons & Hard Tactile Shadows */
+	.neo-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: 6px;
-		font-size: 12px;
-		font-weight: 800;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--primary);
-		background: var(--primary-soft);
-		border: 1px solid var(--primary-border);
-		padding: 4px 12px;
-		border-radius: var(--r-full);
-		margin-bottom: 12px;
-	}
-
-	.section-title {
-		font-size: clamp(24px, 3.2vw, 36px);
+		justify-content: center;
+		gap: 8px;
+		font-family: "Cabinet Grotesk", "Outfit", sans-serif;
 		font-weight: 850;
-		letter-spacing: -0.03em;
-		color: var(--ink);
-		margin: 0 0 12px;
+		text-decoration: none;
+		border: 2px solid #0f172a;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: transform 100ms ease, box-shadow 100ms ease;
+		user-select: none;
 	}
 
-	.section-subtitle {
-		font-size: clamp(14px, 1.6vw, 16px);
-		color: var(--muted);
-		max-width: 680px;
-		margin: 0 auto;
-		line-height: 1.5;
+	.neo-btn-sm {
+		padding: 7px 14px;
+		font-size: 12px;
+		box-shadow: 3px 3px 0px #0f172a;
 	}
 
-	/* ============ TOP NAVBAR ============ */
-	.top-nav {
+	.neo-btn-lg {
+		padding: 14px 28px;
+		font-size: 14.5px;
+		box-shadow: 4px 4px 0px #0f172a;
+	}
+
+	.neo-btn-primary {
+		background: #4f46e5;
+		color: #ffffff;
+	}
+
+	.neo-btn-primary:hover {
+		background: #4338ca;
+		transform: translate(-1px, -1px);
+		box-shadow: 5px 5px 0px #0f172a;
+	}
+
+	.neo-btn-primary:active {
+		transform: translate(2px, 2px);
+		box-shadow: 1px 1px 0px #0f172a;
+	}
+
+	.neo-btn-secondary {
+		background: #ffffff;
+		color: #0f172a;
+	}
+
+	.neo-btn-secondary:hover {
+		background: #f8fafc;
+		transform: translate(-1px, -1px);
+		box-shadow: 5px 5px 0px #0f172a;
+	}
+
+	.neo-btn-secondary:active {
+		transform: translate(2px, 2px);
+		box-shadow: 1px 1px 0px #0f172a;
+	}
+
+	.neo-btn-subtle {
+		background: #ffffff;
+		color: #0f172a;
+		padding: 9px 14px;
+		font-size: 12.5px;
+		box-shadow: 3px 3px 0px #0f172a;
+	}
+
+	.neo-btn-subtle:hover {
+		background: #fef08a;
+		transform: translate(-1px, -1px);
+		box-shadow: 4px 4px 0px #0f172a;
+	}
+
+	.neobrutalist-root {
+		background: #faf8f5;
+		color: #0f172a;
+		font-family: "Satoshi", "Plus Jakarta Sans", -apple-system, sans-serif;
+		min-height: 100vh;
+		overflow-x: hidden;
+		width: 100%;
+		max-width: 100vw;
+	}
+	.neo-header {
 		position: sticky;
 		top: 0;
 		z-index: 500;
-		background: rgba(255, 255, 255, 0.94);
-		backdrop-filter: blur(12px);
-		border-bottom: 1px solid var(--border);
-		box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+		background: #ffffff;
+		border-bottom: 2.5px solid #0f172a;
 	}
 
-	.nav-container {
+	.neo-header-inner {
 		max-width: 1240px;
 		margin: 0 auto;
-		padding: 10px 24px;
+		padding: 12px 24px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 16px;
 	}
 
-	.brand-link {
+	.neo-brand {
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: 9px;
 		text-decoration: none;
-		color: var(--ink);
+		color: #0f172a;
 	}
 
-	.brand-emblem {
-		width: 38px;
-		height: 38px;
-		border-radius: 10px;
-		background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-		color: #ffffff;
+	.brand-box {
+		width: 34px;
+		height: 34px;
+		border: 2px solid #0f172a;
+		background: #facc15;
 		display: grid;
 		place-items: center;
-		box-shadow: 0 3px 8px rgba(79, 70, 229, 0.3);
-	}
-
-	.brand-copy {
-		display: flex;
-		flex-direction: column;
-		line-height: 1.15;
+		border-radius: 6px;
+		box-shadow: 2px 2px 0px #0f172a;
 	}
 
 	.brand-title {
-		font-size: 17px;
-		font-weight: 850;
-		letter-spacing: -0.02em;
+		font-size: 20px;
+		font-weight: 950;
+		letter-spacing: -0.03em;
 	}
 
-	.brand-tagline {
-		font-size: 10.5px;
-		color: var(--muted);
-		font-weight: 700;
-		text-transform: uppercase;
+	.brand-badge-tag {
+		font-size: 9.5px;
+		font-weight: 850;
+		background: #0f172a;
+		color: #facc15;
+		padding: 2px 6px;
+		border-radius: 4px;
 		letter-spacing: 0.04em;
 	}
 
-	.nav-links-center {
+	.neo-nav-links {
 		display: flex;
 		align-items: center;
-		gap: 20px;
+		gap: 18px;
 	}
 
-	.nav-links-center a {
-		font-size: 13.5px;
-		font-weight: 650;
-		color: var(--ink-2);
+	.neo-nav-links a {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 12px;
+		font-weight: 800;
+		color: #0f172a;
 		text-decoration: none;
-		transition: color 130ms ease;
+		transition: color 100ms ease;
 	}
 
-	.nav-links-center a:hover {
-		color: var(--primary);
+	.neo-nav-links a:hover {
+		color: #4f46e5;
 	}
 
-	.nav-right-actions {
+	.neo-nav-actions {
 		display: flex;
 		align-items: center;
 		gap: 10px;
 	}
 
-	.header-book-btn {
+	.neo-staff-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: 6px;
-		padding: 7px 14px;
-		font-size: 12.5px;
-		font-weight: 750;
+		gap: 4px;
+		padding: 7px 11px;
+		border: 2px solid #0f172a;
+		border-radius: 6px;
+		background: #f1f5f9;
+		color: #0f172a;
+		font-size: 11px;
+		font-weight: 850;
 		text-decoration: none;
+		box-shadow: 2px 2px 0px #0f172a;
+		transition: all 100ms ease;
 	}
 
-	.staff-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 5px;
-		padding: 6px 11px;
-		border-radius: var(--r-md);
-		border: 1px solid var(--border);
-		background: var(--surface-2);
-		color: var(--muted);
-		font-size: 11.5px;
-		font-weight: 700;
-		text-decoration: none;
-		transition: all 130ms ease;
-	}
-
-	.staff-link:hover {
-		color: var(--ink);
-		background: var(--surface-3);
-		border-color: var(--border-strong);
+	.neo-staff-btn:hover {
+		background: #e2e8f0;
+		transform: translate(-1px, -1px);
+		box-shadow: 3px 3px 0px #0f172a;
 	}
 
 	/* ============ HERO SECTION ============ */
-	.hero-section {
-		position: relative;
-		background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e1b4b 100%);
-		color: #ffffff;
-		padding: 72px 24px 84px;
-		overflow: hidden;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	.neo-hero-section {
+		padding: 72px 0 64px;
+		background: #faf8f5;
+		border-bottom: 2.5px solid #0f172a;
 	}
 
-	.hero-backdrop-glow {
-		position: absolute;
-		top: -120px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 700px;
-		height: 400px;
-		background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
-		filter: blur(80px);
-		pointer-events: none;
-	}
-
-	.hero-container {
-		position: relative;
-		max-width: 960px;
-		margin: 0 auto;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-align: center;
-	}
-
-	.hero-pill-badge {
+	.hero-tag-strip {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		background: rgba(99, 102, 241, 0.2);
-		border: 1px solid rgba(129, 140, 248, 0.35);
-		color: #c7d2fe;
-		padding: 6px 16px;
-		border-radius: var(--r-full);
-		font-size: 12.5px;
-		font-weight: 750;
+		background: #ffffff;
+		border: 2px solid #0f172a;
+		padding: 5px 12px;
+		border-radius: 6px;
+		box-shadow: 3px 3px 0px #0f172a;
 		margin-bottom: 22px;
 	}
 
-	.badge-sparkle {
-		color: #fbbf24;
+	.status-indicator {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #10b981;
+		border: 1.5px solid #0f172a;
 	}
 
-	.hero-title {
-		font-size: clamp(32px, 5vw, 54px);
-		font-weight: 900;
+	.tag-label {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11px;
+		font-weight: 850;
+		color: #0f172a;
+		letter-spacing: 0.04em;
+	}
+
+	.hero-huge-title {
+		font-size: clamp(34px, 5.2vw, 62px);
+		font-weight: 950;
+		line-height: 1.08;
 		letter-spacing: -0.04em;
-		line-height: 1.15;
-		margin: 0 0 18px;
-		color: #ffffff;
+		color: #0f172a;
+		margin: 0 0 22px;
+		max-width: 1040px;
 	}
 
-	.gradient-text {
-		background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 50%, #38bdf8 100%);
-		-webkit-background-clip: text;
-		background-clip: text;
-		-webkit-text-fill-color: transparent;
+	.highlight-box {
+		background: #fef08a;
+		border: 2px solid #0f172a;
+		padding: 0 8px;
+		box-shadow: 3px 3px 0px #0f172a;
+		display: inline-block;
 	}
 
-	.hero-lead {
-		font-size: clamp(15px, 2vw, 17.5px);
-		color: #94a3b8;
+	.hero-lead-text {
+		font-size: clamp(15px, 1.8vw, 17.5px);
+		color: #334155;
 		max-width: 780px;
-		margin: 0 auto 32px;
 		line-height: 1.55;
+		margin: 0 0 36px;
 	}
 
-	.hero-cta-group {
+	.hero-actions-row {
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
 		gap: 14px;
 		margin-bottom: 56px;
 	}
 
-	.hero-btn-main {
-		padding: 13px 26px;
-		font-size: 14.5px;
-		font-weight: 800;
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		text-decoration: none;
-		box-shadow: 0 4px 18px rgba(99, 102, 241, 0.4);
+	/* Metrics Grid */
+	.neo-metrics-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 16px;
 	}
 
-	.hero-btn-subtle {
-		padding: 13px 22px;
-		font-size: 14px;
-		font-weight: 750;
-		background: rgba(255, 255, 255, 0.08);
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		color: #ffffff;
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		border-radius: var(--r-md);
-		text-decoration: none;
-		transition: all 140ms ease;
-	}
-
-	.hero-btn-subtle:hover {
-		background: rgba(255, 255, 255, 0.16);
-		border-color: rgba(255, 255, 255, 0.4);
-	}
-
-	/* Trust Metrics */
-	.trust-metrics-strip {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: center;
-		background: rgba(15, 23, 42, 0.75);
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		backdrop-filter: blur(8px);
-		border-radius: 20px;
-		padding: 18px 28px;
-		gap: 20px;
-		width: 100%;
-		max-width: 900px;
-	}
-
-	.metric-card {
-		flex: 1;
-		min-width: 140px;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-align: center;
-	}
-
-	.metric-num {
-		font-size: 24px;
-		font-weight: 900;
-		color: #38bdf8;
-		letter-spacing: -0.02em;
-	}
-
-	.metric-lbl {
-		font-size: 11.5px;
-		color: #94a3b8;
-		font-weight: 600;
-		margin-top: 2px;
-	}
-
-	.metric-divider {
-		width: 1px;
-		height: 36px;
-		background: rgba(255, 255, 255, 0.12);
-	}
-
-	/* ============ SECTION ABOUT ============ */
-	.section-about {
-		padding: 84px 0;
+	.metric-box {
 		background: #ffffff;
-	}
-
-	.about-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		gap: 24px;
-	}
-
-	.about-feature-box {
-		background: #f8fafc;
-		border: 1px solid var(--border);
-		border-radius: 18px;
-		padding: 30px 24px;
+		border: 2px solid #0f172a;
+		border-radius: 8px;
+		padding: 16px 18px;
+		box-shadow: 3px 3px 0px #0f172a;
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
-		transition: transform 140ms ease, box-shadow 140ms ease;
+		gap: 3px;
+		text-align: left;
 	}
 
-	.about-feature-box:hover {
-		transform: translateY(-3px);
-		box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-	}
-
-	.about-icon-circle {
-		width: 48px;
-		height: 48px;
-		border-radius: 14px;
-		display: grid;
-		place-items: center;
-	}
-
-	.about-icon-circle.blue { background: #e0f2fe; color: #0284c7; }
-	.about-icon-circle.purple { background: #ede9fe; color: #7c3aed; }
-	.about-icon-circle.emerald { background: #d1fae5; color: #059669; }
-
-	.about-feature-box h3 {
-		font-size: 17px;
-		font-weight: 800;
-		margin: 0;
-		color: var(--ink);
-	}
-
-	.about-feature-box p {
-		font-size: 13.5px;
-		color: var(--muted);
-		margin: 0;
-		line-height: 1.5;
-	}
-
-	/* ============ SERVICES PILLARS ============ */
-	.section-services {
-		padding: 84px 0;
-		background: #f8fafc;
-		border-top: 1px solid var(--border);
-		border-bottom: 1px solid var(--border);
-	}
-
-	.services-pillars-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-		gap: 28px;
-	}
-
-	.pillar-card {
-		position: relative;
-		background: #ffffff;
-		border: 1.5px solid var(--border);
-		border-radius: 20px;
-		padding: 32px 26px;
-		display: flex;
-		flex-direction: column;
-		box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
-		transition: all 140ms ease;
-	}
-
-	.pillar-card:hover {
-		border-color: var(--primary-border);
-		box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-	}
-
-	.pillar-card.featured {
-		border-color: var(--primary);
-		box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
-	}
-
-	.featured-ribbon {
-		position: absolute;
-		top: 16px;
-		right: 18px;
-		background: var(--primary);
-		color: #ffffff;
+	.m-code {
+		font-family: "JetBrains Mono", monospace;
 		font-size: 10px;
 		font-weight: 850;
-		letter-spacing: 0.06em;
-		padding: 3px 9px;
-		border-radius: var(--r-full);
-		text-transform: uppercase;
+		color: #64748b;
 	}
 
-	.pillar-badge {
-		font-size: 11px;
-		font-weight: 800;
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-		margin-bottom: 16px;
-	}
-
-	.pillar-badge.grooming { color: #db2777; }
-	.pillar-badge.hotel { color: #7c3aed; }
-	.pillar-badge.aquarium { color: #0284c7; }
-
-	.pillar-icon-wrap {
-		width: 60px;
-		height: 60px;
-		border-radius: 16px;
-		display: grid;
-		place-items: center;
-		margin-bottom: 20px;
-	}
-
-	.grooming-bg { background: #fdf2f8; color: #ec4899; }
-	.hotel-bg { background: #ede9fe; color: #8b5cf6; }
-	.aquarium-bg { background: #e0f2fe; color: #0284c7; }
-
-	.pillar-card h3 {
+	.m-val {
 		font-size: 20px;
+		font-weight: 950;
+		color: #0f172a;
+	}
+
+	.m-sub {
+		font-size: 11.5px;
+		color: #475569;
+		font-weight: 600;
+	}
+
+	/* ============ TICKER ============ */
+	.neo-ticker-section {
+		background: #0f172a;
+		color: #facc15;
+		border-bottom: 2.5px solid #0f172a;
+		padding: 12px 0;
+		overflow: hidden;
+		width: 100%;
+		max-width: 100vw;
+		contain: paint;
+	}
+	.ticker-wrapper {
+		display: flex;
+		width: max-content;
+		animation: scrollTicker 36s linear infinite;
+	}
+
+	.ticker-content {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		padding-right: 20px;
+		font-family: "JetBrains Mono", monospace;
+		font-size: 12px;
+		font-weight: 900;
+		letter-spacing: 0.1em;
+		white-space: nowrap;
+	}
+
+	.ticker-content .sep {
+		color: #ef4444;
+	}
+
+	@keyframes scrollTicker {
+		from { transform: translateX(0); }
+		to { transform: translateX(-50%); }
+	}
+
+	/* ============ SECTION BASICS ============ */
+	.neo-section {
+		padding: 72px 0;
+		border-bottom: 2.5px solid #0f172a;
+	}
+
+	.section-title-strip {
+		margin-bottom: 40px;
+	}
+
+	.sec-index {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11px;
 		font-weight: 850;
-		color: var(--ink);
+		letter-spacing: 0.08em;
+		color: #4f46e5;
+		display: block;
+		margin-bottom: 6px;
+	}
+
+	.sec-index.yellow {
+		color: #facc15;
+	}
+
+	.section-title-strip h2 {
+		font-size: clamp(26px, 3.8vw, 40px);
+		font-weight: 950;
+		letter-spacing: -0.03em;
 		margin: 0 0 10px;
 	}
 
-	.pillar-desc {
-		font-size: 13.5px;
-		color: var(--muted);
+	.sec-lead {
+		font-size: 15px;
+		color: #475569;
+		max-width: 720px;
 		line-height: 1.5;
-		margin: 0 0 20px;
+		margin: 0;
 	}
 
-	.pillar-bullet-list {
+	.section-title-strip.dark h2 { color: #ffffff; }
+	.section-title-strip.dark .sec-lead { color: #94a3b8; }
+
+	/* ============ PILLARS GRID ============ */
+	.pillars-3-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: 20px;
+	}
+
+	.pillar-card-neo {
+		background: #ffffff;
+		border: 2px solid #0f172a;
+		border-radius: 10px;
+		padding: 24px;
+		box-shadow: 4px 4px 0px #0f172a;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.pillar-top-meta {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.p-num {
+		font-family: "JetBrains Mono", monospace;
+		font-weight: 850;
+		font-size: 11px;
+	}
+
+	.p-badge {
+		font-size: 10px;
+		font-weight: 850;
+		padding: 2px 7px;
+		border: 1.5px solid #0f172a;
+		border-radius: 4px;
+	}
+
+	.p-badge.blue { background: #bae6fd; }
+	.p-badge.purple { background: #e9d5ff; }
+	.p-badge.green { background: #a7f3d0; }
+
+	.pillar-card-neo h3 {
+		font-size: 18px;
+		font-weight: 900;
+		margin: 0;
+		color: #0f172a;
+	}
+
+	.pillar-card-neo p {
+		font-size: 13.5px;
+		color: #475569;
+		line-height: 1.5;
+		margin: 0;
+		flex: 1;
+	}
+
+	.pillar-foot-tag {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 11.5px;
+		font-weight: 800;
+		color: #0f172a;
+		padding-top: 12px;
+		border-top: 1.5px dashed #0f172a;
+	}
+
+	.pillar-foot-tag svg {
+		color: #10b981;
+	}
+
+	/* ============ SERVICES STACKED ============ */
+	.services-stacked-grid {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.service-box-neo {
+		position: relative;
+		background: #faf8f5;
+		border: 2px solid #0f172a;
+		border-radius: 10px;
+		padding: 28px;
+		box-shadow: 4px 4px 0px #0f172a;
+		display: grid;
+		grid-template-columns: 1fr 280px;
+		gap: 28px;
+		align-items: center;
+	}
+
+	.service-box-neo.featured-box {
+		background: #fefce8;
+		border-color: #0f172a;
+	}
+
+	.featured-tag {
+		position: absolute;
+		top: -12px;
+		left: 24px;
+		background: #facc15;
+		border: 2px solid #0f172a;
+		font-size: 10px;
+		font-weight: 900;
+		padding: 2px 9px;
+		border-radius: 4px;
+		box-shadow: 2px 2px 0px #0f172a;
+	}
+
+	.svc-code {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11px;
+		font-weight: 850;
+		color: #4f46e5;
+		display: block;
+		margin-bottom: 6px;
+	}
+
+	.service-left h3 {
+		font-size: 22px;
+		font-weight: 900;
+		margin: 0 0 10px;
+		color: #0f172a;
+	}
+
+	.service-left p {
+		font-size: 13.5px;
+		color: #475569;
+		line-height: 1.5;
+		margin: 0 0 14px;
+	}
+
+	.svc-list {
 		list-style: none;
 		padding: 0;
-		margin: 0 0 26px;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.svc-list li {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 12.5px;
+		font-weight: 650;
+		color: #0f172a;
+	}
+
+	.svc-list li svg {
+		color: #10b981;
+		flex-shrink: 0;
+	}
+
+	.service-right {
+		background: #ffffff;
+		border: 2px solid #0f172a;
+		border-radius: 8px;
+		padding: 20px;
+		box-shadow: 3px 3px 0px #0f172a;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		text-align: center;
+	}
+
+	.price-banner {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.p-from {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 10px;
+		font-weight: 850;
+		color: #64748b;
+	}
+
+	.p-amount {
+		font-size: 26px;
+		font-weight: 950;
+		color: #0f172a;
+	}
+
+	.p-unit {
+		font-size: 11px;
+		color: #64748b;
+	}
+
+	/* ============ SAFETY DARK ============ */
+	.safety-grid-neo {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 20px;
+	}
+
+	.safety-cell {
+		background: #1e293b;
+		border: 2px solid #ffffff;
+		border-radius: 10px;
+		padding: 26px;
+		box-shadow: 4px 4px 0px #ffffff;
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
 	}
 
-	.pillar-bullet-list li {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 12.5px;
-		color: var(--ink-2);
+	.s-icon {
+		color: #facc15;
 	}
 
-	.pillar-bullet-list li :global(svg) {
-		color: #10b981;
-		flex-shrink: 0;
-	}
-
-	.pillar-cta {
-		margin-top: auto;
-		width: 100%;
-		padding: 10px;
-		font-size: 13.5px;
-		font-weight: 750;
-		display: inline-flex;
-		justify-content: center;
-		align-items: center;
-		gap: 6px;
-		text-decoration: none;
-	}
-
-	/* ============ SECTION WHY ============ */
-	.section-why {
-		padding: 84px 0;
-		background: #ffffff;
-	}
-
-	.why-split-layout {
-		display: grid;
-		grid-template-columns: 1.1fr 0.9fr;
-		gap: 48px;
-		align-items: center;
-	}
-
-	.why-lead-desc {
-		font-size: 15.5px;
-		color: var(--muted);
-		line-height: 1.55;
-		margin: 0 0 32px;
-	}
-
-	.why-points-list {
-		display: flex;
-		flex-direction: column;
-		gap: 22px;
-	}
-
-	.why-point-row {
-		display: flex;
-		gap: 14px;
-	}
-
-	.why-icon-badge {
-		width: 38px;
-		height: 38px;
-		border-radius: 10px;
-		background: var(--primary-soft);
-		color: var(--primary);
-		display: grid;
-		place-items: center;
-		flex-shrink: 0;
-	}
-
-	.why-point-text strong {
-		font-size: 14.5px;
-		color: var(--ink);
-		display: block;
-		margin-bottom: 4px;
-	}
-
-	.why-point-text p {
-		font-size: 13px;
-		color: var(--muted);
+	.safety-cell h4 {
+		font-size: 17px;
+		font-weight: 900;
+		color: #ffffff;
 		margin: 0;
-		line-height: 1.45;
 	}
 
-	/* Mockup Card */
-	.trust-card-mockup {
-		background: #0f172a;
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		border-radius: 20px;
-		padding: 24px;
-		color: #ffffff;
-		box-shadow: 0 16px 40px rgba(15, 23, 42, 0.15);
+	.safety-cell p {
+		font-size: 13px;
+		color: #cbd5e1;
+		line-height: 1.5;
+		margin: 0;
 	}
 
-	.mockup-header {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding-bottom: 16px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		margin-bottom: 18px;
-	}
-
-	.mockup-avatar {
-		width: 40px;
-		height: 40px;
-		border-radius: 10px;
-		background: var(--primary);
+	/* ============ BRANCHES ============ */
+	.branches-grid-neo {
 		display: grid;
-		place-items: center;
-	}
-
-	.mockup-name {
-		font-size: 14.5px;
-		font-weight: 800;
-	}
-
-	.mockup-sub {
-		font-size: 11px;
-		color: #94a3b8;
-	}
-
-	.mockup-status-tag {
-		margin-left: auto;
-		font-size: 9.5px;
-		font-weight: 850;
-		background: #065f46;
-		color: #34d399;
-		padding: 3px 8px;
-		border-radius: var(--r-full);
-	}
-
-	.mockup-body {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-		margin-bottom: 18px;
-	}
-
-	.mockup-metric-row {
-		display: flex;
-		justify-content: space-between;
-		font-size: 12.5px;
-		color: #94a3b8;
-	}
-
-	.mockup-metric-row strong {
-		color: #ffffff;
-		font-weight: 700;
-	}
-
-	.text-green {
-		color: #34d399 !important;
-	}
-
-	.mockup-footer {
-		display: flex;
-		justify-content: space-between;
-		font-size: 10.5px;
-		color: #64748b;
-		padding-top: 14px;
-		border-top: 1px solid rgba(255, 255, 255, 0.08);
-	}
-
-	.mockup-timestamp {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-	}
-
-	/* ============ SECTION BRANCHES ============ */
-	.section-branches {
-		padding: 84px 0;
-		background: #f8fafc;
-		border-top: 1px solid var(--border);
-	}
-
-	.branches-display-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 		gap: 20px;
 	}
 
-	.branch-detail-box {
+	.branch-card-neo {
 		background: #ffffff;
-		border: 1px solid var(--border);
-		border-radius: 16px;
+		border: 2px solid #0f172a;
+		border-radius: 10px;
 		padding: 22px;
+		box-shadow: 4px 4px 0px #0f172a;
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
-		transition: all 130ms ease;
+		gap: 10px;
 	}
 
-	.branch-detail-box:hover {
-		border-color: var(--primary-border);
-		box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+	.branch-card-neo.hq-border {
+		background: #eff6ff;
 	}
 
-	.branch-detail-box.is-hq {
-		border-color: var(--primary-border);
-		background: linear-gradient(180deg, var(--primary-soft) 0%, #ffffff 40%);
-	}
-
-	.branch-top-bar {
+	.b-head-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 	}
 
-	.branch-city-tag {
+	.b-city-tag {
 		display: inline-flex;
 		align-items: center;
 		gap: 4px;
 		font-size: 11px;
-		font-weight: 750;
-		color: var(--primary);
-	}
-
-	.hq-label {
-		font-size: 9px;
 		font-weight: 850;
-		color: #ffffff;
-		background: var(--primary);
-		padding: 2px 6px;
-		border-radius: var(--r-full);
+		color: #4f46e5;
 	}
 
-	.branch-name {
-		font-size: 15.5px;
-		font-weight: 800;
-		color: var(--ink);
+	.b-hq-badge {
+		font-size: 9px;
+		font-weight: 900;
+		background: #0f172a;
+		color: #facc15;
+		padding: 2px 6px;
+		border-radius: 4px;
+	}
+
+	.branch-card-neo h3 {
+		font-size: 17px;
+		font-weight: 900;
+		color: #0f172a;
 		margin: 0;
 	}
 
-	.branch-address {
-		font-size: 12px;
-		color: var(--muted);
+	.b-addr {
+		font-size: 12.5px;
+		color: #475569;
 		line-height: 1.4;
-		margin: 0 0 8px;
+		margin: 0;
 	}
 
-	.branch-meta-row {
+	.b-meta-block {
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
-		margin-bottom: 14px;
+		font-size: 11.5px;
+		color: #0f172a;
+		font-weight: 700;
+		padding: 10px 0;
+		border-top: 1.5px dashed #cbd5e1;
+		border-bottom: 1.5px dashed #cbd5e1;
 	}
 
-	.branch-meta-item {
+	.b-meta-block div {
 		display: flex;
 		align-items: center;
 		gap: 6px;
-		font-size: 11.5px;
-		color: var(--ink-2);
 	}
 
-	.branch-book-action {
-		margin-top: auto;
-		width: 100%;
-		display: inline-flex;
-		justify-content: center;
-		align-items: center;
-		gap: 6px;
-		font-size: 12.5px;
-		font-weight: 700;
-		text-decoration: none;
-	}
-
-	/* ============ SECTION PRICING ============ */
-	.section-pricing {
-		padding: 84px 0;
-		background: #ffffff;
-		border-top: 1px solid var(--border);
-	}
-
-	.pricing-cards-grid {
+	/* ============ PRICING ============ */
+	.pricing-grid-neo {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 		gap: 24px;
 	}
 
-	.pricing-tier-card {
+	.pricing-box-neo {
 		position: relative;
-		background: #f8fafc;
-		border: 1.5px solid var(--border);
-		border-radius: 20px;
-		padding: 30px 24px;
+		background: #faf8f5;
+		border: 2px solid #0f172a;
+		border-radius: 10px;
+		padding: 28px;
+		box-shadow: 4px 4px 0px #0f172a;
 		display: flex;
 		flex-direction: column;
 	}
 
-	.pricing-tier-card.featured-tier {
-		background: #ffffff;
-		border-color: var(--primary);
-		box-shadow: 0 10px 30px rgba(99, 102, 241, 0.12);
+	.pricing-box-neo.highlight-pricing {
+		background: #fefce8;
+		border-width: 2.5px;
+		box-shadow: 6px 6px 0px #0f172a;
 	}
 
-	.tier-popular-tag {
+	.pr-pop-tag {
 		position: absolute;
-		top: 16px;
-		right: 18px;
-		background: var(--primary);
-		color: #ffffff;
+		top: -12px;
+		right: 20px;
+		background: #0f172a;
+		color: #facc15;
 		font-size: 10px;
-		font-weight: 850;
-		padding: 3px 9px;
-		border-radius: var(--r-full);
-		text-transform: uppercase;
+		font-weight: 900;
+		padding: 3px 8px;
+		border-radius: 4px;
 	}
 
-	.tier-type {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 12px;
-		font-weight: 800;
-		text-transform: uppercase;
-		margin-bottom: 12px;
-	}
-
-	.tier-type.grooming { color: #ec4899; }
-	.tier-type.hotel { color: #8b5cf6; }
-	.tier-type.aquarium { color: #0284c7; }
-
-	.tier-price-row {
-		display: flex;
-		align-items: baseline;
-		gap: 6px;
+	.pr-badge {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 10px;
+		font-weight: 900;
+		padding: 2px 7px;
+		border: 1.5px solid #0f172a;
+		border-radius: 4px;
+		width: fit-content;
 		margin-bottom: 10px;
 	}
 
-	.from-text {
-		font-size: 12px;
-		color: var(--muted);
-	}
+	.pr-badge.pink { background: #fbcfe8; }
+	.pr-badge.purple { background: #e9d5ff; }
+	.pr-badge.blue { background: #bae6fd; }
 
-	.tier-price {
-		font-size: 28px;
+	.pricing-box-neo h3 {
+		font-size: 20px;
 		font-weight: 900;
-		color: var(--ink);
+		color: #0f172a;
+		margin: 0 0 10px;
 	}
 
-	.per-night {
+	.pr-amount-row {
+		display: flex;
+		align-items: baseline;
+		gap: 6px;
+		margin-bottom: 16px;
+	}
+
+	.pr-from {
 		font-size: 12px;
-		color: var(--muted);
+		color: #64748b;
 	}
 
-	.tier-summary {
-		font-size: 13px;
-		color: var(--muted);
-		line-height: 1.45;
-		margin: 0 0 20px;
-		min-height: 38px;
+	.pr-price {
+		font-size: 28px;
+		font-weight: 950;
+		color: #0f172a;
 	}
 
-	.tier-features {
+	.pr-per {
+		font-size: 12px;
+		color: #64748b;
+	}
+
+	.pr-features {
 		list-style: none;
 		padding: 0;
-		margin: 0 0 26px;
+		margin: 0 0 24px;
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		gap: 8px;
+		flex: 1;
 	}
 
-	.tier-features li {
+	.pr-features li {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		gap: 6px;
 		font-size: 12.5px;
-		color: var(--ink-2);
+		color: #334155;
 	}
 
-	.tier-features li :global(svg) {
+	.pr-features li svg {
 		color: #10b981;
 		flex-shrink: 0;
 	}
 
-	.tier-btn {
-		margin-top: auto;
-		width: 100%;
-		padding: 10px;
-		font-weight: 750;
-		text-decoration: none;
-		text-align: center;
+	/* ============ REVIEWS ============ */
+	.reviews-3-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: 20px;
 	}
 
-	/* ============ CTA BANNER ============ */
-	.section-cta-banner {
-		padding: 40px 0 84px;
+	.review-box-neo {
 		background: #ffffff;
+		border: 2px solid #0f172a;
+		border-radius: 10px;
+		padding: 24px;
+		box-shadow: 4px 4px 0px #0f172a;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
 	}
 
-	.cta-banner-box {
-		background: linear-gradient(135deg, #090d16 0%, #1e1b4b 100%);
-		border-radius: 24px;
+	.stars-line {
+		color: #f59e0b;
+		font-size: 14px;
+		letter-spacing: 2px;
+	}
+
+	.review-box-neo p {
+		font-size: 13.5px;
+		color: #334155;
+		line-height: 1.5;
+		margin: 0;
+		flex: 1;
+	}
+
+	.reviewer-line {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		padding-top: 10px;
+		border-top: 1.5px dashed #cbd5e1;
+	}
+
+	.reviewer-line strong {
+		font-size: 13px;
+		color: #0f172a;
+	}
+
+	.reviewer-line span {
+		font-size: 11px;
+		color: #64748b;
+	}
+
+	/* ============ FAQ ============ */
+	.faq-2-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+		gap: 20px;
+	}
+
+	.faq-box-neo {
+		background: #faf8f5;
+		border: 2px solid #0f172a;
+		border-radius: 8px;
+		padding: 22px;
+		box-shadow: 3px 3px 0px #0f172a;
+	}
+
+	.faq-box-neo h4 {
+		font-size: 15px;
+		font-weight: 900;
+		color: #0f172a;
+		margin: 0 0 8px;
+	}
+
+	.faq-box-neo p {
+		font-size: 13px;
+		color: #475569;
+		line-height: 1.5;
+		margin: 0;
+	}
+	.cta-box-huge {
+		background: #facc15;
+		border: 3px solid #0f172a;
+		border-radius: 14px;
 		padding: 56px 36px;
 		text-align: center;
-		color: #ffffff;
-		box-shadow: 0 20px 45px rgba(15, 23, 42, 0.15);
+		box-shadow: 6px 6px 0px #0f172a;
 	}
 
-	.cta-banner-content {
-		max-width: 720px;
-		margin: 0 auto;
-	}
-
-	.cta-banner-content h2 {
-		font-size: clamp(24px, 3.2vw, 36px);
+	.cta-mini-tag {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11px;
 		font-weight: 900;
-		letter-spacing: -0.03em;
+		background: #0f172a;
+		color: #facc15;
+		padding: 3px 10px;
+		border-radius: 4px;
+		display: inline-block;
+		margin-bottom: 16px;
+	}
+
+	.cta-box-huge h2 {
+		font-size: clamp(26px, 4.2vw, 44px);
+		font-weight: 950;
+		line-height: 1.1;
+		color: #0f172a;
 		margin: 0 0 14px;
-		color: #ffffff;
 	}
 
-	.cta-banner-content p {
-		font-size: 15px;
-		color: #cbd5e1;
-		line-height: 1.55;
-		margin: 0 0 32px;
+	.cta-box-huge p {
+		font-size: 15.5px;
+		color: #0f172a;
+		font-weight: 600;
+		max-width: 640px;
+		margin: 0 auto 32px;
+		line-height: 1.5;
 	}
 
-	.cta-banner-actions {
+	.cta-btns-group {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
 		gap: 14px;
 	}
 
-	.btn-lg {
-		padding: 12px 24px;
-		font-size: 14.5px;
-		font-weight: 800;
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		text-decoration: none;
-	}
-
-	/* ============ SECTION REVIEWS ============ */
-	.section-reviews {
-		padding: 84px 0;
-		background: #f8fafc;
-		border-top: 1px solid var(--border);
-	}
-
-	.reviews-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		gap: 24px;
-	}
-
-	.review-card {
-		background: #ffffff;
-		border: 1px solid var(--border);
-		border-radius: 18px;
-		padding: 26px;
-		display: flex;
-		flex-direction: column;
-		gap: 14px;
-		box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-	}
-
-	.review-stars {
-		color: #f59e0b;
-		font-size: 15px;
-		letter-spacing: 2px;
-	}
-
-	.review-text {
-		font-size: 13.5px;
-		color: var(--ink-2);
-		line-height: 1.55;
-		margin: 0;
-		flex: 1;
-	}
-
-	.reviewer-meta {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding-top: 12px;
-		border-top: 1px solid var(--border);
-	}
-
-	.reviewer-avatar {
-		width: 36px;
-		height: 36px;
-		border-radius: 50%;
-		background: var(--surface-2);
-		display: grid;
-		place-items: center;
-		font-size: 16px;
-	}
-
-	.reviewer-meta strong {
-		font-size: 13px;
-		color: var(--ink);
-		display: block;
-	}
-
-	.reviewer-meta span {
-		font-size: 11px;
-		color: var(--muted);
-	}
-
-	/* ============ SECTION FAQ ============ */
-	.section-faq {
-		padding: 84px 0;
-		background: #ffffff;
-		border-top: 1px solid var(--border);
-	}
-
-	.faq-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-		gap: 24px;
-	}
-
-	.faq-item {
-		background: #f8fafc;
-		border: 1px solid var(--border);
-		border-radius: 16px;
-		padding: 24px;
-	}
-
-	.faq-item h4 {
-		font-size: 15.5px;
-		font-weight: 800;
-		color: var(--ink);
-		margin: 0 0 10px;
-	}
-
-	.faq-item p {
-		font-size: 13.5px;
-		color: var(--muted);
-		margin: 0;
-		line-height: 1.5;
-	}
-
 	/* ============ FOOTER ============ */
-	.landing-footer {
-		background: #090d16;
+	.neo-footer {
+		background: #0f172a;
 		color: #ffffff;
-		padding: 64px 24px 32px;
-		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		border-top: 3px solid #0f172a;
+		padding: 60px 0 28px;
 	}
 
-	.footer-inner {
-		max-width: 1240px;
-		margin: 0 auto;
-	}
-
-	.footer-top-grid {
+	.footer-grid-neo {
 		display: grid;
 		grid-template-columns: 2fr 1fr 1fr 1.2fr;
-		gap: 40px;
-		padding-bottom: 48px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		gap: 36px;
+		padding-bottom: 40px;
+		border-bottom: 1px solid #334155;
 	}
 
 	.footer-brand-col {
 		display: flex;
 		flex-direction: column;
-		gap: 14px;
+		gap: 12px;
 	}
 
-	.footer-logo {
-		display: inline-flex;
+	.f-brand {
+		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: 8px;
 	}
 
-	.footer-emblem {
-		width: 32px;
-		height: 32px;
-		border-radius: 8px;
-		background: var(--primary);
+	.f-box {
+		width: 30px;
+		height: 30px;
+		background: #facc15;
+		color: #0f172a;
+		border: 1.5px solid #ffffff;
 		display: grid;
 		place-items: center;
-		color: #ffffff;
+		border-radius: 4px;
 	}
 
-	.footer-name {
+	.f-title {
 		font-size: 18px;
-		font-weight: 900;
-		letter-spacing: -0.02em;
-	}
-
-	.footer-tagline {
-		font-size: 13px;
-		color: #94a3b8;
-		line-height: 1.5;
-		margin: 0;
-		max-width: 360px;
-	}
-
-	.footer-certs {
-		display: flex;
-		gap: 8px;
-		margin-top: 6px;
-	}
-
-	.cert-pill {
-		font-size: 10.5px;
-		font-weight: 750;
-		background: rgba(255, 255, 255, 0.08);
-		color: #34d399;
-		padding: 3px 8px;
-		border-radius: var(--r-full);
-	}
-
-	.footer-links-col h4 {
-		font-size: 14px;
-		font-weight: 800;
+		font-weight: 950;
 		color: #ffffff;
-		margin: 0 0 16px;
 	}
 
-	.footer-links-col a,
-	.footer-nav-link {
+	.f-tagline {
+		font-size: 12.5px;
+		color: #94a3b8;
+		line-height: 1.55;
+		margin: 0;
+		max-width: 340px;
+	}
+
+	.f-cert-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		font-family: "JetBrains Mono", monospace;
+		font-size: 10px;
+		font-weight: 850;
+		color: #facc15;
+	}
+
+	.footer-nav-col h5 {
+		font-family: "JetBrains Mono", monospace;
+		font-size: 12px;
+		font-weight: 900;
+		letter-spacing: 0.08em;
+		color: #facc15;
+		margin: 0 0 14px;
+	}
+
+	.footer-nav-col a {
 		display: block;
 		font-size: 13px;
-		color: #94a3b8;
+		color: #cbd5e1;
 		text-decoration: none;
-		margin-bottom: 10px;
-		transition: color 130ms ease;
+		margin-bottom: 8px;
+		transition: color 100ms ease;
 	}
 
-	.footer-links-col a:hover,
-	.footer-nav-link:hover {
-		color: var(--primary);
+	.footer-nav-col a:hover {
+		color: #facc15;
 	}
 
-	.footer-staff-link {
+	.f-staff-tag {
 		display: inline-block;
-		margin-top: 8px;
-		padding: 6px 12px;
-		background: rgba(99, 102, 241, 0.2);
-		border: 1px solid rgba(129, 140, 248, 0.35);
-		border-radius: var(--r-md);
-		color: #c7d2fe !important;
-		font-size: 12px;
-		font-weight: 750;
-		text-decoration: none;
+		margin-top: 6px;
+		background: #1e293b;
+		border: 1.5px solid #475569;
+		color: #facc15 !important;
+		padding: 4px 9px;
+		border-radius: 4px;
+		font-size: 11px;
+		font-weight: 850;
 	}
 
-	.footer-bottom-bar {
+	.footer-bottom-neo {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
-		padding-top: 28px;
-		font-size: 12px;
+		padding-top: 22px;
+		font-family: "JetBrains Mono", monospace;
+		font-size: 11px;
 		color: #64748b;
-		gap: 12px;
+		gap: 10px;
 	}
 
-	.footer-bottom-bar p {
-		margin: 0;
-	}
-
-	.footer-bottom-meta {
+	.f-meta-links {
 		display: flex;
-		align-items: center;
 		gap: 8px;
 	}
 
 	/* ============ RESPONSIVE BREAKPOINTS ============ */
 	@media (max-width: 1024px) {
-		.nav-links-center {
-			display: none;
-		}
-
-		.why-split-layout {
-			grid-template-columns: 1fr;
-		}
-
-		.footer-top-grid {
-			grid-template-columns: 1fr 1fr;
-		}
+		.neo-nav-links { display: none; }
+		.service-box-neo { grid-template-columns: 1fr; gap: 20px; }
+		.footer-grid-neo { grid-template-columns: 1fr 1fr; }
 	}
 
-	@media (max-width: 768px) {
-		.hero-section {
-			padding: 48px 20px 60px;
-		}
-
-		.footer-top-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.trust-metrics-strip {
-			flex-direction: column;
-			gap: 14px;
-		}
-
-		.metric-divider {
-			width: 60px;
-			height: 1px;
-		}
-
-		.cta-banner-box {
-			padding: 40px 20px;
-		}
-	}
-
-	@media (max-width: 540px) {
-		.staff-text {
-			display: none;
-		}
+	@media (max-width: 640px) {
+		.hero-actions-row, .cta-btns-group { flex-direction: column; }
+		.neo-btn-lg { width: 100%; justify-content: center; }
+		.footer-grid-neo { grid-template-columns: 1fr; }
+		.staff-label { display: none; }
 	}
 </style>
