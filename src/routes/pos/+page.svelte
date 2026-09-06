@@ -40,113 +40,50 @@
 	import PetAvatar from "$lib/components/PetAvatar.svelte";
 	import EmptyState from "$lib/components/EmptyState.svelte";
 	import ProductCard from "$lib/components/pos/ProductCard.svelte";
+	import { CartState } from "$lib/state/pos-cart.svelte";
+	import { getCategoryIcon } from "$lib/ui/retail";
 
 	let { data } = $props();
 	const t = $derived(makeT(page.data.locale ?? "en"));
 
-	// Cart item type
-	type CartItem = {
-		productId: number;
-		name: string;
-		sku: string;
-		unitPriceCents: number;
-		unit: string;
-		quantity: number;
-		stockQty?: number;
-		categorySlug?: string | null;
-	};
+	// ---- POS cart + payment state (runes module) ----
+	const cartState = new CartState(data.customers);
 
+	// ---- UI-only state (modals, catalog filters) ----
 	let receiptModalOpen = $state(false);
 	let salesHistoryModalOpen = $state(false);
 	let completedOrder = $state<any | null>(null);
-	// Local State
-	let cart = $state<CartItem[]>([]);
 	let searchQuery = $state("");
 	let selectedCategory = $state<string>("all");
 	let onlyInStock = $state(false);
 
-	// Customer selection
-	let selectedCustomerId = $state<string>("");
-	let selectedPetId = $state<string>("");
-
-	// Financials & Payment
-	let discountType = $state<"preset" | "custom">("preset");
-	let discountPercent = $state<number>(0);
-	let customDiscountAmount = $state<number>(0);
-	let paymentMethod = $state<"cash" | "qris" | "card" | "points">("cash");
-	let receiptNotes = $state<string>("");
-
-
 	const form = $derived(page.form);
 	const checkoutError = $derived(form?.checkoutError);
 
-	// When checkout completes, show receipt modal
+	// When checkout completes: show receipt + clear cart
 	$effect(() => {
 		if (form?.success && form?.order) {
 			completedOrder = form.order;
 			receiptModalOpen = true;
-			// Clear local cart
-			cart = [];
-			discountPercent = 0;
-			customDiscountAmount = 0;
-			selectedPetId = "";
-			receiptNotes = "";
+			cartState.resetAfterSale();
 		}
 	});
 
-	// Selected customer object
-	const selectedCustomer = $derived(
-		data.customers.find((c) => String(c.id) === selectedCustomerId) || null
-	);
-
-	// Customer's pets
-	const customerPets = $derived(selectedCustomer?.pets || []);
-
-	// Auto-reset pet if customer changes
+	// Auto-select first pet when a customer is chosen
 	$effect(() => {
-		if (selectedCustomer && customerPets.length > 0 && !selectedPetId) {
-			selectedPetId = String(customerPets[0].id);
-		} else if (!selectedCustomer) {
-			selectedPetId = "";
+		const pets = cartState.customerPets;
+		if (cartState.selectedCustomer && pets.length > 0 && !cartState.selectedPetId) {
+			cartState.selectedPetId = String(pets[0].id);
+		} else if (!cartState.selectedCustomer) {
+			cartState.selectedPetId = "";
 		}
 	});
 
-	// Cart calculations
-	const subtotalCents = $derived(
-		cart.reduce((sum, item) => sum + item.unitPriceCents * item.quantity, 0)
-	);
-
-	const calculatedDiscountCents = $derived.by(() => {
-		if (discountPercent > 0) {
-			return Math.round((subtotalCents * discountPercent) / 100);
-		}
-		return customDiscountAmount > 0 ? customDiscountAmount : 0;
-	});
-
-	const grandTotalCents = $derived(
-		Math.max(0, subtotalCents - calculatedDiscountCents)
-	);
-
-	// Loyalty points calculation
-	const estimatedPointsEarned = $derived.by(() => {
-		if (!selectedCustomer) return 0;
-		if (paymentMethod === "points") return 0;
-		let multiplier = 1;
-		if (selectedCustomer.tier === "platinum") multiplier = 3;
-		else if (selectedCustomer.tier === "gold") multiplier = 2;
-		return Math.max(1, Math.floor(grandTotalCents / 1000) * multiplier);
-	});
-
-	const pointsRequiredForPayment = $derived(
-		Math.ceil(grandTotalCents / 100)
-	);
-
-	// Filtered catalog
+	// Filtered catalog (search + category + in-stock only)
 	const filteredProducts = $derived(
 		data.products.filter((p) => {
 			if (onlyInStock && (p.stockQty ?? 0) <= 0) return false;
 			if (selectedCategory !== "all" && p.categorySlug !== selectedCategory) return false;
-
 			const q = searchQuery.toLowerCase().trim();
 			if (q) {
 				const matchesName = p.name?.toLowerCase().includes(q);
@@ -158,73 +95,14 @@
 		})
 	);
 
-	// Cart operations
-	function addToCart(p: any) {
-		const existing = cart.find((item) => item.productId === p.id);
-		if (existing) {
-			existing.quantity += 1;
-		} else {
-			cart.push({
-				productId: p.id,
-				name: p.name,
-				sku: p.sku,
-				unitPriceCents: p.priceCents,
-				unit: p.unit ?? "pcs",
-				quantity: 1,
-				stockQty: p.stockQty ?? 0,
-				categorySlug: p.categorySlug
-			});
-		}
-	}
-
-	function incrementQty(productId: number) {
-		const item = cart.find((i) => i.productId === productId);
-		if (item) item.quantity += 1;
-	}
-
-	function decrementQty(productId: number) {
-		const itemIndex = cart.findIndex((i) => i.productId === productId);
-		if (itemIndex > -1) {
-			if (cart[itemIndex].quantity > 1) {
-				cart[itemIndex].quantity -= 1;
-			} else {
-				cart.splice(itemIndex, 1);
-			}
-		}
-	}
-
-	function removeFromCart(productId: number) {
-		cart = cart.filter((i) => i.productId !== productId);
-	}
-
-	function clearCart() {
-		cart = [];
-		discountPercent = 0;
-		customDiscountAmount = 0;
-		receiptNotes = "";
-	}
-
-	function applyTierDiscount() {
-		if (selectedCustomer?.tier === "platinum") {
-			discountPercent = 10;
-		} else if (selectedCustomer?.tier === "gold") {
-			discountPercent = 5;
-		}
-	}
-
-	function getCartItemCount(productId: number): number {
-		const item = cart.find((i) => i.productId === productId);
-		return item ? item.quantity : 0;
-	}
-
-	function getCategoryIcon(slug: string | null) {
-		if (slug === "food") return Utensils;
-		if (slug === "grooming") return Sparkles;
-		if (slug === "aquarium") return Fish;
-		if (slug === "treats") return Gift;
-		if (slug === "healthcare") return HeartPulse;
-		return Tag;
-	}
+	// ---- Template-facing aliases (delegate to CartState) ----
+	const addToCart = (p: { id: number; name: string; sku: string; priceCents: number; unit?: string | null; stockQty?: number | null; categorySlug?: string | null }) => cartState.addProduct(p);
+	const incrementQty = (id: number) => cartState.incrementQty(id);
+	const decrementQty = (id: number) => cartState.decrementQty(id);
+	const removeFromCart = (id: number) => cartState.removeFromCart(id);
+	const clearCart = () => cartState.clearCart();
+	const applyTierDiscount = () => cartState.applyTierDiscount();
+	const getCartItemCount = (id: number) => cartState.qtyFor(id);
 
 	function printReceipt() {
 		window.print();
@@ -263,7 +141,7 @@
 				<ShoppingBag size={14} />
 				<span>Inventory &amp; SKUs</span>
 			</a>
-			{#if cart.length > 0}
+			{#if cartState.cart.length > 0}
 				<button class="btn btn-ghost btn-sm text-danger" onclick={clearCart}>
 					<Trash2 size={14} />
 					<span>Clear Cart</span>
@@ -355,16 +233,16 @@
 		</section>
 
 		<!-- Right: Live Interactive Cart & Checkout -->
-		<aside class="cart-pane">
-			<div class="cart-card">
+		<aside class="cartState.cart-pane">
+			<div class="cartState.cart-card">
 				<!-- Customer & Pet Selector Header -->
-				<div class="cart-customer-section">
+				<div class="cartState.cart-customer-section">
 					<div class="field mb-2">
-						<label for="pos-customer" class="cart-field-label">
+						<label for="pos-customer" class="cartState.cart-field-label">
 							<User size={13} />
 							<span>Customer / Member</span>
 						</label>
-						<select id="pos-customer" bind:value={selectedCustomerId} class="customer-select">
+						<select id="pos-customer" bind:value={cartState.selectedCustomerId} class="customer-select">
 							<option value="">Walk-in Customer (Guest)</option>
 							{#each data.customers as cust}
 								<option value={String(cust.id)}>
@@ -374,19 +252,19 @@
 						</select>
 					</div>
 
-					{#if selectedCustomer}
+					{#if cartState.selectedCustomer}
 						<!-- Customer Loyalty Strip -->
 						<div class="customer-loyalty-card">
 							<div class="row spread align-center">
 								<div class="row gap-2 align-center">
-									<Badge variant={selectedCustomer.tier ?? 'silver'} label={selectedCustomer.tier ? selectedCustomer.tier.toUpperCase() : 'SILVER'} />
+									<Badge variant={cartState.selectedCustomer.tier ?? 'silver'} label={cartState.selectedCustomer.tier ? cartState.selectedCustomer.tier.toUpperCase() : 'SILVER'} />
 									<span class="points-text mono">
 										<Award size={13} />
-										<strong>{selectedCustomer.pointsBalance ?? 0}</strong> pts
+										<strong>{cartState.selectedCustomer.pointsBalance ?? 0}</strong> pts
 									</span>
 								</div>
 
-								{#if selectedCustomer.tier === "gold" || selectedCustomer.tier === "platinum"}
+								{#if cartState.selectedCustomer.tier === "gold" || cartState.selectedCustomer.tier === "platinum"}
 									<button
 										type="button"
 										class="btn btn-xs btn-ghost text-primary"
@@ -394,22 +272,22 @@
 										title="Apply member discount rate"
 									>
 										<Percent size={11} />
-										<span>Apply {selectedCustomer.tier === 'platinum' ? '10%' : '5%'} Perk</span>
+										<span>Apply {cartState.selectedCustomer.tier === 'platinum' ? '10%' : '5%'} Perk</span>
 									</button>
 								{/if}
 							</div>
 							<!-- Pet Selector if customer has pets -->
-							{#if customerPets.length > 0}
+							{#if cartState.customerPets.length > 0}
 								<div class="pet-pick-row" style="margin-top: 8px;">
 									<span class="tiny muted">Patient / Pet:</span>
 									<div class="pet-chips row gap-1">
-										{#each customerPets as pet}
+										{#each cartState.customerPets as pet}
 											<button
 												type="button"
-												class="pet-chip {selectedPetId === String(pet.id) ? 'active' : ''}"
-												onclick={() => (selectedPetId = String(pet.id))}
+												class="pet-chip {cartState.selectedPetId === String(pet.id) ? 'active' : ''}"
+												onclick={() => (cartState.selectedPetId = String(pet.id))}
 											>
-												<PetAvatar name={pet.name} species={pet.species} size="sm" />
+												<PetAvatar name={pet.name ?? undefined} species={pet.species ?? undefined} size="sm" />
 											</button>
 										{/each}
 									</div>
@@ -420,22 +298,22 @@
 				</div>
 
 				<!-- Cart Items List -->
-				<div class="cart-items-wrap">
-					<div class="cart-items-header row spread">
-						<span class="cart-header-title">Receipt Items ({cart.reduce((s, i) => s + i.quantity, 0)})</span>
+				<div class="cartState.cart-items-wrap">
+					<div class="cartState.cart-items-header row spread">
+						<span class="cartState.cart-header-title">Receipt Items ({cartState.cart.reduce((s, i) => s + i.quantity, 0)})</span>
 						<span class="tiny muted">Price &amp; Subtotal</span>
 					</div>
 
-					{#if cart.length === 0}
-						<div class="cart-empty">
+					{#if cartState.cart.length === 0}
+						<div class="cartState.cart-empty">
 							<ShoppingBag size={32} strokeWidth={1.5} class="muted" />
 							<p>Cart is empty</p>
 							<span class="tiny faint">Tap products on the left to add items</span>
 						</div>
 					{:else}
-						<div class="cart-items-list">
-							{#each cart as item (item.productId)}
-								<div class="cart-item-row">
+						<div class="cartState.cart-items-list">
+							{#each cartState.cart as item (item.productId)}
+								<div class="cartState.cart-item-row">
 									<div class="item-main">
 										<div class="item-name">{item.name}</div>
 										<div class="item-meta row gap-2">
@@ -486,10 +364,10 @@
 				</div>
 
 				<!-- Cart Summary & Calculations -->
-				<div class="cart-calculations">
+				<div class="cartState.cart-calculations">
 					<div class="calc-row">
 						<span class="calc-label">Subtotal</span>
-						<span class="calc-val mono">{money(subtotalCents)}</span>
+						<span class="calc-val mono">{money(cartState.subtotalCents)}</span>
 					</div>
 
 					<!-- Discount Control -->
@@ -499,38 +377,38 @@
 							<div class="discount-pills row gap-1">
 								<button
 									type="button"
-									class="disc-btn {discountPercent === 0 && customDiscountAmount === 0 ? 'active' : ''}"
-									onclick={() => { discountPercent = 0; customDiscountAmount = 0; }}
+									class="disc-btn {cartState.discountPercent === 0 && cartState.customDiscountAmount === 0 ? 'active' : ''}"
+									onclick={() => { cartState.discountPercent = 0; cartState.customDiscountAmount = 0; }}
 								>
 									0%
 								</button>
 								<button
 									type="button"
-									class="disc-btn {discountPercent === 5 ? 'active' : ''}"
-									onclick={() => { discountPercent = 5; customDiscountAmount = 0; }}
+									class="disc-btn {cartState.discountPercent === 5 ? 'active' : ''}"
+									onclick={() => { cartState.discountPercent = 5; cartState.customDiscountAmount = 0; }}
 								>
 									5%
 								</button>
 								<button
 									type="button"
-									class="disc-btn {discountPercent === 10 ? 'active' : ''}"
-									onclick={() => { discountPercent = 10; customDiscountAmount = 0; }}
+									class="disc-btn {cartState.discountPercent === 10 ? 'active' : ''}"
+									onclick={() => { cartState.discountPercent = 10; cartState.customDiscountAmount = 0; }}
 								>
 									10%
 								</button>
 								<button
 									type="button"
-									class="disc-btn {discountPercent === 15 ? 'active' : ''}"
-									onclick={() => { discountPercent = 15; customDiscountAmount = 0; }}
+									class="disc-btn {cartState.discountPercent === 15 ? 'active' : ''}"
+									onclick={() => { cartState.discountPercent = 15; cartState.customDiscountAmount = 0; }}
 								>
 									15%
 								</button>
 							</div>
 						</div>
-						{#if calculatedDiscountCents > 0}
+						{#if cartState.discountCents > 0}
 							<div class="calc-row discount-applied">
-								<span class="tiny text-success">Discount Applied ({discountPercent > 0 ? `${discountPercent}%` : 'Custom'})</span>
-								<span class="mono text-success font-bold">-{money(calculatedDiscountCents)}</span>
+								<span class="tiny text-success">Discount Applied ({cartState.discountPercent > 0 ? `${cartState.discountPercent}%` : 'Custom'})</span>
+								<span class="mono text-success font-bold">-{money(cartState.discountCents)}</span>
 							</div>
 						{/if}
 					</div>
@@ -541,14 +419,14 @@
 							<span class="total-label">Grand Total</span>
 							<span class="tax-inclusive-tag">Tax inclusive</span>
 						</div>
-						<div class="total-amount mono">{money(grandTotalCents)}</div>
+						<div class="total-amount mono">{money(cartState.grandTotalCents)}</div>
 					</div>
 
 					<!-- Loyalty Points Accrual Notice -->
-					{#if selectedCustomer && grandTotalCents > 0 && paymentMethod !== 'points'}
+					{#if cartState.selectedCustomer && cartState.grandTotalCents > 0 && cartState.paymentMethod !== 'points'}
 						<div class="points-accrual-box">
 							<Sparkles size={13} class="text-purple" />
-							<span>Customer will earn <strong>+{estimatedPointsEarned}</strong> loyalty points</span>
+							<span>Customer will earn <strong>+{cartState.estimatedPointsEarned}</strong> loyalty points</span>
 						</div>
 					{/if}
 				</div>
@@ -559,8 +437,8 @@
 					<div class="payment-grid">
 						<button
 							type="button"
-							class="pay-method-card {paymentMethod === 'cash' ? 'active' : ''}"
-							onclick={() => (paymentMethod = "cash")}
+							class="pay-method-card {cartState.paymentMethod === 'cash' ? 'active' : ''}"
+							onclick={() => (cartState.paymentMethod = "cash")}
 						>
 							<Banknote size={18} />
 							<span>Cash</span>
@@ -568,8 +446,8 @@
 
 						<button
 							type="button"
-							class="pay-method-card {paymentMethod === 'qris' ? 'active' : ''}"
-							onclick={() => (paymentMethod = "qris")}
+							class="pay-method-card {cartState.paymentMethod === 'qris' ? 'active' : ''}"
+							onclick={() => (cartState.paymentMethod = "qris")}
 						>
 							<QrCode size={18} />
 							<span>QRIS</span>
@@ -577,8 +455,8 @@
 
 						<button
 							type="button"
-							class="pay-method-card {paymentMethod === 'card' ? 'active' : ''}"
-							onclick={() => (paymentMethod = "card")}
+							class="pay-method-card {cartState.paymentMethod === 'card' ? 'active' : ''}"
+							onclick={() => (cartState.paymentMethod = "card")}
 						>
 							<CreditCard size={18} />
 							<span>Debit/Card</span>
@@ -586,18 +464,18 @@
 
 						<button
 							type="button"
-							class="pay-method-card {paymentMethod === 'points' ? 'active' : ''} {!selectedCustomer || ((selectedCustomer.pointsBalance ?? 0) < pointsRequiredForPayment) ? 'disabled' : ''}"
+							class="pay-method-card {cartState.paymentMethod === 'points' ? 'active' : ''} {!cartState.selectedCustomer || ((cartState.selectedCustomer.pointsBalance ?? 0) < cartState.pointsRequiredForPayment) ? 'disabled' : ''}"
 							onclick={() => {
-								if (selectedCustomer && (selectedCustomer.pointsBalance ?? 0) >= pointsRequiredForPayment) {
-									paymentMethod = "points";
+								if (cartState.selectedCustomer && (cartState.selectedCustomer.pointsBalance ?? 0) >= cartState.pointsRequiredForPayment) {
+									cartState.paymentMethod = "points";
 								}
 							}}
-							disabled={!selectedCustomer || ((selectedCustomer.pointsBalance ?? 0) < pointsRequiredForPayment)}
+							disabled={!cartState.selectedCustomer || ((cartState.selectedCustomer.pointsBalance ?? 0) < cartState.pointsRequiredForPayment)}
 						>
 							<Award size={18} />
 							<span>Points</span>
-							{#if selectedCustomer}
-								<span class="tiny faint">({pointsRequiredForPayment} pts)</span>
+							{#if cartState.selectedCustomer}
+								<span class="tiny faint">({cartState.pointsRequiredForPayment} pts)</span>
 							{/if}
 						</button>
 					</div>
@@ -605,22 +483,22 @@
 
 				<!-- Checkout Submission Form -->
 				<form method="POST" action="?/checkout" class="checkout-form">
-					<input type="hidden" name="cart" value={JSON.stringify(cart)} />
-					<input type="hidden" name="ownerId" value={selectedCustomerId} />
-					<input type="hidden" name="petId" value={selectedPetId} />
-					<input type="hidden" name="paymentMethod" value={paymentMethod} />
-					<input type="hidden" name="discountCents" value={calculatedDiscountCents} />
-					<input type="hidden" name="notes" value={receiptNotes} />
+					<input type="hidden" name="cartState.cart" value={JSON.stringify(cartState.cart)} />
+					<input type="hidden" name="ownerId" value={cartState.selectedCustomerId} />
+					<input type="hidden" name="petId" value={cartState.selectedPetId} />
+					<input type="hidden" name="cartState.paymentMethod" value={cartState.paymentMethod} />
+					<input type="hidden" name="discountCents" value={cartState.discountCents} />
+					<input type="hidden" name="notes" value={cartState.receiptNotes} />
 
 					<button
 						type="submit"
 						class="btn btn-primary checkout-btn"
-						disabled={cart.length === 0}
+						disabled={cartState.cart.length === 0}
 					>
 						<ReceiptText size={18} strokeWidth={2.2} />
 						<div class="btn-text-col">
 							<span class="checkout-main-text">Complete Checkout &amp; Print Receipt</span>
-							<span class="checkout-sub-text">{money(grandTotalCents)} · {paymentMethod.toUpperCase()}</span>
+							<span class="checkout-sub-text">{money(cartState.grandTotalCents)} · {cartState.paymentMethod.toUpperCase()}</span>
 						</div>
 						<ArrowRight size={16} />
 					</button>
