@@ -22,6 +22,12 @@ describe("i18n catalog parity", () => {
 		expect(translate("en", "auth.signIn")).toBe("Sign in");
 		expect(translate("id", "auth.signIn")).toBe("Masuk");
 		expect(translate("id", "auth.signIn")).not.toBe(translate("en", "auth.signIn"));
+
+		expect(translate("en", "nav.retail")).toBe("Pet Shop & Retail");
+		expect(translate("id", "nav.retail")).toBe("Toko Hewan & Ritel");
+
+		expect(translate("en", "nav.branchView")).toBe("Branch view");
+		expect(translate("id", "nav.branchView")).toBe("Tampilan cabang");
 	});
 
 	it("interpolates params", () => {

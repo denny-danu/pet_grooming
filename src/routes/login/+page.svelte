@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
-	import { PawPrint, KeyRound, Mail, Sparkles, ShieldCheck, ArrowRight, AlertCircle } from "@lucide/svelte";
+	import { PawPrint, KeyRound, Mail, Sparkles, ShieldCheck, ArrowRight, AlertCircle, Calendar } from "@lucide/svelte";
 	import { makeT } from "$lib/i18n/t";
 	import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
 
@@ -97,6 +97,14 @@
 					<span>{t['auth.fillDemoCreds']()}</span>
 				</button>
 			</form>
+
+			<div class="customer-portal-banner">
+				<a href="/book" class="customer-book-link">
+					<span class="portal-badge"><Calendar size={13} /> {page.data.locale === "id" ? "Portal Pelanggan" : "Client Portal"}</span>
+					<span class="portal-cta">{page.data.locale === "id" ? "Ingin Reservasi Grooming / Hotel? Klik di sini" : "Looking to book Grooming or Hotel? Book online"}</span>
+					<ArrowRight size={14} class="portal-arrow" />
+				</a>
+			</div>
 
 			<div class="login-footer">
 				<div class="security-badge">
@@ -332,5 +340,58 @@
 		font-size: 11px;
 		font-weight: 500;
 		color: #64748b;
+	}
+
+	.customer-portal-banner {
+		margin: 18px 0 10px;
+		padding-top: 14px;
+		border-top: 1px solid rgba(255, 255, 255, 0.08);
+	}
+	.customer-book-link {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+		padding: 10px 14px;
+		background: rgba(99, 102, 241, 0.12);
+		border: 1px solid rgba(129, 140, 248, 0.25);
+		border-radius: var(--r-lg);
+		color: #ffffff;
+		text-decoration: none;
+		font-size: 12px;
+		font-weight: 700;
+		transition: all 140ms ease;
+	}
+
+	.customer-book-link:hover {
+		background: rgba(99, 102, 241, 0.22);
+		border-color: rgba(129, 140, 248, 0.45);
+		transform: translateY(-1px);
+	}
+
+	.portal-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		background: #6366f1;
+		color: #ffffff;
+		padding: 2px 7px;
+		border-radius: var(--r-full);
+		font-size: 10.5px;
+		font-weight: 800;
+	}
+
+	.portal-cta {
+		flex: 1;
+		color: #c7d2fe;
+		font-size: 11.5px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.portal-arrow {
+		color: #a5b4fc;
+		flex-shrink: 0;
 	}
 </style>

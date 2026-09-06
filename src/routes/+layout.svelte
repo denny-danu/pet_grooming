@@ -41,8 +41,8 @@
 
 	const selectedBranchName = $derived(
 		page.data.activeBranchId
-			? page.data.branches.find((branch: { id: number; name: string }) => branch.id === page.data.activeBranchId)?.name ?? "Selected branch"
-			: "All branches"
+			? page.data.branches.find((branch: { id: number; name: string }) => branch.id === page.data.activeBranchId)?.name ?? t['nav.branchLocation']()
+			: t['nav.allBranches']()
 	);
 
 	const isPos = $derived(page.url.pathname === "/pos" || page.url.pathname.startsWith("/pos/"));
@@ -102,7 +102,7 @@
 	<title>PetCo · Pet CRM, Grooming &amp; Hotel</title>
 </svelte:head>
 
-{#if page.url.pathname !== "/login"}
+{#if page.url.pathname !== "/login" && !page.url.pathname.startsWith("/book") && !page.url.pathname.startsWith("/portal")}
 	<div class="app-shell">
 		<aside class:collapsed={isCollapsed} class:mobile-open={mobileNavOpen} class="sidebar" aria-label="Primary navigation">
 			<div class="sidebar-header">
@@ -130,7 +130,7 @@
 					<span>{t['nav.hotelRoster']()}</span>
 				</a>
 
-				<div class="nav-section-label">Pet Shop</div>
+				<div class="nav-section-label">{t['nav.retail']()}</div>
 				<a href="/pos" class:active={isActive("/pos")} onclick={closeMobileNav} title={t['nav.pos']()}>
 					<CreditCard size={17} />
 					<span>{t['nav.pos']()}</span>
@@ -150,7 +150,7 @@
 					<span>{t['nav.groomingCuts']()}</span>
 				</a>
 
-				<div class="nav-section-label">CRM</div>
+				<div class="nav-section-label">{t['nav.crm']()}</div>
 				<a href="/customers" class:active={isActive("/customers")} onclick={closeMobileNav} title={t['nav.customers']()}>
 					<Users size={17} />
 					<span>{t['nav.customers']()}</span>
@@ -168,6 +168,10 @@
 				<a href="/settings" class:active={isActive("/settings")} onclick={closeMobileNav} title={t['nav.settings']()}>
 					<Settings size={17} />
 					<span>{t['nav.settings']()}</span>
+				</a>
+				<a href="/book" target="_blank" rel="noopener noreferrer" onclick={closeMobileNav} title={page.data.locale === 'id' ? 'Portal Booking Pelanggan' : 'Customer Booking Portal'}>
+					<PawPrint size={17} />
+					<span>{page.data.locale === 'id' ? 'Portal Booking Klien' : 'Client Booking Site'}</span>
 				</a>
 			</nav>
 		</aside>
@@ -201,20 +205,20 @@
 								type="button"
 								aria-haspopup="menu"
 								aria-expanded={branchMenuOpen}
-								aria-label="Choose branch view"
+								aria-label={t['nav.branchView']()}
 								onclick={toggleBranchMenu}
 							>
 								<span class="branch-trigger-icon"><Building2 size={15} /></span>
 								<span class="branch-trigger-copy">
-									<span class="branch-trigger-label">Branch view</span>
+									<span class="branch-trigger-label">{t['nav.branchView']()}</span>
 									<strong>{selectedBranchName}</strong>
 								</span>
 								<span class:open={branchMenuOpen} class="branch-trigger-chevron"><ChevronDown size={14} /></span>
 							</button>
 
 							{#if branchMenuOpen}
-								<div class="branch-popover" role="menu" aria-label="Available branches">
-									<div class="branch-popover-heading">Switch data scope</div>
+								<div class="branch-popover" role="menu" aria-label={t['nav.branchView']()}>
+									<div class="branch-popover-heading">{t['nav.switchDataScope']()}</div>
 									<button
 										class:active={page.data.activeBranchId == null}
 										class="branch-option"
@@ -224,7 +228,7 @@
 										onclick={() => handleBranchChange(0)}
 									>
 										<span class="branch-option-icon"><Building2 size={16} /></span>
-										<span class="branch-option-copy"><strong>All branches</strong><small>Consolidated headquarters view</small></span>
+										<span class="branch-option-copy"><strong>{t['nav.allBranches']()}</strong><small>{t['nav.headquartersView']()}</small></span>
 										{#if page.data.activeBranchId == null}<span class="branch-option-check"><Check size={16} /></span>{/if}
 									</button>
 									{#each page.data.branches as branch}
@@ -237,7 +241,7 @@
 											onclick={() => handleBranchChange(branch.id)}
 										>
 											<span class="branch-option-icon">{#if branch.isHeadOffice}<Building2 size={16} />{:else}<MapPin size={16} />{/if}</span>
-											<span class="branch-option-copy"><strong>{branch.name}</strong><small>{branch.isHeadOffice ? "Head office" : "Branch location"}</small></span>
+											<span class="branch-option-copy"><strong>{branch.name}</strong><small>{branch.isHeadOffice ? t['nav.headOffice']() : t['nav.branchLocation']()}</small></span>
 											{#if page.data.activeBranchId === branch.id}<span class="branch-option-check"><Check size={16} /></span>{/if}
 										</button>
 									{/each}
@@ -245,9 +249,9 @@
 							{/if}
 						</div>
 					{:else if page.data.currentBranch || page.data.user?.branchName}
-						<div class="branch-locked-pill" title="Data is private to your assigned branch">
+						<div class="branch-locked-pill" title={t['nav.branchPrivateNote']()}>
 							<Lock size={13} />
-							<span>{page.data.currentBranch?.name ?? page.data.user?.branchName ?? "Assigned Branch"}</span>
+							<span>{page.data.currentBranch?.name ?? page.data.user?.branchName ?? t['nav.assignedBranch']()}</span>
 						</div>
 					{/if}
 				</div>

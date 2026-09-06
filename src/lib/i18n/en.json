@@ -198,5 +198,20 @@
 	"checkin.title": "Today's Arrivals",
 	"gc.title": "Grooming Cut Cards & Specifications",
 	"aq.title": "Aquarium Services & Tank Hub",
-	"rem.title": "Pre-Visit Reminders & Delivery Log"
+	"rem.title": "Pre-Visit Reminders & Delivery Log",
+	"nav.retail": "Pet Shop & Retail",
+	"nav.crm": "CRM & Outreach",
+	"nav.branchView": "Branch view",
+	"nav.allBranches": "All branches",
+	"nav.headquartersView": "Consolidated headquarters view",
+	"nav.switchDataScope": "Switch data scope",
+	"nav.assignedBranch": "Assigned Branch",
+	"nav.headOffice": "Head office",
+	"nav.branchLocation": "Branch location",
+	"nav.branchPrivateNote": "Data is private to your assigned branch",
+	"lang.switcher": "Language",
+	"lang.english": "English",
+	"lang.indonesian": "Bahasa Indonesia",
+	"lang.en": "EN",
+	"lang.id": "ID"
 }

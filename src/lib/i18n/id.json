@@ -198,5 +198,20 @@
 	"checkin.title": "Kedatangan Hari Ini",
 	"gc.title": "Kartu Potongan Grooming & Spesifikasi",
 	"aq.title": "Layanan Akuarium & Pusat Tangki",
-	"rem.title": "Pengingat Pra-Kunjungan & Log Pengiriman"
+	"rem.title": "Pengingat Pra-Kunjungan & Log Pengiriman",
+	"nav.retail": "Toko Hewan & Ritel",
+	"nav.crm": "CRM & Jangkauan",
+	"nav.branchView": "Tampilan cabang",
+	"nav.allBranches": "Semua cabang",
+	"nav.headquartersView": "Tampilan konsolidasi kantor pusat",
+	"nav.switchDataScope": "Ganti cakupan data",
+	"nav.assignedBranch": "Cabang Ditugaskan",
+	"nav.headOffice": "Kantor pusat",
+	"nav.branchLocation": "Lokasi cabang",
+	"nav.branchPrivateNote": "Data bersifat pribadi untuk cabang Anda",
+	"lang.switcher": "Bahasa",
+	"lang.english": "English",
+	"lang.indonesian": "Bahasa Indonesia",
+	"lang.en": "EN",
+	"lang.id": "ID"
 }
