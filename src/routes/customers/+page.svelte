@@ -18,6 +18,7 @@
 
 	import { page } from "$app/state";
 	import { makeT } from "$lib/i18n/t";
+	import { getSpeciesEmoji } from "$lib/ui/species";
 
 	let { data } = $props();
 	const t = $derived(makeT(page.data.locale ?? "en"));
@@ -29,14 +30,6 @@
 		d ? new Date(d).toLocaleDateString(page.data.locale === "id" ? "id-ID" : "en-US", { month: "short", day: "numeric", year: "numeric" }) : t['cust.never']();
 
 	const initials = (f: string, l: string) => ((f?.[0] || '') + (l?.[0] || '')).toUpperCase() || '?';
-
-	function getSpeciesEmoji(species: string | null | undefined) {
-		if (species === 'cat') return '🐱';
-		if (species === 'bird') return '🦜';
-		if (species === 'fish') return '🐠';
-		if (species === 'reptile') return '🦎';
-		return '🐶';
-	}
 
 	const filteredCustomers = $derived(
 		data.customers.filter((c) => {

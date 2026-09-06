@@ -38,6 +38,7 @@
 		FileText
 	} from "@lucide/svelte";
 	import { formatRupiah as money } from "$lib/util";
+	import { getSpeciesEmoji } from "$lib/ui/species";
 	import DatePicker from "$lib/components/DatePicker.svelte";
 	import Modal from "$lib/components/Modal.svelte";
 
@@ -77,14 +78,6 @@
 		if (s === 'expiring') return { label: 'Due Soon', cls: 'badge-warning', Icon: TriangleAlert };
 		if (s === 'expired') return { label: 'Expired', cls: 'badge-danger', Icon: ShieldAlert };
 		return { label: 'No record', cls: 'badge-neutral', Icon: Syringe };
-	}
-
-	function getSpeciesEmoji(species: string | null | undefined) {
-		if (species === 'cat') return '🐱';
-		if (species === 'bird') return '🦜';
-		if (species === 'fish') return '🐠';
-		if (species === 'reptile') return '🦎';
-		return '🐶';
 	}
 
 	function pointsToNextTier(pts: number, tier: string | undefined) {

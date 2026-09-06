@@ -28,6 +28,7 @@
 		Heart
 	} from "@lucide/svelte";
 	import { formatRupiah as money } from "$lib/util";
+	import { getSpeciesEmoji } from "$lib/ui/species";
 	import DatePicker from "$lib/components/DatePicker.svelte";
 
 	let { data } = $props();
@@ -155,14 +156,6 @@
 		if (diffDays < 0) return { status: 'expired', label: 'Vaccine Expired', Icon: ShieldAlert, cls: 'status-cancelled' };
 		if (diffDays <= 30) return { status: 'expiring', label: `Expires in ${diffDays}d`, Icon: TriangleAlert, cls: 'status-pending' };
 		return { status: 'valid', label: 'Vaccinated', Icon: ShieldCheck, cls: 'status-valid' };
-	}
-
-	function getSpeciesEmoji(species: string | null | undefined) {
-		if (species === 'cat') return '🐱';
-		if (species === 'bird') return '🦜';
-		if (species === 'fish') return '🐠';
-		if (species === 'reptile') return '🦎';
-		return '🐶';
 	}
 
 	function reloadGroomingSlots() {

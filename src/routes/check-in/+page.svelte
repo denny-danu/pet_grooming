@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/state";
 	import { makeT } from "$lib/i18n/t";
+	import { getSpeciesEmoji } from "$lib/ui/species";
 	import {
 		LogIn,
 		Scissors,
@@ -43,14 +44,6 @@
 		if (k === 'hotel') return Hotel;
 		if (k === 'aquarium') return Fish;
 		return Scissors;
-	}
-
-	function getSpeciesEmoji(species: string | null | undefined) {
-		if (species === 'cat') return '🐱';
-		if (species === 'bird') return '🦜';
-		if (species === 'fish') return '🐠';
-		if (species === 'reptile') return '🦎';
-		return '🐶';
 	}
 
 	const pending = $derived(

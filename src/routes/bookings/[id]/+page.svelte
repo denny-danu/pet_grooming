@@ -34,6 +34,7 @@
 		X
 	} from "@lucide/svelte";
 	import { formatRupiah as money } from "$lib/util";
+	import { getSpeciesEmoji } from "$lib/ui/species";
 	let { data } = $props();
 	const b = $derived(data.booking);
 	const form = $derived(page.form);
@@ -75,14 +76,6 @@
 		if (s === 'expiring') return { cls: 'badge-warning', label: 'Vaccine due soon', Icon: TriangleAlert };
 		if (s === 'expired') return { cls: 'badge-danger', label: 'Vaccine expired', Icon: ShieldAlert };
 		return { cls: 'badge-neutral', label: 'No vax record', Icon: Syringe };
-	}
-
-	function getSpeciesEmoji(species: string | null | undefined) {
-		if (species === 'cat') return '🐱';
-		if (species === 'bird') return '🦜';
-		if (species === 'fish') return '🐠';
-		if (species === 'reptile') return '🦎';
-		return '🐶';
 	}
 
 	const confirmDate = $derived(b?.confirmedAt ? fmtDay(b.confirmedAt) : '');
