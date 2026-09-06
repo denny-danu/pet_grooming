@@ -11,18 +11,12 @@
 		CreditCard,
 		Edit,
 		Boxes,
-		Sparkles,
-		Utensils,
-		Fish,
-		Gift,
-		HeartPulse,
 		CheckCircle2,
 		XCircle,
 		TrendingUp,
 		Filter,
 		Layers,
 		ArrowUpDown,
-		Tag,
 		PackagePlus,
 		Check,
 		X
@@ -57,15 +51,7 @@
 	const actionSuccess = $derived(form?.success);
 
 	// Icon lookup for categories
-	function getCategoryIcon(slug: string | null) {
-		if (slug === "food") return Utensils;
-		if (slug === "grooming") return Sparkles;
-		if (slug === "aquarium") return Fish;
-		if (slug === "treats") return Gift;
-		if (slug === "healthcare") return HeartPulse;
-		return Tag;
-	}
-
+	import { getCategoryIcon } from "$lib/ui/retail";
 	// Filtered products list
 	const filteredProducts = $derived(
 		data.products.filter((p) => {
