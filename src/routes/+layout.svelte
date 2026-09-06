@@ -28,7 +28,11 @@
 		MapPin
 	} from "@lucide/svelte";
 	import { onMount } from "svelte";
+	import { makeT } from "$lib/i18n/t";
+	import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
 	let { children } = $props();
+
+	const t = $derived(makeT(page.data.locale ?? "en"));
 
 	let mobileNavOpen = $state(false);
 	let branchMenuOpen = $state(false);
@@ -108,62 +112,62 @@
 				</a>
 			</div>
 			<nav class="nav">
-				<div class="nav-section-label">Operations</div>
-				<a href="/" class:active={isActive("/")} onclick={closeMobileNav} title="Dashboard">
+				<div class="nav-section-label">{t['nav.operations']()}</div>
+				<a href="/" class:active={isActive("/")} onclick={closeMobileNav} title={t['nav.dashboard']()}>
 					<LayoutDashboard size={17} />
-					<span>Dashboard</span>
+					<span>{t['nav.dashboard']()}</span>
 				</a>
-				<a href="/check-in" class:active={isActive("/check-in")} onclick={closeMobileNav} title="Today's Check-in">
+				<a href="/check-in" class:active={isActive("/check-in")} onclick={closeMobileNav} title={t['nav.checkIn']()}>
 					<LogIn size={17} />
-					<span>Today's Check-in</span>
+					<span>{t['nav.checkIn']()}</span>
 				</a>
-				<a href="/bookings" class:active={isActive("/bookings")} onclick={closeMobileNav} title="Schedule & Bookings">
+				<a href="/bookings" class:active={isActive("/bookings")} onclick={closeMobileNav} title={t['nav.bookings']()}>
 					<CalendarDays size={17} />
-					<span>Schedule &amp; Bookings</span>
+					<span>{t['nav.bookings']()}</span>
 				</a>
-				<a href="/hotel-roster" class:active={isActive("/hotel-roster")} onclick={closeMobileNav} title="Hotel Care Roster">
+				<a href="/hotel-roster" class:active={isActive("/hotel-roster")} onclick={closeMobileNav} title={t['nav.hotelRoster']()}>
 					<Hotel size={17} />
-					<span>Hotel Care Roster</span>
+					<span>{t['nav.hotelRoster']()}</span>
 				</a>
 
-				<div class="nav-section-label">Pet Shop &amp; Retail</div>
-				<a href="/pos" class:active={isActive("/pos")} onclick={closeMobileNav} title="POS Cashier">
+				<div class="nav-section-label">Pet Shop</div>
+				<a href="/pos" class:active={isActive("/pos")} onclick={closeMobileNav} title={t['nav.pos']()}>
 					<CreditCard size={17} />
-					<span>POS Cashier</span>
+					<span>{t['nav.pos']()}</span>
 				</a>
-				<a href="/shop" class:active={isActive("/shop")} onclick={closeMobileNav} title="Products & Stock">
+				<a href="/shop" class:active={isActive("/shop")} onclick={closeMobileNav} title={t['nav.shop']()}>
 					<ShoppingBag size={17} />
-					<span>Products &amp; Stock</span>
+					<span>{t['nav.shop']()}</span>
 				</a>
 
-				<div class="nav-section-label">Specialized Services</div>
-				<a href="/aquarium" class:active={isActive("/aquarium")} onclick={closeMobileNav} title="Aquarium Hub">
+				<div class="nav-section-label">{t['nav.specialized']()}</div>
+				<a href="/aquarium" class:active={isActive("/aquarium")} onclick={closeMobileNav} title={t['nav.aquarium']()}>
 					<Fish size={17} />
-					<span>Aquarium Hub</span>
+					<span>{t['nav.aquarium']()}</span>
 				</a>
-				<a href="/grooming-cuts" class:active={isActive("/grooming-cuts")} onclick={closeMobileNav} title="Grooming Cut Cards">
+				<a href="/grooming-cuts" class:active={isActive("/grooming-cuts")} onclick={closeMobileNav} title={t['nav.groomingCuts']()}>
 					<Scissors size={17} />
-					<span>Grooming Cut Cards</span>
+					<span>{t['nav.groomingCuts']()}</span>
 				</a>
 
-				<div class="nav-section-label">CRM &amp; Outreach</div>
-				<a href="/customers" class:active={isActive("/customers")} onclick={closeMobileNav} title="Customers & Pets">
+				<div class="nav-section-label">CRM</div>
+				<a href="/customers" class:active={isActive("/customers")} onclick={closeMobileNav} title={t['nav.customers']()}>
 					<Users size={17} />
-					<span>Customers &amp; Pets</span>
+					<span>{t['nav.customers']()}</span>
 				</a>
-				<a href="/reminders" class:active={isActive("/reminders")} onclick={closeMobileNav} title="Reminders & Logs">
+				<a href="/reminders" class:active={isActive("/reminders")} onclick={closeMobileNav} title={t['nav.reminders']()}>
 					<BellRing size={17} />
-					<span>Reminders &amp; Logs</span>
+					<span>{t['nav.reminders']()}</span>
 				</a>
 
-				<div class="nav-section-label">Administration</div>
-				<a href="/staff" class:active={isActive("/staff")} onclick={closeMobileNav} title="Staff & Team">
+				<div class="nav-section-label">{t['nav.administration']()}</div>
+				<a href="/staff" class:active={isActive("/staff")} onclick={closeMobileNav} title={t['nav.staff']()}>
 					<Shield size={17} />
-					<span>Staff &amp; Team</span>
+					<span>{t['nav.staff']()}</span>
 				</a>
-				<a href="/settings" class:active={isActive("/settings")} onclick={closeMobileNav} title="Store Settings">
+				<a href="/settings" class:active={isActive("/settings")} onclick={closeMobileNav} title={t['nav.settings']()}>
 					<Settings size={17} />
-					<span>Store Settings</span>
+					<span>{t['nav.settings']()}</span>
 				</a>
 			</nav>
 		</aside>
@@ -249,7 +253,8 @@
 				</div>
 
 				<div class="topbar-right">
-					<a href="/bookings/new" class="btn btn-primary btn-sm topbar-quick-btn"><Plus size={15} strokeWidth={2.5} /><span>New Booking</span></a>
+					<LanguageSwitcher value={page.data.locale ?? "en"} currentPath={page.url.pathname + page.url.search} />
+					<a href="/bookings/new" class="btn btn-primary btn-sm topbar-quick-btn"><Plus size={15} strokeWidth={2.5} /><span>{t['common.actions.newBooking']()}</span></a>
 					{#if page.data.user}
 						<div class="user-menu-wrap">
 							<span class="user-avatar-topbar" title={page.data.user.name}>{initials(page.data.user.name)}</span>
@@ -258,7 +263,7 @@
 								<div class="user-role-top">{page.data.user.role}</div>
 							</div>
 							<form method="POST" action="/logout" class="logout-form-top">
-								<button class="btn-logout-top" type="submit" aria-label="Sign out" title="Sign out"><LogOut size={16} /><span class="logout-text">Sign out</span></button>
+								<button class="btn-logout-top" type="submit" aria-label={t['nav.signOut']()} title={t['nav.signOut']()}><LogOut size={16} /><span class="logout-text">{t['nav.signOut']()}</span></button>
 							</form>
 						</div>
 					{/if}

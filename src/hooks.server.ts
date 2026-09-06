@@ -10,10 +10,12 @@ import {
 	ACTIVE_BRANCH_COOKIE,
 	type SessionUser
 } from "$lib/server/session";
+import { LOCALE_COOKIE, toLocale, type Locale } from "$lib/i18n";
 
 export const handleSession: Handle = async ({ event, resolve }) => {
 	event.locals.user = null;
 	event.locals.activeBranchId = null;
+	event.locals.locale = toLocale(event.cookies.get(LOCALE_COOKIE));
 
 	const accessToken = event.cookies.get(ACCESS_TOKEN_COOKIE) || event.cookies.get(SESSION_COOKIE);
 	if (accessToken) {
