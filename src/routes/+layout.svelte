@@ -49,7 +49,6 @@
 	const isCollapsed = $derived(userCollapsed !== null ? userCollapsed : isPos);
 
 	const isActive = (base: string) => {
-		if (base === "/") return page.url.pathname === "/";
 		return page.url.pathname === base || page.url.pathname.startsWith(base + "/");
 	};
 
@@ -102,18 +101,18 @@
 	<title>PetCo · Pet CRM, Grooming &amp; Hotel</title>
 </svelte:head>
 
-{#if page.url.pathname !== "/login" && !page.url.pathname.startsWith("/book") && !page.url.pathname.startsWith("/portal")}
+{#if page.url.pathname !== "/" && page.url.pathname !== "/login" && !page.url.pathname.startsWith("/book") && !page.url.pathname.startsWith("/portal")}
 	<div class="app-shell">
 		<aside class:collapsed={isCollapsed} class:mobile-open={mobileNavOpen} class="sidebar" aria-label="Primary navigation">
 			<div class="sidebar-header">
-				<a class="sidebar-brand" href="/" aria-label="PetCo dashboard">
+				<a class="sidebar-brand" href="/dashboard" aria-label="PetCo dashboard">
 					<span class="sidebar-brand-mark"><PawPrint size={17} /></span>
 					<span class="sidebar-brand-name">PetCo</span>
 				</a>
 			</div>
 			<nav class="nav">
 				<div class="nav-section-label">{t['nav.operations']()}</div>
-				<a href="/" class:active={isActive("/")} onclick={closeMobileNav} title={t['nav.dashboard']()}>
+				<a href="/dashboard" class:active={isActive("/dashboard")} onclick={closeMobileNav} title={t['nav.dashboard']()}>
 					<LayoutDashboard size={17} />
 					<span>{t['nav.dashboard']()}</span>
 				</a>
@@ -169,7 +168,7 @@
 					<Settings size={17} />
 					<span>{t['nav.settings']()}</span>
 				</a>
-				<a href="/book" target="_blank" rel="noopener noreferrer" onclick={closeMobileNav} title={page.data.locale === 'id' ? 'Portal Booking Pelanggan' : 'Customer Booking Portal'}>
+				<a href="/" target="_blank" rel="noopener noreferrer" onclick={closeMobileNav} title={page.data.locale === 'id' ? 'Portal Booking Pelanggan' : 'Customer Booking Portal'}>
 					<PawPrint size={17} />
 					<span>{page.data.locale === 'id' ? 'Portal Booking Klien' : 'Client Booking Site'}</span>
 				</a>

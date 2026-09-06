@@ -99,7 +99,7 @@
 			</form>
 
 			<div class="customer-portal-banner">
-				<a href="/book" class="customer-book-link">
+				<a href="/" class="customer-book-link">
 					<span class="portal-badge"><Calendar size={13} /> {page.data.locale === "id" ? "Portal Pelanggan" : "Client Portal"}</span>
 					<span class="portal-cta">{page.data.locale === "id" ? "Ingin Reservasi Grooming / Hotel? Klik di sini" : "Looking to book Grooming or Hotel? Book online"}</span>
 					<ArrowRight size={14} class="portal-arrow" />

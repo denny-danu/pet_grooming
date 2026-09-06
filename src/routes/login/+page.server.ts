@@ -13,7 +13,7 @@ import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (locals.user) {
-		throw redirect(303, "/");
+		throw redirect(303, "/dashboard");
 	}
 	return {};
 };
@@ -56,6 +56,6 @@ export const actions: Actions = {
 			maxAge: 14 * 24 * 60 * 60 // 14 days
 		});
 
-		throw redirect(303, "/");
+		throw redirect(303, "/dashboard");
 	}
 };
