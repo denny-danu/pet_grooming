@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import { makeT } from "$lib/i18n/t";
 	import {
 		CalendarDays,
 		ChevronLeft,
@@ -24,6 +25,7 @@
 	import { formatRupiah as money } from "$lib/util";
 
 	let { data } = $props();
+	const t = $derived(makeT(page.data.locale ?? "en"));
 
 	let selectedKind = $state<string>('all');
 	let selectedStatus = $state<string>('all');
@@ -82,8 +84,8 @@
 
 <div class="page-header">
 	<div class="title-block">
-		<div class="kicker"><CalendarDays size={13} /> Operations</div>
-		<h1>Schedule &amp; Bookings</h1>
+		<div class="kicker"><CalendarDays size={13} /> {t['bookings.kicker']()}</div>
+		<h1>{t['bookings.title']()}</h1>
 		<p class="subtitle">{weekLabel}</p>
 	</div>
 	<div class="actions">

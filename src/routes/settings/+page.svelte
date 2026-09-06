@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import { makeT } from "$lib/i18n/t";
 	import {
 		Building2,
 		Store,
@@ -25,6 +26,7 @@
 	import Modal from "$lib/components/Modal.svelte";
 
 	let { data } = $props();
+	const t = $derived(makeT(page.data.locale ?? "en"));
 	const form = $derived(page.form);
 
 	let activeTab = $state<"branches" | "general" | "receipts" | "automation">("branches");
@@ -41,9 +43,9 @@
 
 <div class="page-header">
 	<div class="title-block">
-		<div class="kicker"><Settings size={13} /> Administration &amp; Configuration</div>
-		<h1>Settings &amp; Multi-Branch Architecture</h1>
-		<p class="subtitle">Manage website parameters, child branch data isolation, POS receipts, and notifications.</p>
+		<div class="kicker"><Settings size={13} /> {t['settings.kicker']()}</div>
+		<h1>{t['settings.title']()}</h1>
+		<p class="subtitle">{t['settings.subtitle']()}</p>
 	</div>
 	<div class="actions">
 		{#if data.isHeadOffice}

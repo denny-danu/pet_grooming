@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import { makeT } from "$lib/i18n/t";
 	import {
 		BellRing,
 		Play,
@@ -15,6 +16,7 @@
 	} from "@lucide/svelte";
 
 	let { data } = $props();
+	const t = $derived(makeT(page.data.locale ?? "en"));
 
 	let selectedChannel = $state<string>('all');
 	let selectedStatus = $state<string>('all');
@@ -75,9 +77,9 @@
 
 <div class="page-header">
 	<div class="title-block">
-		<div class="kicker"><BellRing size={13} /> Outreach &amp; Automation</div>
-		<h1>Pre-Visit Reminders &amp; Delivery Log</h1>
-		<p class="subtitle">Automated 24h &amp; 2h pre-appointment alerts via WhatsApp, SMS, and Email.</p>
+		<div class="kicker"><BellRing size={13} /> {t['rem.kicker']()}</div>
+		<h1>{t['rem.title']()}</h1>
+		<p class="subtitle">{t['rem.subtitle']()}</p>
 	</div>
 	<div class="actions">
 		<form method="POST" action="/reminders?/dispatch">

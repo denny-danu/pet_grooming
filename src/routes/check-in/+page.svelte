@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import { makeT } from "$lib/i18n/t";
 	import {
 		LogIn,
 		Scissors,
@@ -22,6 +23,7 @@
 	} from "@lucide/svelte";
 
 	let { data } = $props();
+	const t = $derived(makeT(page.data.locale ?? "en"));
 
 	let searchQuery = $state('');
 	let filterTab = $state<'all' | 'pending' | 'done'>('all');
@@ -86,8 +88,8 @@
 
 <div class="page-header">
 	<div class="title-block">
-		<div class="kicker"><LogIn size={13} /> Front Desk Console</div>
-		<h1>Today's Arrivals</h1>
+		<div class="kicker"><LogIn size={13} /> {t['checkin.kicker']()}</div>
+		<h1>{t['checkin.title']()}</h1>
 		<p class="subtitle">{todayLabel}</p>
 	</div>
 	<div class="actions">

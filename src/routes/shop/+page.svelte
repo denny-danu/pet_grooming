@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import { makeT } from "$lib/i18n/t";
 	import {
 		ShoppingBag,
 		Package,
@@ -33,6 +34,7 @@
 	import EmptyState from "$lib/components/EmptyState.svelte";
 
 	let { data } = $props();
+	const t = $derived(makeT(page.data.locale ?? "en"));
 
 	// State for filters & search
 	let searchQuery = $state("");
@@ -121,9 +123,9 @@
 
 <div class="page-header">
 	<div class="title-block">
-		<div class="kicker"><ShoppingBag size={13} /> PetCo Retail &amp; Pet Shop</div>
-		<h1>Products &amp; Inventory</h1>
-		<p class="subtitle">Real-time stock monitoring, pricing, SKU catalog, and fast restocking</p>
+		<div class="kicker"><ShoppingBag size={13} /> {t['shop.kicker']()}</div>
+		<h1>{t['shop.title']()}</h1>
+		<p class="subtitle">{t['shop.subtitle']()}</p>
 	</div>
 	<div class="actions">
 		<a href="/pos" class="btn">

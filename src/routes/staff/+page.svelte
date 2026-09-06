@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import { makeT } from "$lib/i18n/t";
 	import {
 		Users,
 		UserPlus,
@@ -23,6 +24,7 @@
 	} from "@lucide/svelte";
 
 	let { data } = $props();
+	const t = $derived(makeT(page.data.locale ?? "en"));
 	const form = $derived(page.form);
 	const createError = $derived(form?.createError);
 	const actionError = $derived(form?.actionError);
@@ -76,9 +78,9 @@
 
 <div class="page-header">
 	<div class="title-block">
-		<div class="kicker"><Shield size={13} /> Team &amp; Access</div>
-		<h1>Staff Management</h1>
-		<p class="subtitle">Manage stylists, groomers, caretakers, receptionists, and permissions.</p>
+		<div class="kicker"><Shield size={13} /> {t['staff.kicker']()}</div>
+		<h1>{t['staff.title']()}</h1>
+		<p class="subtitle">{t['staff.subtitle']()}</p>
 	</div>
 	<div class="actions">
 		<button class="btn btn-primary" type="button" onclick={() => addStaffOpen = true}>

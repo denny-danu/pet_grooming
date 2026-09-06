@@ -45,8 +45,10 @@
 	import Badge from "$lib/components/Badge.svelte";
 	import EmptyState from "$lib/components/EmptyState.svelte";
 	import TankCard from "$lib/components/aquarium/TankCard.svelte";
+	import { makeT } from "$lib/i18n/t";
 
 	let { data } = $props();
+	const t = $derived(makeT(page.data.locale ?? "en"));
 	const form = $derived(page.form);
 
 	// Tabs state
@@ -229,7 +231,7 @@
 </script>
 
 <svelte:head>
-	<title>Aquarium Services &amp; Tank Hub · PetCo</title>
+	<title>{t['aq.title']()} · PetCo</title>
 </svelte:head>
 
 <div class="aquarium-page">
@@ -251,26 +253,26 @@
 		<div>
 			<div class="kicker">
 				<Waves size={13} class="kicker-icon" />
-				<span>Specialized Services</span>
+				<span>{t['aq.kicker']()}</span>
 			</div>
-			<h1 class="page-title">Aquarium Services &amp; Tank Hub</h1>
+			<h1 class="page-title">{t['aq.title']()}</h1>
 			<p class="subtle" style="margin-top: 4px; max-width: 650px;">
-				Telemetry for custom aquascapes, reef biotopes, water chemistry logs, and recurring maintenance contracts.
+				{t['aq.subtitle']()}
 			</p>
 		</div>
 
 		<div class="row gap-2 header-actions">
 			<button class="btn btn-subtle" onclick={() => openLogTest()}>
 				<FlaskConical size={15} />
-				<span>Log Water Test</span>
+				<span>{t['aq.logWaterTest']()}</span>
 			</button>
 			<button class="btn btn-subtle" onclick={() => { preselectedTankId = null; preselectedOwnerId = null; createPlanOpen = true; }}>
 				<CalendarPlus size={15} />
-				<span>New Service Plan</span>
+				<span>{t['aq.newServicePlan']()}</span>
 			</button>
 			<button class="btn btn-primary" onclick={() => { registerTankOpen = true; }}>
 				<Plus size={15} />
-				<span>Register Tank</span>
+				<span>{t['aq.registerTank']()}</span>
 			</button>
 		</div>
 	</header>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import { makeT } from "$lib/i18n/t";
 	import {
 		CreditCard,
 		ShoppingBag,
@@ -40,6 +41,7 @@
 	import EmptyState from "$lib/components/EmptyState.svelte";
 
 	let { data } = $props();
+	const t = $derived(makeT(page.data.locale ?? "en"));
 
 	// Cart item type
 	type CartItem = {
@@ -241,9 +243,9 @@
 	<!-- Top Bar -->
 	<header class="pos-header">
 		<div class="pos-title-wrap">
-			<div class="kicker"><CreditCard size={13} /> Point of Sale Terminal</div>
+			<div class="kicker"><CreditCard size={13} /> {t['pos.kicker']()}</div>
 			<div class="pos-heading-row">
-				<h1>PetCo POS Register</h1>
+				<h1>{t['pos.title']()}</h1>
 				<span class="cashier-badge">
 					<Store size={13} />
 					<span>Cashier: <strong>{data.user?.name || "Staff"}</strong></span>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import { makeT } from "$lib/i18n/t";
 	import {
 		ArrowLeft,
 		CalendarPlus,
@@ -30,6 +31,7 @@
 	import DatePicker from "$lib/components/DatePicker.svelte";
 
 	let { data } = $props();
+	const t = $derived(makeT(page.data.locale ?? "en"));
 	const form = $derived(page.form);
 	const error = $derived(form?.createError);
 
@@ -180,9 +182,9 @@
 
 <div class="page-header">
 	<div class="title-block">
-		<div class="kicker"><CalendarPlus size={13} /> Reservation Wizard</div>
-		<h1>Create New Booking</h1>
-		<p class="subtitle">Schedule a grooming session, reserve a hotel suite, or book an aquarium specialist visit.</p>
+		<div class="kicker"><CalendarPlus size={13} /> {t['newbook.kicker']()}</div>
+		<h1>{t['newbook.title']()}</h1>
+		<p class="subtitle">{t['newbook.subtitle']()}</p>
 	</div>
 </div>
 

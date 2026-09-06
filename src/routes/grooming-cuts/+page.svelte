@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import { makeT } from "$lib/i18n/t";
 	import {
 		Scissors,
 		Plus,
@@ -38,6 +39,7 @@
 	import { formatRupiah as money } from "$lib/util";
 
 	let { data } = $props();
+	const t = $derived(makeT(page.data.locale ?? "en"));
 
 	// Modal States
 	let cutCardModalOpen = $state(false);
@@ -184,7 +186,7 @@
 			<Scissors size={13} />
 			<span>Styling &amp; Salon Dossiers</span>
 		</div>
-		<h1>Grooming Cut Cards &amp; Specifications</h1>
+		<h1>{t['gc.title']()}</h1>
 		<p class="subtitle">
 			Pet styling records, blade lengths, custom scissor finishing blueprints, temperament ratings, and salon add-on treatments.
 		</p>

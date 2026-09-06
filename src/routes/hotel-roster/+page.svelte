@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { page } from "$app/state";
+	import { makeT } from "$lib/i18n/t";
 	import { enhance } from "$app/forms";
 	import { goto } from "$app/navigation";
 	import { formatRupiah as money } from "$lib/util";
@@ -35,6 +37,7 @@
 	} from "@lucide/svelte";
 
 	let { data } = $props();
+	const t = $derived(makeT(page.data.locale ?? "en"));
 
 	// Reactive filter states
 	let searchQuery = $state("");
@@ -177,7 +180,7 @@
 </script>
 
 <svelte:head>
-	<title>Hotel Daily Care Roster · PetCo</title>
+	<title>{t['hr.title']()} · PetCo</title>
 </svelte:head>
 
 <div class="hotel-roster-page">
@@ -188,7 +191,7 @@
 				<Hotel size={13} strokeWidth={2.4} />
 				<span>Boarding Operations</span>
 			</div>
-			<h1>Hotel Daily Care Roster</h1>
+			<h1>{t['hr.title']()}</h1>
 			<p class="subtitle">
 				Manajemen harian kamar hotel, jadwal makan, aktivitas jalan, obat &amp; catatan observasi
 				hewan

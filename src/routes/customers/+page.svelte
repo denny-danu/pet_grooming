@@ -16,13 +16,17 @@
 		RotateCcw
 	} from "@lucide/svelte";
 
+	import { page } from "$app/state";
+	import { makeT } from "$lib/i18n/t";
+
 	let { data } = $props();
+	const t = $derived(makeT(page.data.locale ?? "en"));
 
 	let selectedTier = $state<string>('all');
 	let selectedSpecies = $state<string>('all');
 
 	const fmt = (d: Date | string | null) =>
-		d ? new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Never';
+		d ? new Date(d).toLocaleDateString(page.data.locale === "id" ? "id-ID" : "en-US", { month: "short", day: "numeric", year: "numeric" }) : t['cust.never']();
 
 	const initials = (f: string, l: string) => ((f?.[0] || '') + (l?.[0] || '')).toUpperCase() || '?';
 
@@ -51,14 +55,14 @@
 
 <div class="page-header">
 	<div class="title-block">
-		<div class="kicker"><Users size={13} /> Directory</div>
-		<h1>Customers &amp; Pet Dossiers</h1>
-		<p class="subtitle">Complete client directory, registered pets, and loyalty memberships.</p>
+		<div class="kicker"><Users size={13} /> {t['cust.kicker']()}</div>
+		<h1>{t['cust.title']()}</h1>
+		<p class="subtitle">{t['cust.subtitle']()}</p>
 	</div>
 	<div class="actions">
 		<a href="/customers/new" class="btn btn-primary">
 			<UserPlus size={15} />
-			<span>New Customer</span>
+			<span>{t['cust.newCustomer']()}</span>
 		</a>
 	</div>
 </div>
@@ -70,10 +74,10 @@
 			<div class="stat-icon blue">
 				<Users size={18} />
 			</div>
-			<span class="stat-trend up">{data.totalOwners} total</span>
+			<span class="stat-trend up">{data.totalOwners} {t['cust.total']()}</span>
 		</div>
 		<div class="stat-value">{data.totalOwners}</div>
-		<div class="stat-label">Registered Clients</div>
+		<div class="stat-label">{t['cust.registeredClients']()}</div>
 	</div>
 
 	<div class="stat-card">
@@ -81,10 +85,10 @@
 			<div class="stat-icon amber">
 				<PawPrint size={18} />
 			</div>
-			<span class="stat-trend neutral">Profiles</span>
+			<span class="stat-trend neutral">{t['cust.profiles']()}</span>
 		</div>
 		<div class="stat-value">{data.totalPets}</div>
-		<div class="stat-label">Registered Pets</div>
+		<div class="stat-label">{t['cust.registeredPets']()}</div>
 	</div>
 
 	<div class="stat-card">
@@ -92,10 +96,10 @@
 			<div class="stat-icon purple">
 				<Award size={18} />
 			</div>
-			<span class="stat-trend up">{data.vipCount} active</span>
+			<span class="stat-trend up">{data.vipCount} {t['cust.vipActive']()}</span>
 		</div>
 		<div class="stat-value">{data.vipCount}</div>
-		<div class="stat-label">VIP Loyalty Members</div>
+		<div class="stat-label">{t['cust.vipMembers']()}</div>
 	</div>
 
 	<div class="stat-card">
@@ -103,10 +107,10 @@
 			<div class="stat-icon green">
 				<Sparkles size={18} />
 			</div>
-			<span class="stat-trend neutral">Avg ratio</span>
+			<span class="stat-trend neutral">{t['cust.avgRatio']()}</span>
 		</div>
 		<div class="stat-value">{data.totalOwners > 0 ? (data.totalPets / data.totalOwners).toFixed(1) : '1.0'}</div>
-		<div class="stat-label">Pets per Household</div>
+		<div class="stat-label">{t['cust.petsPerHousehold']()}</div>
 	</div>
 </div>
 
@@ -119,27 +123,27 @@
 				<input
 					name="q"
 					value={data.q}
-					placeholder="Search by owner name, phone, or email..."
-					aria-label="Search customers"
+					placeholder={t['cust.searchPlaceholder']()}
+					aria-label={t['cust.search']()}
 				/>
 				{#if data.q}
-					<a href="/customers" class="search-clear" aria-label="Clear search">
+					<a href="/customers" class="search-clear" aria-label={t['cust.clearSearch']()}>
 						<X size={14} />
 					</a>
 				{/if}
 			</div>
 			<button class="btn" type="submit">
 				<Search size={14} />
-				<span>Search</span>
+				<span>{t['cust.search']()}</span>
 			</button>
 		</form>
 
 		<div class="row gap-2">
-			<span class="small faint font-semibold">Tier:</span>
+			<span class="small faint font-semibold">{t['cust.tierFilter']()}</span>
 			<div class="segmented">
 				<button class={selectedTier === 'all' ? 'active' : ''} onclick={() => selectedTier = 'all'}>
 					<Sparkles size={13} />
-					<span>All</span>
+					<span>{t['cust.all']()}</span>
 				</button>
 				<button class={selectedTier === 'silver' ? 'active' : ''} onclick={() => selectedTier = 'silver'}>
 					<Award size={13} />
@@ -165,33 +169,33 @@
 			<div class="empty-state">
 				<div class="empty-icon"><Users /></div>
 				{#if data.q}
-					<h3>No customers match “{data.q}”</h3>
-					<p>Try searching for a different name, phone number, or email address.</p>
+					<h3>{t['cust.noMatchTitle']({q: data.q})}</h3>
+					<p>{t['cust.noMatchBody']()}</p>
 					<div class="row gap-2">
 						<a href="/customers" class="btn">
 							<RotateCcw size={14} />
-							<span>Clear search</span>
+							<span>{t['cust.clearSearch']()}</span>
 						</a>
 						<a href="/customers/new" class="btn btn-primary">
 							<Plus size={14} />
-							<span>Add new customer</span>
+							<span>{t['cust.addNewCustomer']()}</span>
 						</a>
 					</div>
 				{:else}
-					<h3>No customer records found</h3>
-					<p>Get started by adding your first pet owner and their pets.</p>
-					<a href="/customers/new" class="btn btn-primary"><UserPlus size={15} /> Add customer</a>
+					<h3>{t['cust.noResultsTitle']()}</h3>
+					<p>{t['cust.noResultsBody']()}</p>
+					<a href="/customers/new" class="btn btn-primary"><UserPlus size={15} /> {t['cust.addCustomer']()}</a>
 				{/if}
 			</div>
 		{:else}
 			<table>
 				<thead>
 					<tr>
-						<th>Customer / Client</th>
-						<th>Registered Pets</th>
-						<th>Phone Number</th>
-						<th>Membership Tier</th>
-						<th>Last Visit</th>
+						<th>{t['cust.col.customer']()}</th>
+						<th>{t['cust.col.pets']()}</th>
+						<th>{t['cust.col.phone']()}</th>
+						<th>{t['cust.col.tier']()}</th>
+						<th>{t['cust.col.lastVisit']()}</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -223,7 +227,7 @@
 											</span>
 										{/each}
 									{:else}
-										<span class="faint tiny">No pets registered</span>
+										<span class="faint tiny">{t['cust.noPets']()}</span>
 									{/if}
 								</div>
 							</td>
@@ -239,7 +243,7 @@
 										{c.tier ? c.tier.toUpperCase() : 'SILVER'}
 									</span>
 									{#if c.pointsBalance !== undefined && c.pointsBalance !== null}
-										<span class="tiny mono muted">({c.pointsBalance} pts)</span>
+										<span class="tiny mono muted">({c.pointsBalance} {t['cust.pts']()})</span>
 									{/if}
 								</div>
 							</td>
@@ -253,10 +257,10 @@
 								<a
 									class="btn btn-ghost btn-sm"
 									href="/customers/{c.id}"
-									aria-label="Open {c.firstName} {c.lastName}"
+									aria-label={t['cust.openCustomer']({name: `${c.firstName} ${c.lastName}`})}
 									onclick={(e) => e.stopPropagation()}
 								>
-									<span>View</span>
+									<span>{t['cust.view']()}</span>
 									<ChevronRight size={14} />
 								</a>
 							</td>
