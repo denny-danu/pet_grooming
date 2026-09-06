@@ -45,6 +45,7 @@
 	import Badge from "$lib/components/Badge.svelte";
 	import EmptyState from "$lib/components/EmptyState.svelte";
 	import TankCard from "$lib/components/aquarium/TankCard.svelte";
+	import { getEcosystemBadge, getFrequencyLabel, getParameterStatus, formatDate } from "$lib/ui/aquarium";
 	import { makeT } from "$lib/i18n/t";
 
 	let { data } = $props();
@@ -84,111 +85,6 @@
 		if (tankId) preselectedTankId = tankId;
 		if (ownerId) preselectedOwnerId = ownerId;
 		createPlanOpen = true;
-	}
-
-	// Ecosystem helpers
-	function getEcosystemBadge(ecosystem: string) {
-		const e = ecosystem.toLowerCase();
-		if (e === "reef" || e.includes("reef") || e.includes("coral")) {
-			return { label: "Reef & Coral", variant: "purple", icon: Waves, color: "#7c3aed" };
-		}
-		if (e === "planted" || e.includes("planted") || e.includes("aquascape")) {
-			return { label: "Planted Aquascape", variant: "success", icon: Sparkles, color: "#059669" };
-		}
-		if (e === "marine" || e.includes("marine") || e.includes("saltwater")) {
-			return { label: "Marine Saltwater", variant: "info", icon: Droplets, color: "#0284c7" };
-		}
-		if (e === "brackish") {
-			return { label: "Brackish Water", variant: "warning", icon: Gauge, color: "#d97706" };
-		}
-		if (e === "cichlid") {
-			return { label: "African Cichlid", variant: "neutral", icon: Fish, color: "#475569" };
-		}
-		if (e === "paludarium") {
-			return { label: "Paludarium", variant: "success", icon: Layers, color: "#0d9488" };
-		}
-		return { label: "Freshwater", variant: "teal", icon: Fish, color: "#0d9488" };
-	}
-
-	function getFrequencyLabel(freq: string) {
-		if (freq === "weekly") return "Weekly Visit";
-		if (freq === "bi_weekly") return "Bi-Weekly (Every 2 wks)";
-		if (freq === "monthly") return "Monthly Comprehensive";
-		if (freq === "quarterly") return "Quarterly Overhaul";
-		return freq;
-	}
-
-	// Parameter status evaluator
-	function getParameterStatus(param: string, value: string | null | undefined, ecosystem: string = "freshwater") {
-		if (!value || isNaN(parseFloat(value))) return { text: "—", status: "none", class: "text-muted" };
-		const num = parseFloat(value);
-		const isMarine = ecosystem === "reef" || ecosystem === "marine";
-
-		if (param === "ph") {
-			if (isMarine) {
-				if (num >= 8.1 && num <= 8.4) return { text: `${num.toFixed(2)}`, status: "ideal", class: "param-good" };
-				if (num >= 7.8 && num <= 8.6) return { text: `${num.toFixed(2)}`, status: "warning", class: "param-warn" };
-				return { text: `${num.toFixed(2)}`, status: "alert", class: "param-alert" };
-			} else {
-				if (num >= 6.4 && num <= 7.6) return { text: `${num.toFixed(2)}`, status: "ideal", class: "param-good" };
-				if (num >= 6.0 && num <= 8.2) return { text: `${num.toFixed(2)}`, status: "warning", class: "param-warn" };
-				return { text: `${num.toFixed(2)}`, status: "alert", class: "param-alert" };
-			}
-		}
-
-		if (param === "ammonia") {
-			if (num === 0) return { text: "0.00 ppm", status: "ideal", class: "param-good" };
-			if (num <= 0.25) return { text: `${num.toFixed(2)} ppm`, status: "warning", class: "param-warn" };
-			return { text: `${num.toFixed(2)} ppm`, status: "alert", class: "param-alert" };
-		}
-
-		if (param === "nitrite") {
-			if (num === 0) return { text: "0.00 ppm", status: "ideal", class: "param-good" };
-			if (num <= 0.25) return { text: `${num.toFixed(2)} ppm`, status: "warning", class: "param-warn" };
-			return { text: `${num.toFixed(2)} ppm`, status: "alert", class: "param-alert" };
-		}
-
-		if (param === "nitrate") {
-			if (isMarine) {
-				if (num <= 10) return { text: `${num} ppm`, status: "ideal", class: "param-good" };
-				if (num <= 25) return { text: `${num} ppm`, status: "warning", class: "param-warn" };
-				return { text: `${num} ppm`, status: "alert", class: "param-alert" };
-			} else {
-				if (num <= 20) return { text: `${num} ppm`, status: "ideal", class: "param-good" };
-				if (num <= 40) return { text: `${num} ppm`, status: "warning", class: "param-warn" };
-				return { text: `${num} ppm`, status: "alert", class: "param-alert" };
-			}
-		}
-
-		if (param === "salinity") {
-			if (num >= 1.023 && num <= 1.026) return { text: `${num} SG`, status: "ideal", class: "param-good" };
-			if (num >= 30 && num <= 35) return { text: `${num} ppt`, status: "ideal", class: "param-good" };
-			return { text: `${num}`, status: "info", class: "param-info" };
-		}
-
-		if (param === "temp") {
-			if (num >= 24.0 && num <= 27.5) return { text: `${num}°C`, status: "ideal", class: "param-good" };
-			if (num >= 22.0 && num <= 29.0) return { text: `${num}°C`, status: "warning", class: "param-warn" };
-			return { text: `${num}°C`, status: "alert", class: "param-alert" };
-		}
-
-		if (param === "kh") {
-			return { text: `${num} dKH`, status: "info", class: "param-info" };
-		}
-
-		return { text: String(value), status: "info", class: "param-info" };
-	}
-
-	function formatDate(d: Date | string | null | undefined, includeTime = false) {
-		if (!d) return "—";
-		const dateObj = typeof d === "string" ? new Date(d) : d;
-		if (isNaN(dateObj.getTime())) return "—";
-		return dateObj.toLocaleDateString("id-ID", {
-			day: "numeric",
-			month: "short",
-			year: "numeric",
-			...(includeTime ? { hour: "2-digit", minute: "2-digit" } : {})
-		});
 	}
 
 	// Filtered lists
