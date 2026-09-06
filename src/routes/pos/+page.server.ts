@@ -115,7 +115,7 @@ export const actions: Actions = {
 		const cashier = requireUser(locals);
 		const form = await request.formData();
 
-		const rawCart = form.get("cartJson") as string;
+		const rawCart = form.get("cart") as string;
 		const ownerId = Number(form.get("ownerId") || 0) || null;
 		const petId = Number(form.get("petId") || 0) || null;
 		const paymentMethod = (form.get("paymentMethod") as string) || "cash";

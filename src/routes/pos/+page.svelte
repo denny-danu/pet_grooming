@@ -233,12 +233,12 @@
 		</section>
 
 		<!-- Right: Live Interactive Cart & Checkout -->
-		<aside class="cartState.cart-pane">
-			<div class="cartState.cart-card">
+		<aside class="cart-pane">
+			<div class="cart-card">
 				<!-- Customer & Pet Selector Header -->
-				<div class="cartState.cart-customer-section">
+				<div class="cart-customer-section">
 					<div class="field mb-2">
-						<label for="pos-customer" class="cartState.cart-field-label">
+						<label for="pos-customer" class="cart-field-label">
 							<User size={13} />
 							<span>Customer / Member</span>
 						</label>
@@ -298,22 +298,22 @@
 				</div>
 
 				<!-- Cart Items List -->
-				<div class="cartState.cart-items-wrap">
-					<div class="cartState.cart-items-header row spread">
-						<span class="cartState.cart-header-title">Receipt Items ({cartState.cart.reduce((s, i) => s + i.quantity, 0)})</span>
+				<div class="cart-items-wrap">
+					<div class="cart-items-header row spread">
+						<span class="cart-header-title">Receipt Items ({cartState.cart.reduce((s, i) => s + i.quantity, 0)})</span>
 						<span class="tiny muted">Price &amp; Subtotal</span>
 					</div>
 
 					{#if cartState.cart.length === 0}
-						<div class="cartState.cart-empty">
+						<div class="cart-empty">
 							<ShoppingBag size={32} strokeWidth={1.5} class="muted" />
 							<p>Cart is empty</p>
 							<span class="tiny faint">Tap products on the left to add items</span>
 						</div>
 					{:else}
-						<div class="cartState.cart-items-list">
+						<div class="cart-items-list">
 							{#each cartState.cart as item (item.productId)}
-								<div class="cartState.cart-item-row">
+								<div class="cart-item-row">
 									<div class="item-main">
 										<div class="item-name">{item.name}</div>
 										<div class="item-meta row gap-2">
@@ -364,7 +364,7 @@
 				</div>
 
 				<!-- Cart Summary & Calculations -->
-				<div class="cartState.cart-calculations">
+				<div class="cart-calculations">
 					<div class="calc-row">
 						<span class="calc-label">Subtotal</span>
 						<span class="calc-val mono">{money(cartState.subtotalCents)}</span>
@@ -483,10 +483,10 @@
 
 				<!-- Checkout Submission Form -->
 				<form method="POST" action="?/checkout" class="checkout-form">
-					<input type="hidden" name="cartState.cart" value={JSON.stringify(cartState.cart)} />
+					<input type="hidden" name="cart" value={JSON.stringify(cartState.cart)} />
 					<input type="hidden" name="ownerId" value={cartState.selectedCustomerId} />
 					<input type="hidden" name="petId" value={cartState.selectedPetId} />
-					<input type="hidden" name="cartState.paymentMethod" value={cartState.paymentMethod} />
+					<input type="hidden" name="paymentMethod" value={cartState.paymentMethod} />
 					<input type="hidden" name="discountCents" value={cartState.discountCents} />
 					<input type="hidden" name="notes" value={cartState.receiptNotes} />
 
