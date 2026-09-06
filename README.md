@@ -57,8 +57,15 @@ src/
 │  │  └─ labels.ts                enum helpers (booking kind/status labels)
 │  ├─ util.ts                     base64 + money formatting
 │  ├─ components/                 reusable UI + LanguageSwitcher
-│  │  └─ aquarium/                feature-scoped components (TankCard…)
-│  ├─ ui/                         presentation logic (param evaluators…)
+│  │  ├─ aquarium/                TankCard
+│  │  ├─ hotel/                   SuiteCard
+│  │  ├─ pos/                     ProductCard
+│  │  └─ grooming/                CutCard
+│  ├─ ui/                         presentation logic
+│  │  ├─ aquarium.ts              ecosystem/water-chemistry evaluators
+│  │  ├─ hotel.ts                 roster dates + medication helpers
+│  │  ├─ grooming.ts              behavior labels + date formatting
+│  │  └─ retail.ts                POS category icon resolver (pos+shop)
 │  └─ server/
 │     ├─ db/
 │     │  ├─ index.ts              drizzle client
@@ -113,4 +120,4 @@ src/
 
 ## Roadmap / refactor status
 
-Layering, bilingual chrome, and DB domain split are done. Still pending deeper work: splitting the remaining 800–1700-line monoliths (`hotel-roster`, `pos`, `shop`, `grooming-cuts`) into components, and extending message coverage to nested form/modal/tooltip copy.
+Layering, bilingual chrome, and DB domain split are done. Monolith decomposition done for `aquarium` (TankCard), `hotel-roster` (SuiteCard), `pos` (ProductCard), and `grooming-cuts` (CutCard). Still pending: extending message coverage to nested form/modal/tooltip copy, and deeper split of the large `+page.server.ts` loaders if needed.
